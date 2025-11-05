@@ -1,14 +1,32 @@
-import React, {useEffect, useState} from 'react'
-import { Link } from 'react-router-dom'
-export default function Home(){
-  const [lessons, setLessons] = useState([])
-  useEffect(()=>{fetch('/lessons/index.json').then(r=>r.json()).then(setLessons).catch(()=>{fetch('/lessons/generated/index.json').then(r=>r.json()).then(setLessons).catch(()=>{})})},[])
-  return (
-    <div>
-      <h1 className='text-2xl font-bold mb-6'>Blonding App v2.1</h1>
-      <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-        {lessons.length?lessons.map(l=>(<Link key={l.slug} to={`/theory?lesson=${l.slug}`} className='block bg-white rounded-2xl p-6 shadow hover:shadow-md transition'><h3 className='text-lg font-semibold mb-2'>{l.title}</h3><p className='text-sm text-gray-600'>Открыть урок</p></Link>)):<div className='p-6 bg-white rounded shadow'>Уроки не найдены. Запустите генерацию.</div>}
-      </div>
-    </div>
-  )
-}
+--- a/src/pages/Home.jsx
++++ b/src/pages/Home.jsx
+@@ -1,7 +1,7 @@
+-import { Link } from "react-router-dom";
++import Link from "next/link";
+ import { useEffect, useState } from "react";
+ import fs from "fs";
+ import path from "path";
+ 
+ export default function Home() {
+   const [lessons, setLessons] = useState([]);
+@@ -20,10 +20,10 @@
+     <main className="p-8">
+       <h1 className="text-3xl font-bold mb-4">📘 Теория по блондированию</h1>
+       <ul className="space-y-2">
+-        {lessons.map((lesson) => (
+-          <li key={lesson.slug}>
+-            <Link to={`/theory/${lesson.slug}`} className="text-blue-500 underline">
+-              {lesson.title}
+-            </Link>
+-          </li>
+-        ))}
++        {lessons.map((lesson) => (
++          <li key={lesson.slug}>
++            <Link href={`/theory/${lesson.slug}`} className="text-blue-500 underline">
++              {lesson.title}
++            </Link>
++          </li>
++        ))}
+       </ul>
+     </main>
+   );
