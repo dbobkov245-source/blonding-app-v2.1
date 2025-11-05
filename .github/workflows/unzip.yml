@@ -1,0 +1,41 @@
+name: Unzip and Commit
+
+on:
+  push:
+    paths:
+      # Запускаемся только когда этот zip-файл загружен
+      - "blonding-app-v2.1.zip"
+
+# ⚠️ ВАЖНО: Добавляем права на запись
+permissions:
+  contents: write
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Unzip archive
+        run: unzip blonding-app-v2.1.zip -d ./unzipped
+
+      - name: Move content
+        run: |
+          # Эта команда скопирует ВСЁ из 'unzipped' (включая скрытые файлы)
+          cp -a ./unzipped/. ./
+          # Удаляем временную папку и архив
+          rm -rf ./unzipped blonding-app-v2.1.zip
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add .
+          # Проверяем, есть ли вообще изменения, перед коммитом
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "Unpacked project from zip"
+            git push
+          else
+            echo "No changes to commit."
+          fi
