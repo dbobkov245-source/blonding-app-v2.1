@@ -3,13 +3,13 @@
   "version": "2.1.0",
   "private": true,
   "scripts": {
-  "dev": "next dev",
-  "build": "next build",
-  "start": "next start",
-  "generate-lessons": "node scripts/generate-md.js",
-  "generate-quizzes": "node scripts/generate-quizzes.js",
-  "generate-all": "npm run generate-lessons && npm run generate-quizzes"
-},
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "generate-lessons": "node scripts/generate-md.js",
+    "generate-quizzes": "node scripts/generate-quizzes.js",
+    "generate-all": "npm run generate-lessons && npm run generate-quizzes"
+  },
   "dependencies": {
     "next": "14.2.3",
     "react": "18.3.1",
@@ -18,11 +18,13 @@
     "tailwindcss": "3.4.1",
     "postcss": "8.4.38",
     "autoprefixer": "10.4.19",
-    "mammoth": "^1.8.0",
-    "sharp": "^0.33.4",
     "next-pwa": "^5.6.0",
     "lru-cache": "^10.2.2",
     "@tailwindcss/typography": "^0.5.13"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "mammoth": "^1.8.0",
+    "sharp": "^0.33.4",
+    "turndown": "^7.1.1"
+  }
 }
