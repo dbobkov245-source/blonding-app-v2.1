@@ -32,29 +32,35 @@ async function processLessonFile(file) {
 
   let imageCounter = 1;
 
-  // Настраиваем опции для mammoth (обработчик картинок)
+  // *** ИСПРАВЛЕННАЯ ЛОГИКА ОБРАБОТКИ КАРТИНОК ***
   const mammothOptions = {
-    convertImage: mammoth.images.imgElement(async (image) => {
+    // Мы будем использовать dataUri, а не imgElement
+    convertImage: mammoth.images.dataUri(async (image) => {
 
-      const buffer = await image.read();
-      // ТЕПЕРЬ 'imageType' ГАРАНТИРОВАННО СУЩЕСТВУЕТ
-      const type = await imageType(buffer); 
+      // 1. Получаем base64-строку
+      const base64String = await image.read("base64");
+
+      // 2. Конвертируем ее в Buffer, который поймет imageType
+      const buffer = Buffer.from(base64String, 'base64');
+
+      // 3. Определяем тип (jpg, png)
+      const type = await imageType(buffer);
 
       if (!type) {
-        console.warn(`Не удалось определить тип картинки для ${slug}, пропускаем.`);
-        return { src: '' };
+        console.warn(`Не удалось определить тип картинки (base64) для ${slug}, пропускаем.`);
+        return { src: '' }; // Возвращаем пустой src, если не поняли
       }
 
-      // Генерируем имя файла
+      // 4. Генерируем имя файла
       const imgName = `image${imageCounter++}.${type.ext}`;
       const imgPath = path.join(lessonPublicImgDir, imgName);
 
-      // Сохраняем картинку
+      // 5. Сохраняем Buffer как файл
       fs.writeFileSync(imgPath, buffer);
 
-      // Возвращаем веб-путь, который будет вставлен в .md
+      // 6. Возвращаем веб-путь
       const webPath = `/lessons/${slug}/images/${imgName}`;
-      console.log(`Извлечена и сохранена картинка: ${imgPath}`);
+      console.log(`Извлечена (из base64) и сохранена картинка: ${imgPath}`);
 
       return {
         src: webPath
@@ -67,6 +73,7 @@ async function processLessonFile(file) {
     content = fs.readFileSync(filePath, 'utf-8');
   } else if (ext === '.docx') {
     try {
+      // mammoth.js теперь использует convertImage для .docx
       const result = await mammoth.convertToMarkdown({ path: filePath }, mammothOptions);
       content = result.value; // Это уже готовый Markdown
     } catch (e) {
@@ -78,10 +85,8 @@ async function processLessonFile(file) {
     return null;
   }
 
-  // Создание .md файла с "шапкой"
   const mdFile = `---\ntitle: "${slug}"\nslug: "${slug}"\ndate: "${new Date().toISOString().split('T')[0]}"\n---\n\n${content}`;
 
-  // Запись .md файла
   fs.writeFileSync(path.join(lessonPublicDir, `${slug}.md`), mdFile, 'utf-8');
 
   console.log(`Сгенерирован урок: ${slug}`);
@@ -105,12 +110,10 @@ async function generateLessons() {
 
   const lessons = (await Promise.all(lessonPromises)).filter(Boolean);
 
-  // Обновление index.json (списка уроков)
   const indexJsonPath = path.join(outPublicDir, 'index.json');
   fs.writeFileSync(indexJsonPath, JSON.stringify(lessons, null, 2), 'utf-8');
   console.log(`Обновлен ${indexJsonPath}`);
 
-  // Обновление README.md
   if (lessons.length > 0) {
     let readme = fs.readFileSync(readmeFile, 'utf-8');
     const list = lessons.map(l => `- [${l.title}](/Theory?lesson=${l.slug})`).join('\n');
@@ -127,7 +130,6 @@ async function generateLessons() {
   console.log(`✅ Готово! ${lessons.length} уроков обработано.`);
 }
 
-// Запускаем главную функцию
 generateLessons().catch(e => {
   console.error(e);
   process.exit(1);
