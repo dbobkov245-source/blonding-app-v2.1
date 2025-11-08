@@ -2,22 +2,36 @@ import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import fs from 'fs';
 import path from 'path';
-import Link from 'next/link'; // <-- 1. ИМПОРТ ДОБАВЛЕН
+import Link from 'next/link';
 
-function cleanMarkdown(rawText) {
+interface Lesson {
+  title: string;
+  content: string;
+  slug: string;
+}
+
+interface TheoryPageProps {
+  lesson: Lesson;
+}
+
+function cleanMarkdown(rawText: string): string {
   return rawText.replace(/---[\s\S]*?---/, '');
 }
 
-// Компонент мини-чата для боковой панели
-function LessonAIAssistant({ lessonTitle, lessonContent }) {
-  const [messages, setMessages] = useState([]);
+interface LessonAIAssistantProps {
+  lessonTitle: string;
+  lessonContent: string;
+}
+
+function LessonAIAssistant({ lessonTitle, lessonContent }: LessonAIAssistantProps) {
+  const [messages, setMessages] = useState<{ role: string; text: string }[]>([]);
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const messagesEndRef = useRef(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
@@ -27,14 +41,10 @@ function LessonAIAssistant({ lessonTitle, lessonContent }) {
   const send = async (questionText = text) => {
     if (!questionText.trim()) return;
 
-    // Создаем промпт с контекстом урока
     const contextPrompt = `Урок: "${lessonTitle}"
-    
 Содержание урока:
-${lessonContent.substring(0, 2000)}... 
-
+${lessonContent.substring(0, 4000)}...  // Увеличил лимит
 Вопрос студента: ${questionText}
-
 Пожалуйста, ответь на вопрос, используя информацию из урока выше.`;
 
     const userMessage = { role: 'user', text: questionText };
@@ -48,9 +58,9 @@ ${lessonContent.substring(0, 2000)}...
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ inputs: contextPrompt })
       });
-      
+
       const json = await res.json();
-      
+
       if (res.ok) {
         setMessages(m => [...m, {
           role: 'assistant',
@@ -80,7 +90,6 @@ ${lessonContent.substring(0, 2000)}...
 
   return (
     <div className="bg-white rounded-lg shadow-lg border-2 border-purple-200 overflow-hidden">
-      {/* Хедер */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 flex items-center justify-between hover:from-purple-600 hover:to-pink-600 transition-colors"
@@ -97,10 +106,8 @@ ${lessonContent.substring(0, 2000)}...
         </span>
       </button>
 
-      {/* Чат (раскрывается) */}
       {isExpanded && (
         <div className="p-4">
-          {/* Быстрые действия */}
           {messages.length === 0 && (
             <div className="mb-3 space-y-2">
               <p className="text-sm font-semibold text-gray-700">Быстрые вопросы:</p>
@@ -116,16 +123,11 @@ ${lessonContent.substring(0, 2000)}...
             </div>
           )}
 
-          {/* Сообщения */}
           <div className="max-h-64 overflow-auto mb-3 space-y-2">
             {messages.map((m, i) => (
               <div
                 key={i}
-                className={`p-3 rounded-lg text-sm ${
-                  m.role === 'user'
-                    ? 'bg-blue-100 ml-4'
-                    : 'bg-gray-100 mr-4'
-                }`}
+                className={`p-3 rounded-lg text-sm ${m.role === 'user' ? 'bg-blue-100 ml-4' : 'bg-gray-100 mr-4'}`}
               >
                 <div className="font-semibold mb-1">
                   {m.role === 'user' ? '👤 Вы' : '🤖 AI'}
@@ -136,7 +138,6 @@ ${lessonContent.substring(0, 2000)}...
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Ввод */}
           <div className="flex gap-2">
             <input
               type="text"
@@ -164,43 +165,37 @@ ${lessonContent.substring(0, 2000)}...
   );
 }
 
-export default function TheoryPage({ lesson }) {
+export default function TheoryPage({ lesson }: TheoryPageProps) {
   if (!lesson) {
     return <div>Урок не найден.</div>;
   }
 
   return (
     <div className="flex flex-col lg:flex-row gap-6">
-      {/* Основной контент */}
       <div className="flex-1 bg-white p-6 rounded-lg shadow-sm">
         <h1 className="text-3xl font-bold mb-6">{lesson.title}</h1>
         <article className="prose prose-lg max-w-none">
           <ReactMarkdown>{lesson.content}</ReactMarkdown>
         </article>
 
-        {/* --- 2. БЛОК С ТЕСТОМ ДОБАВЛЕН ЗДЕСЬ --- */}
-        <div className="mt-10 p-6 bg-blue-50 rounded-lg text-center border border-blue-200">
+        <div className="mt-8 p-6 bg-blue-50 rounded-lg text-center">
           <h3 className="text-xl font-bold text-blue-900 mb-3">Готовы проверить себя?</h3>
           <p className="text-blue-800 mb-4">Пройдите интерактивный тест по материалам этого урока.</p>
           <Link 
-            href={`/Test/${lesson.slug}`} {/* Ссылка использует lesson.slug */}
+            href={`/Test/${lesson.slug}`}
             className="inline-block px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-lg"
           >
             Пройти тест
           </Link>
         </div>
-        {/* --- Конец блока с тестом --- */}
-
       </div>
 
-      {/* Боковая панель с AI */}
       <div className="lg:w-80 space-y-4">
         <LessonAIAssistant 
           lessonTitle={lesson.title}
           lessonContent={lesson.content}
         />
-        
-        {/* Дополнительная информация */}
+
         <div className="bg-blue-50 p-4 rounded-lg">
           <h3 className="font-bold text-blue-900 mb-2">💡 Подсказка</h3>
           <p className="text-sm text-blue-800">
@@ -213,7 +208,6 @@ export default function TheoryPage({ lesson }) {
   );
 }
 
-// getStaticPaths и getStaticProps остаются без изменений
 export async function getStaticPaths() {
   let lessons = [];
   try {
@@ -244,7 +238,7 @@ export async function getStaticProps({ params }) {
         lesson: {
           title: decodedSlug,
           content: content,
-          slug: decodedSlug, // <-- 3. ВАЖНОЕ ИСПРАВЛЕНИЕ ДОБАВЛЕНО
+          slug: decodedSlug,
         },
       },
     };
