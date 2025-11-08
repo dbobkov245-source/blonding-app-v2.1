@@ -53,6 +53,16 @@ function TestPage({ quiz, lessonSlug }: TestPageProps) {
   const total = quiz.length;
   const allAnswered = Object.keys(selectedAnswers).length === total;
 
+  if (quiz.length === 0) {
+    return (
+      <div className="max-w-3xl mx-auto p-4 md:p-8 text-center">
+        <h1 className="text-2xl font-bold mb-4">Тест для урока "{lessonSlug}" не найден</h1>
+        <p className="text-gray-600">Добавьте файл {lessonSlug}-quiz.json в public/content/quizzes/</p>
+        <Link href="/" className="mt-4 inline-block text-blue-600 hover:underline">Вернуться на главную</Link>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-3xl mx-auto p-4 md:p-8">
       <div className="mb-6">
@@ -157,11 +167,15 @@ export async function getStaticProps({ params }) {
   const { slug } = params;
   let quiz: QuizItem[] = [];
   try {
-    const jsonPath = path.join(process.cwd(), 'public', 'content', 'quizzes', `lesson-${slug}-quiz.json`);
-    const data = fs.readFileSync(jsonPath, 'utf-8');
-    quiz = JSON.parse(data);
+    const jsonPath = path.join(process.cwd(), 'public', 'content', 'quizzes', `${slug}-quiz.json`);  // Исправленный путь: ${slug}-quiz.json
+    if (fs.existsSync(jsonPath)) {
+      const data = fs.readFileSync(jsonPath, 'utf-8');
+      quiz = JSON.parse(data);
+    } else {
+      console.warn(`Quiz file not found: ${jsonPath}`);
+    }
   } catch (e) {
-    console.error(`Не удалось прочитать lesson-${slug}-quiz.json:`, e.message);
+    console.error(`Error loading quiz for slug: ${slug}`, e.message);
   }
 
   return {
