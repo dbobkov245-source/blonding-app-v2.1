@@ -82,7 +82,10 @@ async function processLessonFile(file) {
 
   // *** ВОТ ПРАВИЛЬНЫЙ БЛОК ***
   const mdFile = `---
-  title: "${slug}"slug: "${slug}" date: "${new Date().toISOString().split('T')[0]}"${content}`;  fs.writeFileSync(path.join(lessonPublicDir, `${slug}.md`), mdFile, 'utf-8');
+  title: "${slug}"slug: 
+  "${slug}" date: "${new Date().toISOString().split('T')[0]}"
+  ${content}`;
+  fs.writeFileSync(path.join(lessonPublicDir, `${slug}.md`), mdFile, 'utf-8');
   
   console.log(`Сгенерирован урок: ${slug}`);
   return { slug, title: slug };
