@@ -17,8 +17,7 @@
     "tailwindcss": "3.4.1",
     "postcss": "8.4.38",
     "autoprefixer": "10.4.19",
-    "mammoth": "^1.7.0",
-    "image-type": "^5.2.0"
+    "mammoth": "^1.7.0"
   },
   "devDependencies": {
   }
