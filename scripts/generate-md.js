@@ -2,12 +2,10 @@ import fs from 'fs';
 import path from 'path';
 import mammoth from 'mammoth';
 
-// Динамический импорт image-type, так как он ESM
-let imageType;
-import('image-type').then(mod => {
-  imageType = mod.imageType;
-});
+// 1. СНАЧАЛА ЗАГРУЖАЕМ И ЖДЕМ БИБЛИОТЕКУ
+const { imageType } = await import('image-type');
 
+// 2. ТЕПЕРЬ ОПРЕДЕЛЯЕМ ПУТИ
 const sourceDir = './lessons/source';
 const outPublicDir = './public/lessons';
 const readmeFile = './README.md';
@@ -27,23 +25,20 @@ async function processLessonFile(file) {
 
   let content = '';
 
-  // 1. Создаем папки для урока
+  // Создаем папки для урока
   const lessonPublicDir = path.join(outPublicDir, slug);
   const lessonPublicImgDir = path.join(lessonPublicDir, 'images');
   if (!fs.existsSync(lessonPublicImgDir)) fs.mkdirSync(lessonPublicImgDir, { recursive: true });
 
   let imageCounter = 1;
 
-  // 2. Настраиваем опции для mammoth (обработчик картинок)
+  // Настраиваем опции для mammoth (обработчик картинок)
   const mammothOptions = {
     convertImage: mammoth.images.imgElement(async (image) => {
-      if (!imageType) {
-        console.warn('image-type aсинхронно не загрузился, картинки могут быть пропущены');
-        return { src: '' };
-      }
 
       const buffer = await image.read();
-      const type = await imageType(buffer);
+      // ТЕПЕРЬ 'imageType' ГАРАНТИРОВАННО СУЩЕСТВУЕТ
+      const type = await imageType(buffer); 
 
       if (!type) {
         console.warn(`Не удалось определить тип картинки для ${slug}, пропускаем.`);
@@ -67,7 +62,7 @@ async function processLessonFile(file) {
     })
   };
 
-  // 3. Читаем контент
+  // Читаем контент
   if (ext === '.txt' || ext === '.md') {
     content = fs.readFileSync(filePath, 'utf-8');
   } else if (ext === '.docx') {
@@ -80,13 +75,13 @@ async function processLessonFile(file) {
     }
   } else {
     console.log(`Пропускаем неподдерживаемый файл: ${file}`);
-    return null; // Неподдерживаемый тип файла
+    return null;
   }
 
-  // 4. Создание .md файла с "шапкой"
+  // Создание .md файла с "шапкой"
   const mdFile = `---\ntitle: "${slug}"\nslug: "${slug}"\ndate: "${new Date().toISOString().split('T')[0]}"\n---\n\n${content}`;
 
-  // 5. Запись .md файла
+  // Запись .md файла
   fs.writeFileSync(path.join(lessonPublicDir, `${slug}.md`), mdFile, 'utf-8');
 
   console.log(`Сгенерирован урок: ${slug}`);
@@ -108,14 +103,14 @@ async function generateLessons() {
     lessonPromises.push(processLessonFile(file));
   }
 
-  const lessons = (await Promise.all(lessonPromises)).filter(Boolean); // .filter(Boolean) убирает null (пропущенные)
+  const lessons = (await Promise.all(lessonPromises)).filter(Boolean);
 
-  // 6. Обновление index.json (списка уроков)
+  // Обновление index.json (списка уроков)
   const indexJsonPath = path.join(outPublicDir, 'index.json');
   fs.writeFileSync(indexJsonPath, JSON.stringify(lessons, null, 2), 'utf-8');
   console.log(`Обновлен ${indexJsonPath}`);
 
-  // 7. Обновление README.md
+  // Обновление README.md
   if (lessons.length > 0) {
     let readme = fs.readFileSync(readmeFile, 'utf-8');
     const list = lessons.map(l => `- [${l.title}](/Theory?lesson=${l.slug})`).join('\n');
