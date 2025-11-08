@@ -13,7 +13,6 @@
 ## 📚 Уроки
 - [lesson-1](/Theory?lesson=lesson-1)
 - [lesson-2](/Theory?lesson=lesson-2)
-- [test-image](/Theory?lesson=test-image)
 
 ## Локальная разработка
 1. Установите зависимости: `npm install`
