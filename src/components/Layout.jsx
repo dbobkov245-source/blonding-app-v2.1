@@ -1,12 +1,13 @@
 import React from 'react';
 import Link from 'next/link';
 
-// Это наш новый Layout-компонент
-export default function Layout({ children }) {
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+export default function Layout({ children }: LayoutProps) {
   return (
     <div className='min-h-screen bg-gray-50 text-gray-900'>
-      
-      {/* Вся навигация теперь живет здесь */}
       <nav className='bg-white shadow-sm'>
         <div className='max-w-4xl mx-auto p-4 flex gap-4 items-center'>
           <Link href='/' className='font-semibold text-lg'>
@@ -16,19 +17,16 @@ export default function Layout({ children }) {
             Теория
           </Link>
           <Link href='/Chat' className='text-sm hover:underline'>
-            AI-консультант
+            АІ-консультант
           </Link>
           <Link href='/Test' className='text-sm hover:underline'>
             Тест
           </Link>
         </div>
       </nav>
-
-      {/* 'children' - это та страница (index, Chat, Test ...), которую мы оборачиваем */}
       <main className='max-w-4xl mx-auto p-6'>
         {children}
       </main>
-      
     </div>
   );
 }
