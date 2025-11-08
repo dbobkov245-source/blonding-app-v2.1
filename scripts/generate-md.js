@@ -80,12 +80,12 @@ async function processLessonFile(file) {
     return null;
   }
 
-  // *** ВОТ ИСПРАВЛЕННЫЙ БЛОК ***
+  // *** ВОТ ПРАВИЛЬНЫЙ БЛОК ***
   const mdFile = `---
-  fs.writeFileSync(path.join(lessonPublicDir, `${slug}.md`), mdFile, 'utf-8');
-  
-  console.log(`Сгенерирован урок: ${slug}`);
-  return { slug, title: slug };
+  title: "${slug}"slug: "${slug}" date: "${new Date().toISOString().split('T')[0]}"${content}`;  fs.writeFileSync(path.join(lessonPublicDir, `${slug}.md`), mdFile, 'utf-8');
+  
+  console.log(`Сгенерирован урок: ${slug}`);
+  return { slug, title: slug };
 }
 
 /**
@@ -97,7 +97,7 @@ async function generateLessons() {
     f.endsWith('.txt') || f.endsWith('.md') || f.endsWith('.docx')
   );
 
-  console.log(`Найдено ${files.length} файлов уроков для обработки...`);
+  console.log(`Найдено ${files.length} файлов уроков обработки...`);
 
   for (const file of files) {
     lessonPromises.push(processLessonFile(file));
