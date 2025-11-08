@@ -1,61 +1,36 @@
 name: Generate Content
-
 on:
   push:
     paths:
       - 'lessons/source/**'
   workflow_dispatch:
-
 jobs:
   generate:
     runs-on: ubuntu-latest
-    
-    # Добавляем токен HF как переменную окружения для ВСЕЙ 'job'
     env:
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
-
       - name: Install dependencies
         run: npm install
-
       - name: Generate Lessons
         run: npm run generate-lessons
-
       - name: Generate Quizzes
-        # Скрипт возьмет HF_TOKEN из env, заданного выше
         run: npm run generate-quizzes
-        
       - name: Commit generated files
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          
-          # Добавляем все сгенерированные папки
           git add public/lessons public/content/quizzes src/content/theory
-          
           if git diff --quiet --cached; then
             echo "No changes to commit"
           else
             git commit -m "Auto: generate lessons and quizzes"
             git push
           fi
-          
-      # Шаг 'Trigger Vercel redeploy' (который был на строке 55) УДАЛЕН.
-      # Vercel будет автоматически запущен шагом 'git push' выше.
-```eof
-
-**Почему это сработает:**
-* Шаг `Trigger Vercel redeploy` (который был на строке 55) был необязательным.
-* Ваш Vercel **в любом случае** автоматически начнет сборку, как только увидит `git push` из предыдущего шага.
-* Удалив этот шаг, мы удалили строку, которая вызывала ошибку синтаксиса.
-
-Пожалуйста, попробуйте этот код. Он должен исправить ошибку.
