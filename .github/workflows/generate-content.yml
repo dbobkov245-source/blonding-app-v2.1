@@ -1,7 +1,6 @@
 name: Generate Content
 
 on:
-  # Используем 2 пробела для отступов
   push:
     paths:
       - 'lessons/source/**'
@@ -11,8 +10,8 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     
-    # 1. Токен HF добавлен сюда (на уровень 'job')
-    # Это лучшая практика и решает проблему с отступом 'env:'
+    # Добавляем токен HF как переменную окружения для ВСЕЙ 'job'
+    # Это чистая практика и решает проблемы с отступами
     env:
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
 
@@ -33,13 +32,15 @@ jobs:
         run: npm run generate-lessons
 
       - name: Generate Quizzes
-        # 'env:' отсюда убран, так как он теперь задан для всей 'job'
+        # Скрипт возьмет HF_TOKEN из env, заданного выше
         run: npm run generate-quizzes
         
       - name: Commit generated files
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
+          
+          # Добавляем все сгенерированные папки
           git add public/lessons public/content/quizzes src/content/theory
           
           if git diff --quiet --cached; then
@@ -49,8 +50,8 @@ jobs:
             git push
           fi
           
-      - name: Trigger Vercel redeploy (optional)
-        # 2. 'if:' на одном уровне с 'name:' и 'run:'
-        if: ${{ secrets.VERCEL_BUILD_HOOK }}
-        run: |
-          curl -X POST "${{ secrets.VERCEL_BUILD_HOOK }}"
+      # Шаг 'Trigger Vercel redeploy' УДАЛЕН.
+      # Vercel будет автоматически запущен шагом 'git push' выше.
+```eof
+
+Этот код нужно вставить в файл `.github/workflows/generate-content.yml` в вашем репозитории. Он должен исправить ошибку.
