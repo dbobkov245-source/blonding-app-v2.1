@@ -1,5 +1,5 @@
 name: Convert lessons
-
+    
 on:
   push:
     paths:
@@ -7,7 +7,7 @@ on:
       - 'lessons/source/**'
 
 permissions:
-  contents: write # Даем права на запись (чтобы коммитить .md файлы)
+  contents: write 
 
 jobs:
   convert:
@@ -15,14 +15,17 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          # 1. Загружаем полную историю, чтобы избежать 'rejected'
+          fetch-depth: 0 
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18' # Используем Node 18
+          node-version: '18'
+          cache: 'npm' # 2. Добавляем кэш npm
 
       - name: Install dependencies
-        # Используем npm install, чтобы он установил новые библиотеки (mammoth)
         run: npm install
 
       - name: Run lesson generator script
@@ -32,11 +35,19 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add public/lessons/*.md public/lessons/*/*.md public/lessons/*/images/* public/lessons/index.json README.md
-          # Проверяем, есть ли изменения, перед коммитом
+          
+          # 3. Добавляем всё, что изменилось в /public/lessons
+          git add public/lessons
+          # 4. Проверяем README.md перед добавлением
+          if [ -f README.md ]; then
+            git add README.md
+          fi
+          
+          # 5. Проверяем, есть ли изменения
           if [ -n "$(git status --porcelain)" ]; then
             git commit -m "Auto: Generated lessons from source files"
-            git push
+            # 6. Пытаемся сделать push, и если не вышло — пробуем 'pull' и 'push'
+            git push || (git pull --rebase && git push)
           else
             echo "No changes to commit."
           fi
