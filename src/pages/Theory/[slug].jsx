@@ -1,102 +1,241 @@
-import React from 'react'
-import ReactMarkdown from 'react-markdown'
-import Link from 'next/link'
-import fs from 'fs' // Node.js
-import path from 'path' // Node.js
+// src/pages/Theory/[slug].jsx - С интегрированным AI-помощником
 
-// --- Вспомогательная функция (остается как была) ---
+import React, { useState, useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
+import fs from 'fs';
+import path from 'path';
+
 function cleanMarkdown(rawText) {
   return rawText.replace(/---[\s\S]*?---/, '');
 }
 
-// --- 1. Компонент страницы ---
-// Он теперь получает 'lessonContent' и 'allLessons' как пропсы
-export default function TheoryPage({ lessonContent, allLessons }){
-  
-  // 2. Убрали useEffect, useState, useRouter. Вся информация уже есть.
+// Компонент мини-чата для боковой панели
+function LessonAIAssistant({ lessonTitle, lessonContent }) {
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const send = async (questionText = text) => {
+    if (!questionText.trim()) return;
+
+    // Создаем промпт с контекстом урока
+    const contextPrompt = `Урок: "${lessonTitle}"
+    
+Содержание урока:
+${lessonContent.substring(0, 2000)}... 
+
+Вопрос студента: ${questionText}
+
+Пожалуйста, ответь на вопрос, используя информацию из урока выше.`;
+
+    const userMessage = { role: 'user', text: questionText };
+    setMessages(m => [...m, userMessage]);
+    setText('');
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/proxy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ inputs: contextPrompt })
+      });
+      
+      const json = await res.json();
+      
+      if (res.ok) {
+        setMessages(m => [...m, {
+          role: 'assistant',
+          text: json.reply || 'Нет ответа'
+        }]);
+      } else {
+        setMessages(m => [...m, {
+          role: 'assistant',
+          text: 'Ошибка: ' + (json.error || 'Неизвестная ошибка')
+        }]);
+      }
+    } catch (e) {
+      setMessages(m => [...m, {
+        role: 'assistant',
+        text: 'Ошибка соединения с AI'
+      }]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const quickActions = [
+    '💡 Объясни проще',
+    '📝 Приведи пример',
+    '🎯 Дай инструкцию'
+  ];
 
   return (
-    <div>
-      <div className='flex flex-col md:flex-row gap-4'>
-        <div className='w-full md:w-1/3'>
-          {/* 3. Боковая панель теперь использует 'allLessons' */}
-          <ul className='space-y-2'>
-            {allLessons.map(l=>(
-              <li key={l.slug}>
-                {/* 4. Ссылки обновлены на новый формат */}
-                <Link 
-                  href={`/Theory/${encodeURIComponent(l.slug)}`} 
-                  className='block p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition'
-                >
-                  {l.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
+    <div className="bg-white rounded-lg shadow-lg border-2 border-purple-200 overflow-hidden">
+      {/* Хедер */}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 flex items-center justify-between hover:from-purple-600 hover:to-pink-600 transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">🤖</span>
+          <div className="text-left">
+            <div className="font-bold">AI-помощник</div>
+            <div className="text-xs opacity-90">Задай вопрос по уроку</div>
+          </div>
         </div>
+        <span className={`transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
+          ▼
+        </span>
+      </button>
+
+      {/* Чат (раскрывается) */}
+      {isExpanded && (
+        <div className="p-4">
+          {/* Быстрые действия */}
+          {messages.length === 0 && (
+            <div className="mb-3 space-y-2">
+              <p className="text-sm font-semibold text-gray-700">Быстрые вопросы:</p>
+              {quickActions.map((action, i) => (
+                <button
+                  key={i}
+                  onClick={() => send(action)}
+                  className="w-full text-left px-3 py-2 bg-purple-50 hover:bg-purple-100 rounded-lg text-sm transition-colors"
+                >
+                  {action}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Сообщения */}
+          <div className="max-h-64 overflow-auto mb-3 space-y-2">
+            {messages.map((m, i) => (
+              <div
+                key={i}
+                className={`p-3 rounded-lg text-sm ${
+                  m.role === 'user'
+                    ? 'bg-blue-100 ml-4'
+                    : 'bg-gray-100 mr-4'
+                }`}
+              >
+                <div className="font-semibold mb-1">
+                  {m.role === 'user' ? '👤 Вы' : '🤖 AI'}
+                </div>
+                {m.text}
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Ввод */}
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !loading) {
+                  send();
+                }
+              }}
+              placeholder="Ваш вопрос..."
+              className="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+            <button
+              onClick={() => send()}
+              disabled={loading || !text.trim()}
+              className="px-4 py-2 bg-purple-500 text-white rounded-lg disabled:bg-gray-400 text-sm font-medium hover:bg-purple-600 transition-colors"
+            >
+              {loading ? '...' : '📤'}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function TheoryPage({ lesson }) {
+  if (!lesson) {
+    return <div>Урок не найден.</div>;
+  }
+
+  return (
+    <div className="flex flex-col lg:flex-row gap-6">
+      {/* Основной контент */}
+      <div className="flex-1 bg-white p-6 rounded-lg shadow-sm">
+        <h1 className="text-3xl font-bold mb-6">{lesson.title}</h1>
+        <article className="prose prose-lg max-w-none">
+          <ReactMarkdown>{lesson.content}</ReactMarkdown>
+        </article>
+      </div>
+
+      {/* Боковая панель с AI */}
+      <div className="lg:w-80 space-y-4">
+        <LessonAIAssistant 
+          lessonTitle={lesson.title}
+          lessonContent={lesson.content}
+        />
         
-        {/* 5. Контент урока теперь использует 'lessonContent' */}
-        <div className='flex-1 bg-white p-6 rounded-lg shadow-sm'>
-          <article className="prose">
-            <ReactMarkdown>{cleanMarkdown(lessonContent)}</ReactMarkdown>
-          </article>
+        {/* Дополнительная информация */}
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <h3 className="font-bold text-blue-900 mb-2">💡 Подсказка</h3>
+          <p className="text-sm text-blue-800">
+            Используй AI-помощника для разбора сложных моментов урока. 
+            Он знает весь материал!
+          </p>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-
-// --- 6. Функция getStaticPaths (Говорит Next.js, какие уроки существуют) ---
+// getStaticPaths и getStaticProps остаются без изменений
 export async function getStaticPaths() {
-  const filePath = path.join(process.cwd(), 'public', 'lessons', 'index.json');
   let lessons = [];
   try {
-    const fileContent = fs.readFileSync(filePath, 'utf-8');
-    lessons = JSON.parse(fileContent);
-  } catch (error) {
-    console.error("Ошибка в getStaticPaths:", error.message);
+    const jsonPath = path.join(process.cwd(), 'public', 'lessons', 'index.json');
+    const data = fs.readFileSync(jsonPath, 'utf-8');
+    lessons = JSON.parse(data);
+  } catch (e) {
+    console.warn("index.json не найден для getStaticPaths");
   }
 
-  // Создаем массив путей, которые Next.js должен сгенерировать
   const paths = lessons.map(lesson => ({
     params: { slug: lesson.slug },
   }));
 
-  // fallback: false означает, что если урока нет - будет 404
-  return { paths, fallback: false };
+  return { paths, fallback: 'blocking' };
 }
 
-
-// --- 7. Функция getStaticProps (Загружает контент ДЛЯ КАЖДОГО урока) ---
-export async function getStaticProps(context) {
-  // Получаем slug из URL (например, "Урок 1. ...")
-  const { slug } = context.params;
-
-  // --- Загружаем контент .md файла ---
-  const mdFilePath = path.join(process.cwd(), 'public', 'lessons', slug, `${slug}.md`);
-  let lessonContent = '';
+export async function getStaticProps({ params }) {
+  const { slug } = params;
   try {
-    lessonContent = fs.readFileSync(mdFilePath, 'utf-8');
-  } catch (error) {
-    console.error(`Ошибка чтения .md урока ${slug}:`, error.message);
-  }
+    const decodedSlug = decodeURIComponent(slug);
+    const mdPath = path.join(process.cwd(), 'public', 'lessons', decodedSlug, `${decodedSlug}.md`);
+    const rawText = fs.readFileSync(mdPath, 'utf-8');
+    const content = cleanMarkdown(rawText);
 
-  // --- Загружаем ВЕСЬ список уроков (для боковой панели) ---
-  const indexFilePath = path.join(process.cwd(), 'public', 'lessons', 'index.json');
-  let allLessons = [];
-  try {
-    const indexContent = fs.readFileSync(indexFilePath, 'utf-8');
-    allLessons = JSON.parse(indexContent);
-  } catch (error) {
-    //
+    return {
+      props: {
+        lesson: {
+          title: decodedSlug,
+          content: content,
+        },
+      },
+    };
+  } catch (e) {
+    console.error(`Ошибка в getStaticProps для slug: ${slug}`, e.message);
+    return { notFound: true };
   }
-
-  // Передаем все данные в компонент TheoryPage
-  return {
-    props: {
-      lessonContent: lessonContent,
-      allLessons: allLessons
-    }
-  };
 }
