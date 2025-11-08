@@ -1,9 +1,8 @@
-// src/pages/Theory/[slug].jsx - С интегрированным AI-помощником
-
 import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import fs from 'fs';
 import path from 'path';
+import Link from 'next/link'; // <-- 1. ИМПОРТ ДОБАВЛЕН
 
 function cleanMarkdown(rawText) {
   return rawText.replace(/---[\s\S]*?---/, '');
@@ -178,6 +177,20 @@ export default function TheoryPage({ lesson }) {
         <article className="prose prose-lg max-w-none">
           <ReactMarkdown>{lesson.content}</ReactMarkdown>
         </article>
+
+        {/* --- 2. БЛОК С ТЕСТОМ ДОБАВЛЕН ЗДЕСЬ --- */}
+        <div className="mt-10 p-6 bg-blue-50 rounded-lg text-center border border-blue-200">
+          <h3 className="text-xl font-bold text-blue-900 mb-3">Готовы проверить себя?</h3>
+          <p className="text-blue-800 mb-4">Пройдите интерактивный тест по материалам этого урока.</p>
+          <Link 
+            href={`/Test/${lesson.slug}`} {/* Ссылка использует lesson.slug */}
+            className="inline-block px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-lg"
+          >
+            Пройти тест
+          </Link>
+        </div>
+        {/* --- Конец блока с тестом --- */}
+
       </div>
 
       {/* Боковая панель с AI */}
@@ -231,6 +244,7 @@ export async function getStaticProps({ params }) {
         lesson: {
           title: decodedSlug,
           content: content,
+          slug: decodedSlug, // <-- 3. ВАЖНОЕ ИСПРАВЛЕНИЕ ДОБАВЛЕНО
         },
       },
     };
