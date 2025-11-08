@@ -1,14 +1,21 @@
 name: Generate Content
 
 on:
+  # Используем 2 пробела для отступов
   push:
     paths:
-      - 'lessons/source/**' # Запускается при изменениях в уроках
-  workflow_dispatch: # Позволяет запускать вручную
+      - 'lessons/source/**'
+  workflow_dispatch:
 
 jobs:
   generate:
     runs-on: ubuntu-latest
+    
+    # 1. Токен HF добавлен сюда (на уровень 'job')
+    # Это лучшая практика и решает проблему с отступом 'env:'
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -22,22 +29,17 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # --- ВОТ ВАЖНЫЕ ШАГИ, КОТОРЫХ НЕ БЫЛО В ЛОГЕ ---
-      
       - name: Generate Lessons
         run: npm run generate-lessons
 
       - name: Generate Quizzes
+        # 'env:' отсюда убран, так как он теперь задан для всей 'job'
         run: npm run generate-quizzes
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }} # Убедитесь, что секрет HF_TOKEN добавлен в GitHub
-
+        
       - name: Commit generated files
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          
-          # Добавляем ВСЕ сгенерированные папки
           git add public/lessons public/content/quizzes src/content/theory
           
           if git diff --quiet --cached; then
@@ -48,6 +50,7 @@ jobs:
           fi
           
       - name: Trigger Vercel redeploy (optional)
+        # 2. 'if:' на одном уровне с 'name:' и 'run:'
         if: ${{ secrets.VERCEL_BUILD_HOOK }}
         run: |
           curl -X POST "${{ secrets.VERCEL_BUILD_HOOK }}"
