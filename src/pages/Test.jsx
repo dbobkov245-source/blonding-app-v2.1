@@ -1,23 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react'; // Убрали useEffect
 import Link from 'next/link';
+import fs from 'fs'; // Node.js
+import path from 'path'; // Node.js
 
-// Мы не будем импортировать 'lucide-react', чтобы не было ошибки
-// Вместо иконок будем использовать эмодзи
-
-function TestPage() {
-  const [quiz, setQuiz] = useState([]);
+// 1. Компонент теперь получает 'quiz' как пропс
+function TestPage({ quiz }) { 
+  
+  // 2. Убрали useEffect и useState для quiz
   const [selectedAnswers, setSelectedAnswers] = useState({});
 
-  useEffect(() => {
-    // Мы загружаем JSON из папки /public
-    fetch('/content/quizzes/lesson-1-quiz.json')
-      .then(res => res.json())
-      .then(data => {
-        setQuiz(data);
-      })
-      .catch(err => console.error("Ошибка загрузки теста:", err));
-  }, []);
-
+  // 3. Логика теста (handleAnswerClick, resetQuiz, getButtonClass) остается БЕЗ ИЗМЕНЕНИЙ
+  // ... (вся твоя логика) ...
+  
   // Срабатывает при клике на вариант
   const handleAnswerClick = (questionIndex, selectedOption) => {
     if (selectedAnswers[questionIndex] !== undefined) {
@@ -54,7 +48,7 @@ function TestPage() {
 
   return (
     <div className="max-w-3xl mx-auto p-4 md:p-8">
-      {/* --- Кнопка Назад (Используем <Link href> из Next.js) --- */}
+      {/* --- Кнопка Назад --- */}
       <div className="mb-6">
         <Link
           href="/"
@@ -136,3 +130,23 @@ function TestPage() {
 }
 
 export default TestPage;
+
+
+// 4. НОВАЯ ФУНКЦИЯ: getStaticProps для Теста
+export async function getStaticProps() {
+  const filePath = path.join(process.cwd(), 'public', 'content', 'quizzes', 'lesson-1-quiz.json');
+  let quiz = [];
+
+  try {
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    quiz = JSON.parse(fileContent);
+  } catch (error) {
+    console.error("Ошибка чтения lesson-1-quiz.json:", error.message);
+  }
+
+  return {
+    props: {
+      quiz: quiz
+    }
+  };
+}
