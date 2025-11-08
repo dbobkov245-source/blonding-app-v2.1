@@ -1,12 +1,12 @@
 ---
 title: "lesson-1"
 slug: "lesson-1"
-date: "2025-11-05"
+date: "2025-11-08"
 ---
 
 Урок 1 — Подготовка клиента к блондированию
 
-![hair-diagram.svg](/lessons/lesson-1/images/hair-diagram.svg)
+[[hair-diagram.svg]]
 
 Краткое содержание:
 - Консультация клиента: выяснить историю окрашиваний и аллергии.

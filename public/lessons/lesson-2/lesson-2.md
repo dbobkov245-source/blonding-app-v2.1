@@ -1,12 +1,12 @@
 ---
 title: "lesson-2"
 slug: "lesson-2"
-date: "2025-11-05"
+date: "2025-11-08"
 ---
 
 Урок 2 — Подбор оттенка блонда
 
-![tone-chart.png](/lessons/lesson-2/images/tone-chart.png)
+[[tone-chart.png]]
 
 Краткое содержание:
 - Определение желаемого оттенка.
