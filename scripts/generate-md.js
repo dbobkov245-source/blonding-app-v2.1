@@ -1,7 +1,7 @@
-import fs from 'fs';
-import path from 'path';
-import mammoth from 'mammoth';
-import sharp from 'sharp'; // 1. ИМПОРТИРУЕМ SHARP
+const fs = require('fs');
+const path = require('path');
+const mammoth = require('mammoth');
+const sharp = require('sharp');
 
 const sourceDir = './lessons/source';
 const outPublicDir = './public/lessons';
@@ -15,38 +15,37 @@ async function processLessonFile(file) {
   const filePath = path.join(sourceDir, file);
   const slug = path.basename(file, path.extname(file));
   const ext = path.extname(file);
-  
   let content = '';
   
   const lessonPublicDir = path.join(outPublicDir, slug);
   const lessonPublicImgDir = path.join(lessonPublicDir, 'images');
+  
   if (!fs.existsSync(lessonPublicImgDir)) fs.mkdirSync(lessonPublicImgDir, { recursive: true });
   
   let imageCounter = 1;
   
   const mammothOptions = {
     convertImage: mammoth.images.imgElement(async (image) => {
-      
       const buffer = await image.read();
-      const contentType = image.contentType; 
+      const contentType = image.contentType;
       const extension = contentType.split('/')[1];
+      
       if (!extension) {
         console.warn(`Не удалось определить тип картинки для ${slug}, пропускаем.`);
         return { src: '' };
       }
       
       const imgName = `image${imageCounter++}.${extension}`;
-      const imgPath = path.join(lessonPublicImgDir, imgName);
+      const imgPath = path.join(lessonPublicDir, imgName);
       
-      // 2. СЖИМАЕМ КАРТИНКУ ПЕРЕД СОХРАНЕНИЕМ
       try {
         await sharp(buffer)
-          .jpeg({ quality: 80 }) // Сжимаем JPEG
-          .png({ quality: 80 })  // Сжимаем PNG
+          .jpeg({ quality: 80 })
+          .png({ quality: 80 })
           .toFile(imgPath);
       } catch (e) {
         console.warn(`Ошибка сжатия картинки ${imgName}: ${e.message}. Сохраняем как есть.`);
-        fs.writeFileSync(imgPath, buffer); // Если сжатие не удалось, просто сохраняем
+        fs.writeFileSync(imgPath, buffer);
       }
       
       const webPath = `/lessons/${encodeURIComponent(slug)}/images/${encodeURIComponent(imgName)}`;
@@ -82,8 +81,8 @@ date: "${new Date().toISOString().split('T')[0]}"
 ${content}`;
   
   fs.writeFileSync(path.join(lessonPublicDir, `${slug}.md`), mdFile, 'utf-8');
-  
   console.log(`Сгенерирован урок: ${slug}`);
+  
   return { slug, title: slug };
 }
 
@@ -106,16 +105,18 @@ async function generateLessons() {
   console.log(`Обновлен ${indexJsonPath}`);
   
   if (lessons.length > 0) {
-    if (fs.existsSync(readmeFile)) { // 3. ПРОВЕРЯЕМ, что README существует
+    if (fs.existsSync(readmeFile)) {
       try {
         let readme = fs.readFileSync(readmeFile, 'utf-8');
-        const list = lessons.map(l => `- [${l.title}](/Theory?lesson=${encodeURIComponent(l.slug)})`).join('\n');
+        const list = lessons.map(l => `- [${l.title}](/Theory/${encodeURIComponent(l.slug)})`).join('\n');
         const sectionHeader = '## 📚 Уроки';
+        
         if (readme.includes(sectionHeader)) {
           readme = readme.replace(/## 📚 Уроки[\s\S]*?(?=##|$)/, `${sectionHeader}\n${list}\n\n`);
         } else {
           readme += `\n${sectionHeader}\n${list}\n\n`;
         }
+        
         fs.writeFileSync(readmeFile, readme, 'utf-8');
         console.log('README.md обновлен.');
       } catch (e) {
@@ -133,4 +134,3 @@ generateLessons().catch(e => {
   console.error(e);
   process.exit(1);
 });
-```eof
