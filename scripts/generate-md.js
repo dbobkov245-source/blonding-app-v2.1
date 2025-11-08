@@ -82,10 +82,10 @@ async function processLessonFile(file) {
 
   // *** ВОТ ИСПРАВЛЕННЫЙ БЛОК ***
   const mdFile = `---
-  fs.writeFileSync(path.join(lessonPublicDir, `${slug}.md`), mdFile, 'utf-8');
-  
-  console.log(`Сгенерирован урок: ${slug}`);
-  return { slug, title: slug };
+  fs.writeFileSync(path.join(lessonPublicDir, `${slug}.md`), mdFile, 'utf-8');
+  
+  console.log(`Сгенерирован урок: ${slug}`);
+  return { slug, title: slug };
 }
 
 /**
