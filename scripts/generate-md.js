@@ -2,6 +2,10 @@ import fs from 'fs';
 import path from 'path';
 import mammoth from 'mammoth';
 
+// 1. СНАЧАЛА ЗАГРУЖАЕМ И ЖДЕМ БИБЛИОТЕКУ
+const { imageType } = await import('image-type');
+
+// 2. ТЕПЕРЬ ОПРЕДЕЛЯЕМ ПУТИ
 const sourceDir = './lessons/source';
 const outPublicDir = './public/lessons';
 const readmeFile = './README.md';
@@ -44,20 +48,17 @@ async function processLessonFile(file) {
 
       fs.writeFileSync(imgPath, buffer);
 
-      // *** ВОТ ИСПРАВЛЕНИЕ: ***
-      // Мы кодируем кириллицу (slug) и пробелы в URL-безопасный формат
-      const webPath = \`/lessons/${encodeURIComponent(slug)}/images/${encodeURIComponent(imgName)}\`;
+      // *** ИСПРАВЛЕНИЕ БЕЗ СЛЭША: ***
+      const webPath = `/lessons/${encodeURIComponent(slug)}/images/${encodeURIComponent(imgName)}`;
 
       console.log(`Извлечена и сохранена картинка: ${imgPath}`);
-      console.log(`Создан Web-путь: ${webPath}`); // Добавим лог для проверки
+      console.log(`Создан Web-путь: ${webPath}`); 
 
       return {
         src: webPath
       };
     })
   };
-
-  // ... (остальной код скрипта такой же, как и был) ...
 
   if (ext === '.txt' || ext === '.md') {
     content = fs.readFileSync(filePath, 'utf-8');
@@ -74,52 +75,4 @@ async function processLessonFile(file) {
     return null;
   }
 
-  const mdFile = \`---\ntitle: "${slug}"\nslug: "${slug}"\ndate: "${new Date().toISOString().split('T')[0]}"\n---\n\n${content}\`;
-
-  fs.writeFileSync(path.join(lessonPublicDir, \`\${slug}.md\`), mdFile, 'utf-8');
-
-  console.log(\`Сгенерирован урок: ${slug}\`);
-  return { slug, title: slug };
-}
-
-/**
- * Главная асинхронная функция
- */
-async function generateLessons() {
-  const lessonPromises = [];
-  const files = fs.readdirSync(sourceDir).filter(f =>
-    f.endsWith('.txt') || f.endsWith('.md') || f.endsWith('.docx')
-  );
-
-  console.log(\`Найдено ${files.length} файлов уроков для обработки...\`);
-
-  for (const file of files) {
-    lessonPromises.push(processLessonFile(file));
-  }
-
-  const lessons = (await Promise.all(lessonPromises)).filter(Boolean);
-
-  const indexJsonPath = path.join(outPublicDir, 'index.json');
-  fs.writeFileSync(indexJsonPath, JSON.stringify(lessons, null, 2), 'utf-8');
-  console.log(\`Обновлен ${indexJsonPath}\`);
-
-  if (lessons.length > 0) {
-    let readme = fs.readFileSync(readmeFile, 'utf-8');
-    const list = lessons.map(l => \`- [${l.title}](/Theory?lesson=${encodeURIComponent(l.slug)})\`).join('\n'); // Тоже кодируем
-    const sectionHeader = '## 📚 Уроки';
-    if (readme.includes(sectionHeader)) {
-      readme = readme.replace(/## 📚 Уроки[\s\S]*?(?=##|$)/, \`\${sectionHeader}\n\${list}\n\n\`);
-    } else {
-      readme += \`\n\${sectionHeader}\n\${list}\n\n\`;
-    }
-    fs.writeFileSync(readmeFile, readme, 'utf-8');
-    console.log('README.md обновлен.');
-  }
-
-  console.log(\`✅ Готово! ${lessons.length} уроков обработано.\`);
-}
-
-generateLessons().catch(e => {
-  console.error(e);
-  process.exit(1);
-});
+  const mdFile = `---
