@@ -2,10 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import mammoth from 'mammoth';
 
-// 1. СНАЧАЛА ЗАГРУЖАЕМ И ЖДЕМ БИБЛИОТЕКУ
-const { imageType } = await import('image-type');
+// БИБЛИОТЕКА 'image-type' БОЛЬШЕ НЕ НУЖНА
 
-// 2. ТЕПЕРЬ ОПРЕДЕЛЯЕМ ПУТИ
 const sourceDir = './lessons/source';
 const outPublicDir = './public/lessons';
 const readmeFile = './README.md';
@@ -20,39 +18,45 @@ const readmeFile = './README.md';
  */
 async function processLessonFile(file) {
   const filePath = path.join(sourceDir, file);
-  const slug = path.basename(file, path.extname(file)); // slug ОСТАЕТСЯ С КИРИЛЛИЦЕЙ
+  const slug = path.basename(file, path.extname(file));
   const ext = path.extname(file);
 
   let content = '';
 
-  // Папки на диске ОСТАЮТСЯ С КИРИЛЛИЦЕЙ
-  const lessonPublicDir = path.join(outPublicDir, slug); 
+  // Создаем папки для урока
+  const lessonPublicDir = path.join(outPublicDir, slug);
   const lessonPublicImgDir = path.join(lessonPublicDir, 'images');
   if (!fs.existsSync(lessonPublicImgDir)) fs.mkdirSync(lessonPublicImgDir, { recursive: true });
 
   let imageCounter = 1;
 
+  // *** ИСПРАВЛЕННАЯ ЛОГИКА ОБРАБОТКИ КАРТИНОК (БЕЗ image-type) ***
   const mammothOptions = {
     convertImage: mammoth.images.imgElement(async (image) => {
 
+      // 1. Получаем Buffer картинки
       const buffer = await image.read();
+
+      // 2. Получаем тип картинки (e.g. "image/jpeg")
       const contentType = image.contentType; 
+
+      // 3. Превращаем "image/jpeg" в ".jpeg"
       const extension = contentType.split('/')[1];
       if (!extension) {
         console.warn(`Не удалось определить тип картинки для ${slug}, пропускаем.`);
         return { src: '' };
       }
 
+      // 4. Генерируем имя файла
       const imgName = `image${imageCounter++}.${extension}`;
-      const imgPath = path.join(lessonPublicImgDir, imgName); // Путь на диске (с кириллицей)
+      const imgPath = path.join(lessonPublicImgDir, imgName);
 
+      // 5. Сохраняем Buffer как файл
       fs.writeFileSync(imgPath, buffer);
 
-      // *** ИСПРАВЛЕНИЕ БЕЗ СЛЭША: ***
+      // 6. Возвращаем веб-путь
       const webPath = `/lessons/${encodeURIComponent(slug)}/images/${encodeURIComponent(imgName)}`;
-
       console.log(`Извлечена и сохранена картинка: ${imgPath}`);
-      console.log(`Создан Web-путь: ${webPath}`); 
 
       return {
         src: webPath
@@ -60,6 +64,7 @@ async function processLessonFile(file) {
     })
   };
 
+  // Читаем контент
   if (ext === '.txt' || ext === '.md') {
     content = fs.readFileSync(filePath, 'utf-8');
   } else if (ext === '.docx') {
@@ -75,8 +80,9 @@ async function processLessonFile(file) {
     return null;
   }
 
+  // *** ВОТ ИСПРАВЛЕННЫЙ БЛОК ***
   const mdFile = `---
-title: "${slug}"slug: "${slug}" date: "${new Date().toISOString().split('T')[0]}"${content}`;  fs.writeFileSync(path.join(lessonPublicDir, `${slug}.md`), mdFile, 'utf-8');
+  fs.writeFileSync(path.join(lessonPublicDir, `${slug}.md`), mdFile, 'utf-8');
   
   console.log(`Сгенерирован урок: ${slug}`);
   return { slug, title: slug };
@@ -105,7 +111,6 @@ async function generateLessons() {
 
   if (lessons.length > 0) {
     let readme = fs.readFileSync(readmeFile, 'utf-8');
-    // ИСПРАВЛЕНИЕ БЕЗ СЛЭША (здесь тоже):
     const list = lessons.map(l => `- [${l.title}](/Theory?lesson=${encodeURIComponent(l.slug)})`).join('\n');
     const sectionHeader = '## 📚 Уроки';
     if (readme.includes(sectionHeader)) {
