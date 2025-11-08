@@ -2,10 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import mammoth from 'mammoth';
 
-// 1. СНАЧАЛА ЗАГРУЖАЕМ И ЖДЕМ БИБЛИОТЕКУ
-const { imageType } = await import('image-type');
+// БИБЛИОТЕКА 'image-type' БОЛЬШЕ НЕ НУЖНА
 
-// 2. ТЕПЕРЬ ОПРЕДЕЛЯЕМ ПУТИ
 const sourceDir = './lessons/source';
 const outPublicDir = './public/lessons';
 const readmeFile = './README.md';
@@ -32,27 +30,26 @@ async function processLessonFile(file) {
 
   let imageCounter = 1;
 
-  // *** ИСПРАВЛЕННАЯ ЛОГИКА ОБРАБОТКИ КАРТИНОК ***
+  // *** ИСПРАВЛЕННАЯ ЛОГИКА ОБРАБОТКИ КАРТИНОК (БЕЗ image-type) ***
   const mammothOptions = {
-    // Мы будем использовать dataUri, а не imgElement
-    convertImage: mammoth.images.dataUri(async (image) => {
+    // Мы используем imgElement, это правильный обработчик для Node.js
+    convertImage: mammoth.images.imgElement(async (image) => {
 
-      // 1. Получаем base64-строку
-      const base64String = await image.read("base64");
+      // 1. Получаем Buffer картинки
+      const buffer = await image.read();
 
-      // 2. Конвертируем ее в Buffer, который поймет imageType
-      const buffer = Buffer.from(base64String, 'base64');
+      // 2. Получаем тип картинки (e.g. "image/jpeg")
+      const contentType = image.contentType; 
 
-      // 3. Определяем тип (jpg, png)
-      const type = await imageType(buffer);
-
-      if (!type) {
-        console.warn(`Не удалось определить тип картинки (base64) для ${slug}, пропускаем.`);
-        return { src: '' }; // Возвращаем пустой src, если не поняли
+      // 3. Превращаем "image/jpeg" в ".jpeg"
+      const extension = contentType.split('/')[1];
+      if (!extension) {
+        console.warn(`Не удалось определить тип картинки для ${slug}, пропускаем.`);
+        return { src: '' };
       }
 
       // 4. Генерируем имя файла
-      const imgName = `image${imageCounter++}.${type.ext}`;
+      const imgName = `image${imageCounter++}.${extension}`;
       const imgPath = path.join(lessonPublicImgDir, imgName);
 
       // 5. Сохраняем Buffer как файл
@@ -60,7 +57,7 @@ async function processLessonFile(file) {
 
       // 6. Возвращаем веб-путь
       const webPath = `/lessons/${slug}/images/${imgName}`;
-      console.log(`Извлечена (из base64) и сохранена картинка: ${imgPath}`);
+      console.log(`Извлечена и сохранена картинка: ${imgPath}`);
 
       return {
         src: webPath
@@ -73,9 +70,8 @@ async function processLessonFile(file) {
     content = fs.readFileSync(filePath, 'utf-8');
   } else if (ext === '.docx') {
     try {
-      // mammoth.js теперь использует convertImage для .docx
       const result = await mammoth.convertToMarkdown({ path: filePath }, mammothOptions);
-      content = result.value; // Это уже готовый Markdown
+      content = result.value;
     } catch (e) {
       console.warn(`Ошибка чтения .docx ${filePath}:`, e.message);
       return null;
