@@ -3,7 +3,6 @@ title: "lesson-2"
 slug: "lesson-2"
 date: "2025-11-08"
 ---
-
 Урок 2 — Подбор оттенка блонда
 
 [[tone-chart.png]]

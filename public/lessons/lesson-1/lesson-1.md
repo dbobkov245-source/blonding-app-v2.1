@@ -3,7 +3,6 @@ title: "lesson-1"
 slug: "lesson-1"
 date: "2025-11-08"
 ---
-
 Урок 1 — Подготовка клиента к блондированию
 
 [[hair-diagram.svg]]
