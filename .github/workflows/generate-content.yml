@@ -48,6 +48,6 @@ jobs:
           fi
           
       - name: Trigger Vercel redeploy (optional)
-        if: ${{ secrets.VERCEL_BUILD_HOOK != '' }}
+        if: ${{ secrets.VERCEL_BUILD_HOOK }}
         run: |
           curl -X POST "${{ secrets.VERCEL_BUILD_HOOK }}"
