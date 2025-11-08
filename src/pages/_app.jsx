@@ -1,10 +1,10 @@
 import React from 'react';
-import Layout from '../components/Layout'; // 1. Импортируем наш Layout
-import '../index.css'; 
+import type { AppProps } from 'next/app';
+import Layout from '../components/Layout';
+import '../index.css';
 
-export default function MyApp({ Component, pageProps }) {
+export default function MyApp({ Component, pageProps }: AppProps) {
   return (
-    // 2. Оборачиваем все страницы в Layout
     <Layout>
       <Component {...pageProps} />
     </Layout>
