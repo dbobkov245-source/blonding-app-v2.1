@@ -1,10 +1,9 @@
 /**
  * Автоматический генератор тестов из уроков с использованием AI
- * Читает уроки из public/lessons/ и создает тесты в public/content/quizzes/
  */
 import fs from 'fs';
 import path from 'path';
-import { callHF } from '../src/lib/ai.js'; // Предполагаем, что существует
+import { callHF } from '../src/lib/ai.js';
 
 const lessonsDir = './public/lessons';
 const quizzesDir = './public/content/quizzes';
@@ -28,15 +27,19 @@ function cleanMarkdown(text) {
  */
 function createQuizPrompt(lessonTitle, lessonContent) {
   return `Ты - эксперт по созданию образовательных тестов. На основе следующего урока по блондированию волос создай тест из 4-6 вопросов.
+
 УРОК: "${lessonTitle}"
+
 СОДЕРЖАНИЕ:
 ${lessonContent.substring(0, 4000)}
+
 ТРЕБОВАНИЯ К ТЕСТУ:
 1. Создай 4-6 вопросов на понимание материала урока
 2. Каждый вопрос должен иметь 4 варианта ответа
 3. Только один правильный ответ
 4. Добавь подробное объяснение к каждому вопросу
 5. Вопросы должны проверять практические знания, а не заучивание
+
 ФОРМАТ ОТВЕТА (СТРОГО JSON, БЕЗ КОММЕНТАРИЕВ И MARKDOWN):
 [
   {
@@ -51,6 +54,7 @@ ${lessonContent.substring(0, 4000)}
     "explanation": "Подробное объяснение почему этот ответ правильный"
   }
 ]
+
 ВАЖНО: Верни ТОЛЬКО валидный JSON массив, без текста до или после. Не используй markdown форматирование.`;
 }
 
@@ -61,16 +65,29 @@ function parseAIResponse(response) {
   try {
     // Убираем markdown блоки и лишний текст
     let cleaned = response.trim();
-    cleaned = cleaned.replace(/```(json)?\n?/g, '');
-    cleaned = cleaned.replace(/```/g, '');
-    cleaned = cleaned.replace(/^\[|\]$/g, ''); // На случай лишних скобок
-    cleaned = cleaned.trim();
+    
+    // Удаляем markdown code blocks
+    cleaned = cleaned.replace(/```json\s*/g, '');
+    cleaned = cleaned.replace(/```\s*/g, '');
+    
+    // Находим первый [ и последний ]
+    const firstBracket = cleaned.indexOf('[');
+    const lastBracket = cleaned.lastIndexOf(']');
+    
+    if (firstBracket === -1 || lastBracket === -1) {
+      throw new Error('No valid JSON array found in response');
+    }
+    
+    cleaned = cleaned.substring(firstBracket, lastBracket + 1);
+    
     // Парсим JSON
-    const parsed = JSON.parse(`[${cleaned}]`); // Оборачиваем в массив если нужно
+    const parsed = JSON.parse(cleaned);
+    
     // Валидация структуры
     if (!Array.isArray(parsed)) {
       throw new Error('Response is not an array');
     }
+    
     // Проверяем каждый вопрос
     parsed.forEach((q, i) => {
       if (typeof q.question !== 'string' || q.question.trim() === '') {
@@ -86,6 +103,7 @@ function parseAIResponse(response) {
         throw new Error(`Question ${i + 1} has invalid explanation`);
       }
     });
+    
     return parsed;
   } catch (e) {
     console.error('Failed to parse AI response:', e.message);
@@ -103,18 +121,24 @@ async function generateQuizForLesson(lessonSlug, lessonData) {
   const quizPath = path.join(quizzesDir, `${lessonSlug}-quiz.json`);
 
   if (fs.existsSync(quizPath) && !isForce) {
-    console.log(` ⏭️ Quiz already exists, skipping...`);
+    console.log(` ⭐️ Quiz already exists, skipping...`);
     return { slug: lessonSlug, exists: true };
   }
 
+  // ✅ ИСПРАВЛЕНО: проверка HF_TOKEN с понятным сообщением
   const HF_TOKEN = process.env.HF_TOKEN;
   if (!HF_TOKEN) {
+    console.error('\n❌ ERROR: HF_TOKEN not found!');
+    console.error('Please set HF_TOKEN environment variable:');
+    console.error('  Local: Add to .env.local file');
+    console.error('  GitHub: Add to repository secrets');
     throw new Error('HF_TOKEN not found in environment variables');
   }
 
   const prompt = createQuizPrompt(title, content);
   let attempts = 0;
   let quiz;
+  
   while (attempts < maxRetries) {
     attempts++;
     console.log(` 🤖 Calling AI (attempt ${attempts})...`);
@@ -130,7 +154,7 @@ async function generateQuizForLesson(lessonSlug, lessonData) {
     } catch (e) {
       if (attempts === maxRetries) throw e;
       console.warn(` ⚠️ Retry after error: ${e.message}`);
-      await new Promise(resolve => setTimeout(resolve, 5000)); // Задержка перед retry
+      await new Promise(resolve => setTimeout(resolve, 5000));
     }
   }
 
@@ -156,9 +180,11 @@ function readLesson(lessonSlug) {
     }
     const rawContent = fs.readFileSync(mdPath, 'utf-8');
     const content = cleanMarkdown(rawContent);
+    
     // Извлекаем title из frontmatter или используем slug
     const titleMatch = rawContent.match(/title:\s*"([^"]+)"/);
     const title = titleMatch ? titleMatch[1] : lessonSlug;
+    
     return { title, content };
   } catch (e) {
     console.error(` ❌ Error reading lesson: ${e.message}`);
@@ -171,36 +197,50 @@ function readLesson(lessonSlug) {
  */
 async function generateAllQuizzes() {
   console.log('\n🎓 Starting quiz generation...\n');
+  
   // Читаем index.json со списком уроков
   const indexPath = path.join(lessonsDir, 'index.json');
   if (!fs.existsSync(indexPath)) {
     console.error('❌ Lessons index not found. Run generate-lessons first!');
     process.exit(1);
   }
+  
   const lessons = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
   console.log(`📚 Found ${lessons.length} lesson(s)\n`);
+  
   if (lessons.length === 0) {
     console.log('ℹ️ No lessons to process');
     return;
   }
+
   const results = [];
+  
   // Генерируем тесты последовательно (чтобы не перегрузить API)
   for (const lesson of lessons) {
     const lessonData = readLesson(lesson.slug);
     if (!lessonData) {
-      console.log(`⏭️ Skipping ${lesson.slug} - could not read lesson`);
+      console.log(`⭐️ Skipping ${lesson.slug} - could not read lesson`);
       continue;
     }
-    const result = await generateQuizForLesson(lesson.slug, lessonData);
-    if (result) {
-      results.push(result);
+    
+    try {
+      const result = await generateQuizForLesson(lesson.slug, lessonData);
+      if (result) {
+        results.push(result);
+      }
+    } catch (error) {
+      console.error(`❌ Failed to generate quiz for ${lesson.slug}:`, error.message);
+      // Продолжаем со следующим уроком вместо полного падения
+      continue;
     }
+    
     // Небольшая задержка между запросами к API
     if (lessons.indexOf(lesson) < lessons.length - 1) {
-      console.log(' ⏳ Waiting 2s before next request...');
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log(' ⏳ Waiting 3s before next request...');
+      await new Promise(resolve => setTimeout(resolve, 3000));
     }
   }
+
   // Создаём индексный файл всех тестов
   const quizIndex = results.map(r => ({
     slug: r.slug,
@@ -208,8 +248,10 @@ async function generateAllQuizzes() {
     questionsCount: r.questionsCount,
     quizPath: `/content/quizzes/${r.slug}-quiz.json`
   }));
+  
   const indexOutputPath = path.join(quizzesDir, 'index.json');
   fs.writeFileSync(indexOutputPath, JSON.stringify(quizIndex, null, 2), 'utf-8');
+  
   console.log(`\n📋 Quiz index updated: ${indexOutputPath}`);
   console.log(`\n✅ Generation complete!`);
   console.log(` Total lessons: ${lessons.length}`);
