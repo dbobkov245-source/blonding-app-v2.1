@@ -5,24 +5,25 @@ import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 import type { GetStaticProps, GetStaticPaths } from 'next';
 
+// --- Типы ---
 interface Lesson {
   title: string;
   content: string;
-  slug: string;
+  slug: string; // <-- 'slug' ОБЯЗАТЕЛЕН ЗДЕСЬ
 }
 
 interface TheoryPageProps {
-  lesson: Lesson | null; // Разрешаем null на случай ошибки
+  lesson: Lesson | null; 
 }
 
 const cleanMarkdown = (rawText: string): string => rawText.replace(/---[\s\S]*?---/, '');
 
+// --- Компонент AI-помощника (без изменений) ---
 interface LessonAIAssistantProps {
   lessonTitle: string;
   lessonContent: string;
 }
 
-// Компонент AI-помощника (типизированный)
 const LessonAIAssistant: React.FC<LessonAIAssistantProps> = ({ lessonTitle, lessonContent }) => {
   const [messages, setMessages] = useState<{ role: 'user' | 'assistant'; text: string }[]>([]);
   const [text, setText] = useState('');
@@ -137,7 +138,7 @@ const LessonAIAssistant: React.FC<LessonAIAssistantProps> = ({ lessonTitle, less
   );
 };
 
-// Главный компонент страницы
+// --- Главный компонент страницы (без изменений) ---
 const TheoryPage: React.FC<TheoryPageProps> = ({ lesson }) => {
   if (!lesson) {
     return <div>Урок не найден.</div>;
@@ -185,25 +186,35 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return { paths, fallback: 'blocking' };
 };
 
+// --- getStaticProps (ИСПРАВЛЕНО) ---
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { slug } = params as { slug: string };
   try {
-    const decodedSlug = decodeURIComponent(slug);
+    // ВАЖНО: Мы используем decodeURIComponent, так как getStaticPaths
+    // может передавать уже очищенный slug, но slug из URL может быть закодирован.
+    // Однако, наш новый `slugify` script создает чистые ASCII slugs,
+    // поэтому decodeURIComponent здесь безопасен, но не всегда нужен.
+    const decodedSlug = decodeURIComponent(slug); 
+    
     const mdPath = path.join(process.cwd(), 'public', 'lessons', decodedSlug, `${decodedSlug}.md`);
     const rawText = fs.readFileSync(mdPath, 'utf-8');
     const content = cleanMarkdown(rawText);
+
+    // Извлекаем 'title' из frontmatter (если он есть)
+    const titleMatch = rawText.match(/title:\s*"([^"]+)"/);
+    const title = titleMatch ? titleMatch[1] : decodedSlug; // Фолбэк на slug
+
     return {
       props: {
         lesson: {
-          title: decodedSlug, // Используем slug (имя папки) как title по умолчанию
+          title: title, // <-- Используем извлеченный title
           content,
-          slug: decodedSlug,
+          slug: decodedSlug, // <-- ИСПРАВЛЕНИЕ: Передаем 'slug' в props
         },
       },
     };
   } catch (e) {
     console.error(`Error for slug: ${slug}`, (e as Error).message);
-    // Важно вернуть props: { lesson: null }, чтобы страница отрендерила "Урок не найден"
     return { props: { lesson: null } }; 
   }
 };
