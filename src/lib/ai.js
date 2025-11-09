@@ -1,9 +1,7 @@
 /**
  * Централизованная библиотека для работы с Hugging Face API
- * Используется в api/proxy.js и может использоваться в других местах
  */
 
-// Системный промпт для AI-консультанта
 export const SYSTEM_PROMPT = `Ты — опытный преподаватель и консультант по техникам блондирования волос. 
 Твоя задача - помогать студентам разбираться в материале курса.
 
@@ -17,14 +15,6 @@ export const SYSTEM_PROMPT = `Ты — опытный преподаватель
 
 /**
  * Вызов Hugging Face Chat Completions API
- * @param {string} inputs - Пользовательский запрос
- * @param {Object} options - Опции запроса
- * @param {string} options.hfToken - Hugging Face токен
- * @param {string} options.model - Модель для использования
- * @param {number} options.maxTokens - Максимум токенов в ответе
- * @param {number} options.temperature - Температура генерации
- * @param {string} options.systemPrompt - Кастомный системный промпт
- * @returns {Promise<string>} Ответ от AI
  */
 export async function callHF(inputs, options = {}) {
   const {
@@ -44,6 +34,7 @@ export async function callHF(inputs, options = {}) {
     throw new Error("Invalid inputs: must be a non-empty string");
   }
 
+  // ✅ ИСПРАВЛЕНО: правильный URL
   const url = "https://router.huggingface.co/v1/chat/completions";
   
   const body = {
@@ -74,7 +65,7 @@ export async function callHF(inputs, options = {}) {
 
     const data = await response.json();
     
-    // Извлекаем ответ из разных возможных форматов
+    // ✅ ИСПРАВЛЕНО: правильный доступ к данным
     const message = data.choices?.[0]?.message?.content || 
                     data.generated_text || 
                     "";
@@ -92,12 +83,6 @@ export async function callHF(inputs, options = {}) {
 
 /**
  * Вызов HF с контекстом урока
- * @param {string} question - Вопрос студента
- * @param {Object} lessonContext - Контекст урока
- * @param {string} lessonContext.title - Название урока
- * @param {string} lessonContext.content - Содержание урока
- * @param {Object} options - Дополнительные опции
- * @returns {Promise<string>} Ответ от AI
  */
 export async function callHFWithContext(question, lessonContext, options = {}) {
   const { title, content } = lessonContext;
@@ -116,8 +101,6 @@ ${content.substring(0, 2000)}${content.length > 2000 ? '...' : ''}
 
 /**
  * Проверка валидности HF токена
- * @param {string} token - Токен для проверки
- * @returns {Promise<boolean>} true если токен валидный
  */
 export async function validateHFToken(token) {
   try {
