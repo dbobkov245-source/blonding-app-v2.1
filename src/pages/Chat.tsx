@@ -1,47 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// 1. Описываем интерфейс для сообщения
 interface Message {
   role: 'user' | 'assistant';
   text: string;
-  image?: string | null; // Image может быть string (data URL) или null
+  image?: string | null;
   timestamp: string;
 }
 
-// 2. Описываем интерфейс для контекста урока
 interface LessonContext {
   title: string;
   content: string;
 }
 
 export default function EnhancedChat() {
-  // 3. Типизируем все состояния
+  // ✅ ИСПРАВЛЕНО: убран localStorage, данные хранятся только в памяти
   const [messages, setMessages] = useState<Message[]>([]);
   const [text, setText] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [currentLesson, setCurrentLesson] = useState<LessonContext | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [lastRequestTime, setLastRequestTime] = useState<number>(0);
   
-  // 4. Типизируем refs
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Загрузка из localStorage
-  useEffect(() => {
-    const savedMessages = localStorage.getItem('chatHistory');
-    if (savedMessages) {
-      setMessages(JSON.parse(savedMessages));
-    }
-  }, []);
-
-  // Сохранение в localStorage
-  useEffect(() => {
-    if (messages.length > 0) {
-      localStorage.setItem('chatHistory', JSON.stringify(messages));
-    }
-  }, [messages]);
-
-  // Скролл
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -50,7 +32,6 @@ export default function EnhancedChat() {
     scrollToBottom();
   }, [messages]);
 
-  // Загрузка контекста (mock; замени на dynamic, e.g., from useRouter)
   const loadLessonContext = async () => {
     const mockLesson: LessonContext = {
       title: "Подготовка к блондированию",
@@ -63,10 +44,13 @@ export default function EnhancedChat() {
     loadLessonContext();
   }, []);
 
-  // Обработка загрузки изображения
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Файл слишком большой. Максимум 2MB.');
+        return;
+      }
       const reader = new FileReader();
       reader.onload = (event) => {
         setUploadedImage(event.target?.result as string | null);
@@ -75,9 +59,16 @@ export default function EnhancedChat() {
     }
   };
 
-  // Отправка сообщения
   const send = async (messageText: string = text, includeContext: boolean = true) => {
     if (!messageText.trim() && !uploadedImage) return;
+
+    // ✅ ДОБАВЛЕНО: защита от спама (минимум 2 секунды между запросами)
+    const now = Date.now();
+    if (now - lastRequestTime < 2000) {
+      alert('Подождите немного перед следующим запросом');
+      return;
+    }
+    setLastRequestTime(now);
 
     let fullPrompt = messageText;
 
@@ -123,7 +114,7 @@ export default function EnhancedChat() {
     } catch (e) {
       const errorMessage: Message = {
         role: 'assistant',
-        text: 'Ошибка при запросе к AI.',
+        text: 'Ошибка при запросе к AI. Проверьте подключение или попробуйте позже.',
         timestamp: new Date().toISOString()
       };
       setMessages((m) => [...m, errorMessage]);
@@ -138,12 +129,12 @@ export default function EnhancedChat() {
   }
 
   const quickQuestions: QuickQuestion[] = [
-    { emoji: '💡', text: 'Объясни проще' },
-    { emoji: '📝', text: 'Приведи пример' },
-    { emoji: '❓', text: 'Что это значит?' },
-    { emoji: '❗', text: 'Какие ошибки можно допустить?' },
-    { emoji: '➡️', text: 'Дай пошаговую инструкцию' },
-    { emoji: '🔍', text: 'Расскажи подробнее' }
+    { emoji: '\u{1F4A1}', text: 'Объясни проще' },
+    { emoji: '\u{1F4D6}', text: 'Приведи пример' },
+    { emoji: '\u{2753}', text: 'Что это значит?' },
+    { emoji: '\u{203C}', text: 'Какие ошибки можно допустить?' },
+    { emoji: '\u{27A1}', text: 'Дай пошаговую инструкцию' },
+    { emoji: '\u{1F50D}', text: 'Расскажи подробнее' }
   ];
 
   const handleQuickQuestion = (questionText: string) => {
@@ -163,7 +154,6 @@ export default function EnhancedChat() {
   const clearHistory = () => {
     if (window.confirm('Очистить историю чата?')) { 
       setMessages([]);
-      localStorage.removeItem('chatHistory');
     }
   };
 
@@ -173,7 +163,6 @@ export default function EnhancedChat() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* --- JSX --- */}
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">AI-консультант</h2>
@@ -183,7 +172,10 @@ export default function EnhancedChat() {
             </p>
           )}
         </div>
-        <button onClick={clearHistory} className="text-sm text-red-600 hover:text-red-800 px-3 py-1 border border-red-300 rounded-md">
+        <button 
+          onClick={clearHistory} 
+          className="text-sm text-red-600 hover:text-red-800 px-3 py-1 border border-red-300 rounded-md"
+        >
           Очистить историю
         </button>
       </div>
@@ -247,28 +239,47 @@ export default function EnhancedChat() {
           {uploadedImage && (
             <div className="mb-3 relative inline-block">
               <img src={uploadedImage} alt="Preview" className="h-20 rounded-lg border-2 border-blue-400" />
-              <button onClick={removeImage} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold hover:bg-red-600">
-                X
+              <button 
+                onClick={removeImage} 
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold hover:bg-red-600"
+              >
+                ×
               </button>
             </div>
           )}
 
           {messages.length > 0 && messages[messages.length - 1].role === 'assistant' && (
             <div className="mb-3 flex gap-2">
-              <button onClick={() => handleQuickQuestion('Объясни проще')} className="text-xs px-3 py-1 bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200">
+              <button 
+                onClick={() => handleQuickQuestion('Объясни проще')} 
+                className="text-xs px-3 py-1 bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200"
+              >
                 Объясни проще
               </button>
-              <button onClick={() => handleQuickQuestion('Приведи пример')} className="text-xs px-3 py-1 bg-green-100 text-green-700 rounded-full hover:bg-green-200">
+              <button 
+                onClick={() => handleQuickQuestion('Приведи пример')} 
+                className="text-xs px-3 py-1 bg-green-100 text-green-700 rounded-full hover:bg-green-200"
+              >
                 Приведи пример
               </button>
             </div>
           )}
 
           <div className="flex gap-2">
-            <button onClick={() => fileInputRef.current?.click()} className="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" title="Прикрепить изображение">
+            <button 
+              onClick={() => fileInputRef.current?.click()} 
+              className="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" 
+              title="Прикрепить изображение"
+            >
               📎
             </button>
-            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+            <input 
+              ref={fileInputRef} 
+              type="file" 
+              accept="image/*" 
+              onChange={handleImageUpload} 
+              className="hidden" 
+            />
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -282,10 +293,18 @@ export default function EnhancedChat() {
               disabled={loading || (!text.trim() && !uploadedImage)}
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium"
             >
-              {loading ? <span className="flex items-center gap-2"><span className="animate-spin">...</span> Думаю...</span> : 'Отправить'}
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <span className="animate-spin">⏳</span> Думаю...
+                </span>
+              ) : (
+                'Отправить'
+              )}
             </button>
           </div>
-          <p className="text-xs text-gray-500 mt-2 text-center">Совет: Вопросы автоматически учитывают контекст текущего урока</p>
+          <p className="text-xs text-gray-500 mt-2 text-center">
+            Совет: Вопросы автоматически учитывают контекст текущего урока
+          </p>
         </div>
       </div>
     </div>
