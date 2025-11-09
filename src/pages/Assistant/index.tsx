@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 
+// Проверка доступности SpeechSynthesis (синхронно)
+const synthesisAvailable = typeof window !== 'undefined' && 'speechSynthesis' in window;
+
 interface VoiceMessage {
   role: 'user' | 'assistant';
   text: string;
@@ -13,7 +16,6 @@ export default function VoiceAssistant() {
   const [isLoading, setIsLoading] = useState(false);
   const [recognizedText, setRecognizedText] = useState('');
   const recognitionRef = useRef<any>(null);
-  const synthesisRef = useRef<SpeechSynthesis | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,11 +26,9 @@ export default function VoiceAssistant() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Инициализация Web Speech API
+  // Инициализация SpeechRecognition
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      synthesisRef.current = window.speechSynthesis;
-      
       const SpeechRecognition = 
         (window as any).SpeechRecognition || 
         (window as any).webkitSpeechRecognition;
@@ -124,15 +124,27 @@ export default function VoiceAssistant() {
   };
 
   const speakResponse = (text: string) => {
-    if (!synthesisRef.current) return;
-    synthesisRef.current.cancel();
+    console.log('🔊 speakResponse called with:', text);
+    
+    if (!synthesisAvailable) {
+      alert('Ваш браузер не поддерживает синтез речи');
+      return;
+    }
+
+    // Отменяем предыдущую речь
+    window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'ru-RU';
     utterance.rate = 0.9;
     utterance.pitch = 1;
     utterance.volume = 1;
-    synthesisRef.current.speak(utterance);
+
+    utterance.onerror = (event) => {
+      console.error('Speech synthesis error:', event);
+    };
+
+    window.speechSynthesis.speak(utterance);
   };
 
   const clearHistory = () => {
@@ -182,7 +194,7 @@ export default function VoiceAssistant() {
           {/* Кнопки действий */}
           <div className="flex gap-3 mt-4">
             <button
-              onClick={() => synthesisRef.current?.cancel()}
+              onClick={() => synthesisAvailable && window.speechSynthesis.cancel()}
               className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-sm"
             >
               ⏸️ Стоп
@@ -236,7 +248,8 @@ export default function VoiceAssistant() {
                       minute: '2-digit'
                     })}
                   </p>
-                  {msg.role === 'assistant' && (
+                  {/* ✅ ИСПРАВЛЕНО: Добавлена проверка synthesisAvailable */}
+                  {msg.role === 'assistant' && synthesisAvailable && (
                     <button
                       onClick={() => speakResponse(msg.text)}
                       className="mt-2 text-xs text-purple-600 hover:text-purple-700"
