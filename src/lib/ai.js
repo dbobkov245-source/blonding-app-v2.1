@@ -7,7 +7,8 @@ export const SYSTEM_PROMPT = `Ты — эксперт-преподаватель
 Будь мотивирующим и конструктивным.`;
 
 function hashQuery(query) {
-  return query.replace(/\s+/g, ' ').trim().slice(0, 200);
+  // ✅ УВЕЛИЧЕН ЛИМИТ С 200 ДО 1000 СИМВОЛОВ
+  return query.replace(/\s+/g, ' ').trim().slice(0, 1000);
 }
 
 export async function callHF(inputs, options = {}) {
@@ -18,7 +19,7 @@ export async function callHF(inputs, options = {}) {
     temperature = 0.7,
     topP = 0.9,
     systemPrompt = SYSTEM_PROMPT,
-    enableCache = true
+    enableCache = true // По умолчанию кэш включен
   } = options;
 
   if (!hfToken && process.env.NODE_ENV === 'production') {
