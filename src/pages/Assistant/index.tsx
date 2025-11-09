@@ -13,16 +13,23 @@ export default function VoiceAssistant() {
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [recognizedText, setRecognizedText] = useState('');
-  const [speakingText, setSpeakingText] = useState('');
   const recognitionRef = useRef<any>(null);
   const synthesisRef = useRef<SpeechSynthesis | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   // Инициализация Web Speech API
   useEffect(() => {
     if (typeof window !== 'undefined') {
       synthesisRef.current = window.speechSynthesis;
       
-      // Проверка поддержки распознавания
       const SpeechRecognition = 
         (window as any).SpeechRecognition || 
         (window as any).webkitSpeechRecognition;
@@ -47,7 +54,6 @@ export default function VoiceAssistant() {
         
         recognitionRef.current.onend = () => {
           setIsRecording(false);
-          // Автоматически отправляем распознанный текст
           if (recognizedText.trim()) {
             sendMessage(recognizedText, true);
             setRecognizedText('');
@@ -55,7 +61,7 @@ export default function VoiceAssistant() {
         };
       }
     }
-  }, []);
+  }, [recognizedText]);
 
   const toggleRecording = () => {
     if (!recognitionRef.current) {
@@ -107,7 +113,6 @@ export default function VoiceAssistant() {
       };
 
       setMessages(prev => [...prev, assistantMessage]);
-      setSpeakingText(assistantText);
     } catch (error) {
       setMessages(prev => [...prev, {
         role: 'assistant', 
@@ -121,8 +126,6 @@ export default function VoiceAssistant() {
 
   const speakResponse = (text: string) => {
     if (!synthesisRef.current) return;
-
-    // Останавливаем текущее воспроизведение
     synthesisRef.current.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
@@ -130,7 +133,6 @@ export default function VoiceAssistant() {
     utterance.rate = 0.9;
     utterance.pitch = 1;
     utterance.volume = 1;
-
     synthesisRef.current.speak(utterance);
   };
 
@@ -151,13 +153,14 @@ export default function VoiceAssistant() {
         {/* Интерфейс записи */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
           <div className="flex flex-col items-center gap-4">
-            {/* Кнопка записи */}
+            {/* Кнопка записи с анимацией пульсации */}
             <button
               onClick={toggleRecording}
               disabled={isLoading}
-              className={`relative w-24 h-24 rounded-full flex items-center justify-center transition-all
+              className={`
+                relative w-24 h-24 rounded-full flex items-center justify-center transition-all
                 ${isRecording 
-                  ? 'bg-red-500 animate-pulse' 
+                  ? 'bg-red-500 animate-pulse-record' 
                   : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:scale-105'
                 }
                 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
@@ -254,6 +257,7 @@ export default function VoiceAssistant() {
                 </div>
               </div>
             )}
+            <div ref={messagesEndRef} />
           </div>
         </div>
 
