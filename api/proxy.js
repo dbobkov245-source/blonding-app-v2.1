@@ -37,7 +37,7 @@ export default async function handler(req, res) {
 
     const systemPrompt = `Ты — опытный преподаватель и консультант по техникам 
 блондирования волос. Твоя задача — помогать студентам разбираться в материале 
-курса... (и т.д.)`; // (Твой системный промпт)
+курса. Отвечай кратко и по существу, используй простой язык.`;
 
     let messages = [];
 
@@ -59,9 +59,8 @@ export default async function handler(req, res) {
       ];
     }
 
-    // --- ❗ ИСПРАВЛЕНИЕ ЗДЕСЬ ---
-    // URL должен быть чистой строкой, а не Markdown-ссылкой
-    const url = "https://router.huggingface.co/vl/chat/completions";
+    // ✅ ИСПРАВЛЕНО: правильный URL
+    const url = "https://router.huggingface.co/v1/chat/completions";
 
     const hfResponse = await fetch(url, {
       method: "POST",
@@ -88,7 +87,8 @@ export default async function handler(req, res) {
       });
     }
 
-    const message = data.choices?.[[0]]?.message?.content || "";
+    // ✅ ИСПРАВЛЕНО: убраны двойные скобки
+    const message = data.choices?.[0]?.message?.content || "";
     res.status(200).json({ reply: message });
   } catch (err) {
     console.error("Proxy error:", err);
