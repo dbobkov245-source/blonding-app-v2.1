@@ -66,6 +66,10 @@ async function generateQuizForLesson(lessonSlug, lessonData) {
   }
 
   const prompt = createQuizPrompt(title, content);
+  
+  // ✅ ЛОГИРОВАНИЕ КОНТЕНТА
+  console.log(`📄 Контент урока (первые 300 символов): "${content.substring(0, 300)}..."`);
+  
   let attempts = 0;
   let quiz;
   
@@ -76,7 +80,8 @@ async function generateQuizForLesson(lessonSlug, lessonData) {
       const response = await callHF(prompt, {
         hfToken: HF_TOKEN,
         maxTokens: 2048,
-        temperature: 0.7
+        temperature: 0.9, // ✅ ПОВЫШЕННАЯ КРЕАТИВНОСТЬ
+        enableCache: false // ✅ ОТКЛЮЧЕН КЭШ
       });
       console.log(` 📦 Парсинг ответа...`);
       quiz = parseAIResponse(response);
