@@ -24,11 +24,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <Link href="/Chat" className={`px-3 py-1 rounded-md hover:bg-purple-50 ${isActive('/Chat') ? 'text-purple-600 bg-purple-50' : 'text-gray-700'}`}>
               AI-консультант
             </Link>
-            <Link href="/" className="px-3 py-1 text-gray-700 rounded-md hover:bg-purple-50" onClick={(e) => {
-              e.preventDefault();
-              alert('Выберите урок → нажмите "Пройти тест"');
-            }}>
-              Тесты
+            <Link href="/ChatRaw" className={`px-3 py-1 rounded-md hover:bg-purple-50 ${isActive('/ChatRaw') ? 'text-purple-600 bg-purple-50' : 'text-gray-700'}`}>
+              Чат с ИИ
             </Link>
           </div>
         </div>
