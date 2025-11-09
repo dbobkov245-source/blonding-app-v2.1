@@ -7,7 +7,6 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  // Rate limit по IP
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
   const key = `rate:${ip}`;
   let count = cache.get(key) || 0;
@@ -17,6 +16,7 @@ export default async function handler(req, res) {
   cache.set(key, ++count);
 
   const HF_TOKEN = process.env.HF_TOKEN;
+  
   if (!HF_TOKEN) {
     console.error("HF_TOKEN is not set");
     return res.status(500).json({ error: 'Server configuration error' });
@@ -25,27 +25,19 @@ export default async function handler(req, res) {
   try {
     const body = req.body;
     const inputs = body?.inputs || body?.message || "";
-    const image = body?.image; // base64 data URL
+    const image = body?.image; 
 
     if (!inputs) {
       return res.status(400).json({ error: 'No "inputs" field provided' });
     }
 
-    // Валидация размера base64 (max 2MB)
     if (image && Buffer.from(image.split(',')[1] || '', 'base64').length > 2 * 1024 * 1024) {
       return res.status(400).json({ error: 'Image too large (max 2MB)' });
     }
 
     const systemPrompt = `Ты — опытный преподаватель и консультант по техникам 
 блондирования волос. Твоя задача — помогать студентам разбираться в материале 
-курса.
-Правила ответов:
-- Отвечай кратко и по существу.
-- Используй простой язык, но сохраняй профессиональную терминологию.
-- Если студент просит "объяснить проще", используй аналогии и примеры.
-- Если прикреплено изображение, анализируй его в контексте блондирования (цвет, 
-техника, состояние волос).
-- Всегда будь поддерживающим и мотивирующим.`;
+курса... (и т.д.)`; // (Твой системный промпт)
 
     let messages = [];
 
@@ -67,6 +59,8 @@ export default async function handler(req, res) {
       ];
     }
 
+    // --- ❗ ИСПРАВЛЕНИЕ ЗДЕСЬ ---
+    // URL должен быть чистой строкой, а не Markdown-ссылкой
     const url = "https://router.huggingface.co/vl/chat/completions";
 
     const hfResponse = await fetch(url, {
@@ -94,7 +88,7 @@ export default async function handler(req, res) {
       });
     }
 
-    const message = data.choices?.[0]?.message?.content || "";
+    const message = data.choices?.[[0]]?.message?.content || "";
     res.status(200).json({ reply: message });
   } catch (err) {
     console.error("Proxy error:", err);
