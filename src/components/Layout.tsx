@@ -19,9 +19,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Link href="/Chat" className="text-sm hover:underline">
             AI-консультант
           </Link>
-          <Link href="/Test" className="text-sm hover:underline">
-            Тест
-          </Link>
+          {/* Я УДАЛИЛ ССЫЛКУ НА /Test, потому что она вызывала 404.
+            Мы можем добавить ее позже, когда (если) создадим 
+            страницу src/pages/Test/index.tsx со списком тестов.
+          */}
         </div>
       </nav>
       <main className="max-w-4xl mx-auto p-6">{children}</main>
@@ -30,3 +31,4 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 };
 
 export default Layout;
+```eof
