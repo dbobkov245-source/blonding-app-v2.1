@@ -26,7 +26,7 @@ export default async function handler(req, res) {
     const body = req.body;
     const inputs = body?.inputs || body?.message || "";
     const image = body?.image; 
-    const customSystemPrompt = body?.systemPrompt; // ✅ Поддержка кастомного промпта
+    const customSystemPrompt = body?.systemPrompt;
 
     if (!inputs) {
       return res.status(400).json({ error: 'Не предоставлено поле "inputs"' });
@@ -36,20 +36,35 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Изображение слишком большое (макс. 2MB)' });
     }
 
-    // ✅ Используем кастомный системный промпт или дефолтный
-    const systemPrompt = customSystemPrompt || `Ты — эксперт-преподаватель по блондированию волос. Отвечай профессионально, кратко и по существу.
-Используй терминологию курса. При анализе изображений оценивай: состояние волос, тон, технику, рекомендуй % окислителя.`;
+    // Готовим сообщения для модели
+    const messages = [];
 
-    const messages = [
-      { role: "system", content: systemPrompt },
-      ...(image ? [{
+    // ✅ ДОБАВЛЯЕМ СИСТЕМНЫЙ ПРОМПТ ТОЛЬКО ЕСЛИ ОН НЕ ПУСТОЙ
+    if (customSystemPrompt && customSystemPrompt.trim().length > 0) {
+      messages.push({ 
+        role: "system", 
+        content: customSystemPrompt 
+      });
+    }
+
+    // ✅ ДОБАВЛЯЕМ ПОЛЬЗОВАТЕЛЬСКОЕ СООБЩЕНИЕ
+    if (image) {
+      messages.push({
         role: "user",
         content: [
           { type: "text", text: inputs },
           { type: "image_url", image_url: { url: image } }
         ]
-      }] : [{ role: "user", content: inputs }])
-    ];
+      });
+    } else {
+      messages.push({ 
+        role: "user", 
+        content: inputs 
+      });
+    }
+
+    // ✅ ВАЖНО: Если системный промпт НЕ передан, сообщений будет только 1 (user)
+    // Это гарантирует, что модель не получит никакой специализации
 
     const url = "https://router.huggingface.co/v1/chat/completions";
     
