@@ -15,7 +15,7 @@ date: "2025-11-09"
 
 **Первичное блондирование натуральных волос:** 
 
-![1.jpg](/lessons/urok-2-4-zony-osvetleniya-vybor-percent-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos/images/image1.jpeg)
+![1.jpg](/lessons/urok-2-4-zony-osvetleniya-vybor-percent-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos/images/image-1.jpeg)
 
 **На фото № 1-  натуральные волосы на 6-м УГТ.**
 
@@ -189,7 +189,7 @@ date: "2025-11-09"
 
 Закрытая это блондирование в обертке, открытая - без обертки.
 
-![190.jpg](/lessons/urok-2-4-zony-osvetleniya-vybor-percent-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos/images/image2.jpeg)
+![190.jpg](/lessons/urok-2-4-zony-osvetleniya-vybor-percent-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos/images/image-2.jpeg)
 
 Фото №1 – закрытая техника. Фото № 2 – открытая техника + ватные жгуты. 
 
@@ -259,7 +259,7 @@ date: "2025-11-09"
 
 Ватные жгуты дают дополнительное тепло и усиливают осветление, поэтому волосы на уровне стыка могу переосветлиться.
 
-![261.jpg](/lessons/urok-2-4-zony-osvetleniya-vybor-percent-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos/images/image3.jpeg)
+![261.jpg](/lessons/urok-2-4-zony-osvetleniya-vybor-percent-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos/images/image-3.jpeg)
 
 **На фото №1 – ватные жгуты при первичном блондировании, на фото № 2 – ватные жгуты при блондировании слишком длинных корней.**
 
@@ -416,7 +416,7 @@ date: "2025-11-09"
 
 **Задание**
 
-![default_profile_50.png](/lessons/urok-2-4-zony-osvetleniya-vybor-percent-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos/images/image4.png)
+![default_profile_50.png](/lessons/urok-2-4-zony-osvetleniya-vybor-percent-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos/images/image-4.png)
 
 1\. Перечислите 4 участка осветления. _\- \* обязательное поле_
 

@@ -371,29 +371,29 @@ date: "2025-11-09"
 
 Для того, чтобы зачерпнуть нужное количество вазелина, используйте ложку или кисть в виде шпателя – вазелин имеет очень плотную консистенцию и его сложно зачерпнуть обычной кистью в нужном количестве.
 
-![194.jpg](/lessons/urok-3-op-bonusnyi-urok/images/image1.jpeg)
+![194.jpg](/lessons/urok-3-op-bonusnyi-urok/images/image-1.jpeg)
 
-![272.jpg](/lessons/urok-3-op-bonusnyi-urok/images/image2.jpeg)
+![272.jpg](/lessons/urok-3-op-bonusnyi-urok/images/image-2.jpeg)
 
 **На фото №1 – волосы, окрашенные медным оттенком на 7-м УГТ. На длине и концах волос – кератиновое выпрямление. Виден завиток на прикорневой зоне и прямые концы волос.  
 На фото №2 – волосы после 2-х кислотных смывок перед блондированием**
 
-![391.jpg](/lessons/urok-3-op-bonusnyi-urok/images/image3.jpeg)
+![391.jpg](/lessons/urok-3-op-bonusnyi-urok/images/image-3.jpeg)
 
-![131.jpg](/lessons/urok-3-op-bonusnyi-urok/images/image4.jpeg)
+![131.jpg](/lessons/urok-3-op-bonusnyi-urok/images/image-4.jpeg)
 
 **На фото цвет, полученный после декапирования и тонирования. На прикорневой части использовалась классическая пропорция смешивания с 6% окислителем, на длине с остатками кератинового выпрямления — 12% окислитель 1:6, и повторное нанесение 9% окислитель 1:4**
 
-![89.jpg](/lessons/urok-3-op-bonusnyi-urok/images/image5.jpeg)
+![89.jpg](/lessons/urok-3-op-bonusnyi-urok/images/image-5.jpeg)
 
-![349.jpg](/lessons/urok-3-op-bonusnyi-urok/images/image6.jpeg)
+![349.jpg](/lessons/urok-3-op-bonusnyi-urok/images/image-6.jpeg)
 
 **На фото № 1 видны темные концы волос после блондирующей смывки.**
 
 **Корни осветляли классическим способом, длину и концы на высоком проценте с двойным нанесением. Сначала — большее количество окислителя: 1:8, потом меньшее количество окислителя 1:6.**
 
-![188.jpg](/lessons/urok-3-op-bonusnyi-urok/images/image7.jpeg)
+![188.jpg](/lessons/urok-3-op-bonusnyi-urok/images/image-7.jpeg)
 
-![258.jpg](/lessons/urok-3-op-bonusnyi-urok/images/image8.jpeg)
+![258.jpg](/lessons/urok-3-op-bonusnyi-urok/images/image-8.jpeg)
 
 **На фото № 1 и № 2 видно неоднородное мелирование и отросшие корни. Корни были осветлены классическим способом, мелированная длина с 12% окислителем, через двойное нанесение.**

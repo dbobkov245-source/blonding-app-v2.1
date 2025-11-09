@@ -30,6 +30,7 @@
 4. При пуше workflow (если настроен) автоматически выполнит генерацию уроков.
 
 ## Уроки
+- [Урок 1. Подготовка клиента к блондированию](/Theory/urok-1-podgotovka-klienta-k-blondirovaniyu)
 - [Урок 2. 4 зоны осветления. Выбор % окислителя. Первичное осветление натуральных волос](/Theory/urok-2-4-zony-osvetleniya-vybor-percent-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos)
 - [Урок 3 ОП БОНУСНЫЙ УРОК](/Theory/urok-3-op-bonusnyi-urok)
 
