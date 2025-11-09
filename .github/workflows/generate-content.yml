@@ -1,0 +1,58 @@
+name: Generate Content
+
+on:
+  # 1. Запускается, когда ты пушишь в 'lessons/source/'
+  push:
+    paths:
+      - 'lessons/source/**'
+      
+  # 2. Позволяет запускать вручную с вкладки "Actions"
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    
+    # 3. Добавляем токен HF для всей "работы"
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+
+    steps:
+      # 4. Скачиваем твой код
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      # 5. Настраиваем Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      # 6. Устанавливаем зависимости (npm i)
+      - name: Install dependencies
+        run: npm install
+
+      # 7. ЗАПУСКАЕМ ГЕНЕРАЦИЮ УРОКОВ
+      - name: Generate Lessons
+        run: npm run generate-lessons
+
+      # 8. ЗАПУСКАЕМ ГЕНЕРАЦИЮ ТЕСТОВ
+      - name: Generate Quizzes
+        run: npm run generate-quizzes
+        
+      # 9. Сохраняем и пушим новые файлы в репозиторий
+      - name: Commit generated files
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          
+          # Добавляем ВСЕ сгенерированные папки
+          git add public/lessons public/content/quizzes src/content/theory
+          
+          if git diff --quiet --cached; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto: generate lessons and quizzes"
+            git push
+          fi
