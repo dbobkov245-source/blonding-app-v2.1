@@ -14,17 +14,26 @@ function cleanMarkdown(text) {
 }
 
 function createQuizPrompt(lessonTitle, lessonContent) {
-  return `Ты - эксперт по созданию образовательных тестов. Создай тест из 4-6 вопросов на основе урока.
-УРОК: "${lessonTitle}"
-СОДЕРЖАНИЕ: ${lessonContent.substring(0, 4000)}
-ТРЕБОВАНИЯ: 4 варианта ответа, 1 правильный, подробное объяснение, проверка практических знаний.
-ФОРМАТ: Строго JSON массив без markdown.
+  // Берем только первые 1500 символов, чтобы не перегрузить модель
+  const shortContent = lessonContent.substring(0, 1500);
+  
+  return `Ты — эксперт по обучению колористов. Создай тест из 4 вопросов СТРОГО на основе этого урока.
+Вопросы должны проверять конкретные знания из предоставленного материала.
+
+НАЗВАНИЕ УРОКА: "${lessonTitle}"
+
+ТЕКСТ УРОКА:
+${shortContent}
+
+ВАЖНО: Вопросы должны быть про зоны осветления, проценты окислителя, техники блондирования — и ТОЛЬКО из этого текста.
+
+ВЕРНИ ТОЛЬКО JSON:
 [
   {
-    "question": "Текст?",
-    "options": ["В1","В2","В3","В4"],
-    "correctAnswer": "В1",
-    "explanation": "Почему..."
+    "question": "Вопрос?",
+    "options": ["Ответ 1","Ответ 2","Ответ 3","Ответ 4"],
+    "correctAnswer": "Ответ 1",
+    "explanation": "Объяснение..."
   }
 ]`;
 }
@@ -44,8 +53,8 @@ function parseAIResponse(response) {
     });
     return parsed;
   } catch (e) {
-    console.error('Ошибка парсинга ответа AI:', e.message);
-    console.error('Сырой ответ (первые 500 символов):', response.substring(0, 500));
+    console.error('❌ Ошибка парсинга ответа AI:', e.message);
+    console.error('📄 Сырой ответ (первые 500 символов):', response.substring(0, 500));
     throw e;
   }
 }
@@ -53,6 +62,12 @@ function parseAIResponse(response) {
 async function generateQuizForLesson(lessonSlug, lessonData) {
   console.log(`\n📝 Генерация теста: ${lessonSlug}${isForce ? ' (принудительно)' : ''}`);
   const { title, content } = lessonData;
+  
+  // 🔍 ДЕБАГ: Проверка контента
+  console.log(`📌 Тема урока: "${title}"`);
+  console.log(`📄 Первые 500 символов контента:`);
+  console.log(content.substring(0, 500) + '...');
+
   const quizPath = path.join(quizzesDir, `${lessonSlug}-quiz.json`);
 
   if (fs.existsSync(quizPath) && !isForce) {
@@ -67,9 +82,10 @@ async function generateQuizForLesson(lessonSlug, lessonData) {
 
   const prompt = createQuizPrompt(title, content);
   
-  // ✅ ЛОГИРОВАНИЕ КОНТЕНТА
-  console.log(`📄 Контент урока (первые 300 символов): "${content.substring(0, 300)}..."`);
-  
+  // 🔍 ДЕБАГ: Вывод промпта
+  console.log(`🤖 Промпт для AI (первые 500 символов):`);
+  console.log(prompt.substring(0, 500) + '...');
+
   let attempts = 0;
   let quiz;
   
@@ -77,18 +93,33 @@ async function generateQuizForLesson(lessonSlug, lessonData) {
     attempts++;
     console.log(` 🤖 Запрос к AI (попытка ${attempts})...`);
     try {
+      // ✅ Модель будет взята из src/lib/ai.js по умолчанию (Qwen)
       const response = await callHF(prompt, {
         hfToken: HF_TOKEN,
         maxTokens: 2048,
-        temperature: 0.9, // ✅ ПОВЫШЕННАЯ КРЕАТИВНОСТЬ
-        enableCache: false // ✅ ОТКЛЮЧЕН КЭШ
+        temperature: 0.9,
+        enableCache: false
       });
-      console.log(` 📦 Парсинг ответа...`);
+      console.log(` 📦 Получен ответ от AI, парсинг...`);
       quiz = parseAIResponse(response);
+      
+      // ✅ ПРОВЕРКА: Если вопросы про "мочить волосы" — это Урок 1, перегенерируем
+      const hasWrongQuestions = quiz.some(q => 
+        q.question.includes('мочить') || 
+        q.question.includes('Пантенол') ||
+        q.question.includes('пряди')
+      );
+      
+      if (hasWrongQuestions && attempts < maxRetries) {
+        console.warn(`⚠️ Обнаружены вопросы из другого урока, повтор...`);
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        continue;
+      }
+      
       break;
     } catch (e) {
       if (attempts === maxRetries) throw e;
-      console.warn(` ⚠️ Повтор после ошибки: ${e.message}`);
+      console.warn(` ⚠️ Ошибка: ${e.message}, повтор через 5с...`);
       await new Promise(resolve => setTimeout(resolve, 5000));
     }
   }
