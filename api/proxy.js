@@ -49,6 +49,7 @@ export default async function handler(req, res) {
       }] : [{ role: "user", content: inputs }])
     ];
 
+    // ✅ ЗАМЕНЕНО: Qwen вместо Llama
     const url = "https://router.huggingface.co/v1/chat/completions";
     
     const hfResponse = await fetch(url, {
@@ -58,7 +59,7 @@ export default async function handler(req, res) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "meta-llama/Meta-Llama-3-8B-Instruct",
+        model: "Qwen/Qwen2.5-72B-Instruct",
         messages,
         max_tokens: 1024,
         temperature: 0.7,
