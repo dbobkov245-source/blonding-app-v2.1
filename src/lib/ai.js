@@ -7,19 +7,20 @@ export const SYSTEM_PROMPT = `Ты — эксперт-преподаватель
 Будь мотивирующим и конструктивным.`;
 
 function hashQuery(query) {
-  // ✅ УВЕЛИЧЕН ЛИМИТ С 200 ДО 1000 СИМВОЛОВ
+  // Увеличен лимит для более точного кэширования
   return query.replace(/\s+/g, ' ').trim().slice(0, 1000);
 }
 
 export async function callHF(inputs, options = {}) {
   const {
     hfToken = process.env.HF_TOKEN,
-    model = "meta-llama/Meta-Llama-3-8B-Instruct",
-    maxTokens = 1024,
+    // ✅ ЗАМЕНЕНО: Qwen вместо Llama
+    model = "Qwen/Qwen2.5-72B-Instruct",
+    maxTokens = 2048,
     temperature = 0.7,
     topP = 0.9,
     systemPrompt = SYSTEM_PROMPT,
-    enableCache = true // По умолчанию кэш включен
+    enableCache = true
   } = options;
 
   if (!hfToken && process.env.NODE_ENV === 'production') {
@@ -41,6 +42,7 @@ export async function callHF(inputs, options = {}) {
     return cache.get(cacheKey);
   }
 
+  // ✅ URL такой же, Qwen работает через router.huggingface.co
   const url = "https://router.huggingface.co/v1/chat/completions";
   
   const body = {
