@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import mammoth from 'mammoth';
 import sharp from 'sharp';
-import TurndownService from 'turndown'; // Убедись, что он в package.json
+import TurndownService from 'turndown';
 
 const sourceDir = './lessons/source';
 const outPublicDir = './public/lessons';
@@ -10,7 +10,7 @@ const readmeFile = './README.md';
 
 const turndownService = new TurndownService();
 
-// --- 1. ДОБАВЛЕНА ФУНКЦИЯ SLUGIFY ---
+// --- 1. ФУНКЦИЯ SLUGIFY ---
 function slugify(text) {
   const a = {
     "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e", "ж": "zh", "з": "z", "и": "i", "й": "y",
@@ -21,11 +21,10 @@ function slugify(text) {
 
   return text.toString().toLowerCase().trim()
     .replace(/[а-яё%]/g, (char) => a[char] || '')
-    .replace(/[^a-z0-9 -]/g, '') // убираем все, кроме букв, цифр и дефиса
-    .replace(/\s+/g, '-') // заменяем пробелы на дефис
-    .replace(/-+/g, '-'); // убираем двойные дефисы
+    .replace(/[^a-z0-9 -]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
 }
-// ------------------------------------
 
 [sourceDir, outPublicDir].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -39,7 +38,7 @@ function log(...args) {
 async function processLessonFile(file) {
   const filePath = path.join(sourceDir, file);
   const baseName = path.basename(file, path.extname(file));
-  const slug = slugify(baseName); // <-- 2. ИСПОЛЬЗУЕМ SLUGIFY
+  const slug = slugify(baseName);
   const ext = path.extname(file);
   let content = '';
   let title = baseName; 
@@ -47,7 +46,7 @@ async function processLessonFile(file) {
   const lessonPublicDir = path.join(outPublicDir, slug);
   const lessonPublicImgDir = path.join(lessonPublicDir, 'images');
 
-  // Очищаем старую папку урока (важно для обновления)
+  // Очищаем старую папку урока
   if (fs.existsSync(lessonPublicDir)) {
     fs.rmSync(lessonPublicDir, { recursive: true, force: true });
   }
@@ -58,7 +57,7 @@ async function processLessonFile(file) {
   const mammothOptions = {
     convertImage: mammoth.images.imgElement(async (image) => {
       const buffer = await image.read();
-      if (buffer.length > 5 * 1024 * 1024) { // 5MB limit
+      if (buffer.length > 5 * 1024 * 1024) {
         log(`Изображение слишком большое для ${slug}, пропускаем.`);
         return { src: '' };
       }
@@ -68,10 +67,14 @@ async function processLessonFile(file) {
       const imgPath = path.join(lessonPublicImgDir, imgName);
 
       try {
-        await sharp(buffer)
-          .jpeg({ quality: 80 })
-          .png({ quality: 80 })
-          .toFile(imgPath);
+        // ✅ ИСПРАВЛЕНО: оптимизация только нужного формата
+        if (extension === 'jpeg' || extension === 'jpg') {
+          await sharp(buffer).jpeg({ quality: 80 }).toFile(imgPath);
+        } else if (extension === 'png') {
+          await sharp(buffer).png({ quality: 80 }).toFile(imgPath);
+        } else {
+          await sharp(buffer).toFile(imgPath);
+        }
       } catch (e) {
         log(`Ошибка сжатия картинки ${imgName}: ${e.message}. Сохраняем как есть.`);
         fs.writeFileSync(imgPath, buffer);
@@ -98,7 +101,7 @@ async function processLessonFile(file) {
     return null;
   }
 
-  // Извлекаем title из первого H1, если он есть
+  // Извлекаем title из первого H1
   const titleMatch = content.match(/^# (.*)$/m);
   if (titleMatch && titleMatch[1]) {
     title = titleMatch[1].trim();
@@ -157,8 +160,8 @@ async function generateLessons() {
   console.log(`[generate-md] Готово! ${lessons.length} уроков обработано.`);
 }
 
+// ✅ ИСПРАВЛЕНО: добавлен вызов функции
 generateLessons().catch(e => {
-  console.error(e);
+  console.error('Fatal error in generate-md:', e);
   process.exit(1);
 });
-```eof
