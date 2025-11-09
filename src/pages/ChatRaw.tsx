@@ -40,7 +40,8 @@ export default function ChatRaw() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           inputs: messageText,
-          systemPrompt: systemPromptInput || undefined
+          // ✅ Передаем systemPrompt ТОЛЬКО если он не пустой
+          ...(systemPromptInput.trim() && { systemPrompt: systemPromptInput })
         }),
       });
 
@@ -101,17 +102,20 @@ export default function ChatRaw() {
         </button>
       </div>
 
-      <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+      <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+        <label className="block text-sm font-semibold text-gray-800 mb-2">
           Системный промпт (необязательно):
         </label>
         <textarea
           value={systemPromptInput}
           onChange={(e) => setSystemPromptInput(e.target.value)}
-          placeholder="Оставьте пустым для стандартного поведения"
+          placeholder="Оставьте пустым для свободного общения"
           className="w-full p-2 border border-gray-300 rounded-md text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
           rows={2}
         />
+        <p className="text-xs text-gray-600 mt-2">
+          Если оставить пустым — модель будет отвечать в свободном стиле без специализации на блондировании
+        </p>
       </div>
 
       <div className="bg-white rounded-xl shadow-lg border border-gray-200">
@@ -119,8 +123,8 @@ export default function ChatRaw() {
           {messages.length === 0 ? (
             <div className="text-center py-12 text-gray-400">
               <div className="text-6xl mb-4">🤖</div>
-              <p className="text-lg">Начните общение с AI</p>
-              <p className="text-sm mt-2">Задайте любой вопрос или просто поболтайте</p>
+              <p className="text-lg">Начните свободное общение с AI</p>
+              <p className="text-sm mt-2">Задавайте любые вопросы без ограничений</p>
             </div>
           ) : (
             messages.map((m, i) => (
@@ -172,7 +176,7 @@ export default function ChatRaw() {
             </button>
           </div>
           <p className="text-xs text-gray-500 mt-2 text-center">
-            Модель: Qwen/Qwen2.5-72B-Instruct • Без специализированного контекста
+            Модель: Qwen/Qwen2.5-72B-Instruct • Свободное общение без ограничений
           </p>
         </div>
       </div>
