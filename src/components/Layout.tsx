@@ -17,9 +17,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Link href="/" className="font-bold text-xl text-purple-600">
             Blonding App v2.1
           </Link>
-          <div className="flex gap-4 text-sm font-medium">
+          <div className="flex gap-4 text-sm font-medium flex-wrap">
             <Link href="/" className={`px-3 py-1 rounded-md hover:bg-purple-50 ${isActive('/') ? 'text-purple-600 bg-purple-50' : 'text-gray-700'}`}>
               Теория
+            </Link>
+            <Link href="/Assistant" className={`px-3 py-1 rounded-md hover:bg-purple-50 ${isActive('/Assistant') ? 'text-purple-600 bg-purple-50' : 'text-gray-700'}`}>
+              Голосовой помощник
             </Link>
             <Link href="/Chat" className={`px-3 py-1 rounded-md hover:bg-purple-50 ${isActive('/Chat') ? 'text-purple-600 bg-purple-50' : 'text-gray-700'}`}>
               AI-консультант
