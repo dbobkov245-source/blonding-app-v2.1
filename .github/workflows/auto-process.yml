@@ -36,12 +36,12 @@ jobs:
         run: npm run generate-lessons
 
       - name: Generate AI Tests
-        continue-on-error: true
+        # ✅ УБРАН continue-on-error, добавлен флаг --force
         run: |
           if [ -z "$HF_TOKEN" ]; then
             echo "⚠️ HF_TOKEN не установлен, пропускаю генерацию тестов"
           else
-            npm run generate-quizzes
+            npm run generate-quizzes -- --force
           fi
 
       - name: Commit changes
