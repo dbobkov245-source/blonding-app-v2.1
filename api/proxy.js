@@ -26,6 +26,7 @@ export default async function handler(req, res) {
     const body = req.body;
     const inputs = body?.inputs || body?.message || "";
     const image = body?.image; 
+    const customSystemPrompt = body?.systemPrompt; // ✅ Поддержка кастомного промпта
 
     if (!inputs) {
       return res.status(400).json({ error: 'Не предоставлено поле "inputs"' });
@@ -35,7 +36,8 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Изображение слишком большое (макс. 2MB)' });
     }
 
-    const systemPrompt = `Ты — эксперт-преподаватель по блондированию волос. Отвечай профессионально, кратко и по существу.
+    // ✅ Используем кастомный системный промпт или дефолтный
+    const systemPrompt = customSystemPrompt || `Ты — эксперт-преподаватель по блондированию волос. Отвечай профессионально, кратко и по существу.
 Используй терминологию курса. При анализе изображений оценивай: состояние волос, тон, технику, рекомендуй % окислителя.`;
 
     const messages = [
@@ -49,7 +51,6 @@ export default async function handler(req, res) {
       }] : [{ role: "user", content: inputs }])
     ];
 
-    // ✅ ЗАМЕНЕНО: Qwen вместо Llama
     const url = "https://router.huggingface.co/v1/chat/completions";
     
     const hfResponse = await fetch(url, {
