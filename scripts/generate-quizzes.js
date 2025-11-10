@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 
-const lessonsDir   = './public/lessons';
-const quizzesDir   = './public/content/quizzes';
-const isForce      = process.argv.includes('--force');
-const maxRetries   = 3;
+const lessonsDir = './public/lessons';
+const quizzesDir = './public/content/quizzes';
+const isForce = process.argv.includes('--force');
+const maxRetries = 3;
 
 if (!fs.existsSync(quizzesDir)) fs.mkdirSync(quizzesDir, { recursive: true });
 
