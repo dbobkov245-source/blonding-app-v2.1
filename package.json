@@ -1,17 +1,26 @@
 {
   "name": "blonding-app-v2.1",
-  "version": "2.1.0",
+  "version": "2.2.0",
+  "description": "PWA для обучения техникам блондирования с AI-генерацией тестов",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
     "generate-lessons": "node scripts/generate-md.js",
     "generate-quizzes": "node scripts/generate-quizzes.js",
     "generate-all": "npm run generate-lessons && npm run generate-quizzes",
-    "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "quiz-single": "node -e \"import('./scripts/generate-quizzes.js').then(m => m.generateQuizForLesson(process.argv[2], {title: process.argv[2], content: 'test'}))\"",
+    "test-quiz": "node -e \"import('./scripts/generate-quizzes.js').then(m => m.generateAllQuizzes())\"",
+    "validate-token": "node -e \"import('./src/lib/ai.js').then(m => m.validateHFToken(process.env.HF_TOKEN)).then(console.log)\"",
+    "clean-cache": "rm -rf .next/cache && rm -rf node_modules/.cache"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.15",
@@ -26,7 +35,8 @@
     "react-markdown": "9.0.1",
     "sharp": "^0.33.5",
     "tailwindcss": "3.4.10",
-    "turndown": "^7.1.3"
+    "turndown": "^7.1.3",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^22.6.0",
@@ -36,9 +46,5 @@
     "eslint": "^9.12.0",
     "eslint-config-next": "15.0.1",
     "typescript": "^5.7.1"
-  },
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
   }
 }
