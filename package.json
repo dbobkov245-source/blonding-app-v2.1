@@ -1,5 +1,5 @@
 {
-  "name": "blonding-app-v2.1",
+  "name": "blonding-app-v2.2",
   "version": "2.2.0",
   "description": "PWA для обучения техникам блондирования с AI-генерацией тестов",
   "private": true,
@@ -17,7 +17,6 @@
     "generate-lessons": "node scripts/generate-md.js",
     "generate-quizzes": "node scripts/generate-quizzes.js",
     "generate-all": "npm run generate-lessons && npm run generate-quizzes",
-    "quiz-single": "node -e \"import('./scripts/generate-quizzes.js').then(m => m.generateQuizForLesson(process.argv[2], {title: process.argv[2], content: 'test'}))\"",
     "test-quiz": "node -e \"import('./scripts/generate-quizzes.js').then(m => m.generateAllQuizzes())\"",
     "validate-token": "node -e \"import('./src/lib/ai.js').then(m => m.validateHFToken(process.env.HF_TOKEN)).then(console.log)\"",
     "clean-cache": "rm -rf .next/cache && rm -rf node_modules/.cache"
