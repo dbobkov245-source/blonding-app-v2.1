@@ -10,46 +10,21 @@ permissions:
   contents: write
 
 jobs:
-  process-lessons:
+  process:
     runs-on: ubuntu-latest
     env:
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+          node-version: 20
           cache: 'npm'
-
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Update lock file
-        run: npm install
-
-      - name: Generate lessons
-        run: npm run generate-lessons
-
-      - name: Generate AI Tests
-        # ✅ УБРАН continue-on-error, добавлен флаг --force
-        run: |
-          if [ -z "$HF_TOKEN" ]; then
-            echo "⚠️ HF_TOKEN не установлен, пропускаю генерацию тестов"
-          else
-            npm run generate-quizzes -- --force
-          fi
-
-      - name: Commit changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/lessons/ public/content/quizzes/ README.md
-          if ! git diff --quiet --cached; then
-            git commit -m "🤖 Auto: Processed lessons from source"
-            git push
-          fi
+      - run: npm ci
+      - run: npm run generate-lessons
+      - run: npm run generate-quizzes -- --force   # ← JSON-режим, gemma-2-27b-it
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 🤖 Auto: processed lessons + JSON tests (gemma-2-27b-it)
+          file_pattern: public/lessons/ public/content/quizzes/ README.md
+          
