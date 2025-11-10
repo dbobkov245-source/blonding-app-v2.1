@@ -14,17 +14,47 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      HF_MODEL_QUIZ: ${{ vars.HF_MODEL_QUIZ || 'mistralai/Mixtral-8x22B-Instruct-v0.1' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
-      - run: npm ci
-      - run: npm run generate-lessons
-      - run: npm run generate-quizzes -- --force
-      - uses: stefanzweifel/git-auto-commit-action@v5
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Generate lessons from DOCX
+        run: npm run generate-lessons
+        
+      - name: Debug environment
+        run: |
+          echo "HF_TOKEN is set: ${{ secrets.HF_TOKEN != '' }}"
+          echo "Model: $HF_MODEL_QUIZ"
+          ls -la public/lessons/
+      
+      - name: Generate quizzes with retry
+        run: npm run generate-quizzes -- --force
+        timeout-minutes: 30
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+      
+      - name: Check generated files
+        run: |
+          echo "Generated quizzes:"
+          ls -la public/content/quizzes/
+          wc -l public/content/quizzes/*.json || true
+      
+      - name: Auto-commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "🤖 Auto: processed lessons + Quiz tests"
           file_pattern: "public/lessons/ public/content/quizzes/ README.md"
           commit_author: "GitHub Actions <actions@github.com>"
+          push_options: '--force-with-lease'
