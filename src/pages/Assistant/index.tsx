@@ -23,14 +23,16 @@ export default function VoiceAssistant() {
   }, [messages]);
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
+    const check = () => setIsMobile(typeof window !== 'undefined' && window.innerWidth < 768);
     check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', check);
+      return () => window.removeEventListener('resize', check);
+    }
   }, []);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
@@ -62,6 +64,7 @@ export default function VoiceAssistant() {
   }, []);
 
   const toggleRecording = () => {
+    if (typeof window === 'undefined') return;
     if (!recognitionRef.current) return alert('Распознавание не поддерживается');
     if (isRecording) recognitionRef.current.stop();
     else {
@@ -80,10 +83,7 @@ export default function VoiceAssistant() {
       const res = await fetch('/api/proxy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          inputs: text,
-          systemPrompt: `Ты - голосовой ассистент для колориста. Отвечай кратко, по существу.`
-        })
+        body: JSON.stringify({ inputs: text, systemPrompt: `Ты - голосовой ассистент для колориста. Отвечай кратко, по существу.` })
       });
       if (!res.ok) throw new Error('Ошибка запроса');
       const json = await res.json();
@@ -97,6 +97,7 @@ export default function VoiceAssistant() {
   };
 
   const speakResponse = (text: string) => {
+    if (typeof window === 'undefined') return;
     if (!synthesisAvailable) return alert('Синтез речи не поддерживается');
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
@@ -129,7 +130,7 @@ export default function VoiceAssistant() {
             {recognizedText && isRecording && <p className="text-sm text-gray-500 mt-1 break-words">Распознано: "{recognizedText}"</p>}
           </div>
           <div className="flex gap-2 sm:gap-3 mt-3 sm:mt-4 w-full justify-center">
-            {window.speechSynthesis.speaking && <button onClick={() => window.speechSynthesis.cancel()} className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-sm font-medium">⏸️ Стоп</button>}
+            {typeof window !== 'undefined' && window.speechSynthesis?.speaking && <button onClick={() => window.speechSynthesis.cancel()} className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-sm font-medium">⏸️ Стоп</button>}
             <button onClick={clearHistory} className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg text-sm font-medium">🗑️ Очистить</button>
           </div>
         </div>
