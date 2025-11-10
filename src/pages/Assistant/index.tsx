@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react'; // Добавлен useCallback
 
 const synthesisAvailable = typeof window !== 'undefined' && 'speechSynthesis' in window;
 
@@ -17,7 +17,6 @@ export default function VoiceAssistant() {
   const [isMobile, setIsMobile] = useState(false);
   const [lastRequestTime, setLastRequestTime] = useState<number>(0);
 
-  // ✅ AbortController для прерывания запросов
   const abortRef = useRef<AbortController | null>(null);
   const recognitionRef = useRef<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -29,8 +28,8 @@ export default function VoiceAssistant() {
     scrollToBottom();
   }, [messages]);
 
-  /* ---------- Отправка запроса ---------- */
-  const sendMessage = async (text: string, isVoiceInput = false) => {
+  /* ---------- Отправка запроса (useCallback для стабильности) ---------- */
+  const sendMessage = useCallback(async (text: string, isVoiceInput = false) => {
     if (!text.trim()) return;
 
     // ✅ Защита от спама (2 сек)
@@ -41,7 +40,7 @@ export default function VoiceAssistant() {
     }
     setLastRequestTime(now);
 
-    // ✅ Прерываем предыдущий запрос, если он ещё летит
+    // ✅ Прерываем предыдущий запрос
     if (abortRef.current) {
       abortRef.current.abort();
       abortRef.current = null;
@@ -57,7 +56,7 @@ export default function VoiceAssistant() {
     setMessages((m) => [...m, userMsg]);
     setIsLoading(true);
 
-    // ✅ Чистим старые ошибки перед новым запросом
+    // ✅ Чистим старые ошибки
     setMessages((m) =>
       m.filter((msg) => !(msg.role === 'assistant' && msg.text.includes('Ошибка')))
     );
@@ -112,7 +111,7 @@ export default function VoiceAssistant() {
       setIsLoading(false);
       abortRef.current = null;
     }
-  };
+  }, [lastRequestTime]); // Зависимости для useCallback
 
   /* ---------- Кнопка «Стоп» ---------- */
   const stopSpeaking = () => {
@@ -140,9 +139,14 @@ export default function VoiceAssistant() {
 
     rec.onresult = (e: any) => {
       let finalTranscript = '';
+      let interimTranscript = ''; // ✅ ИСПРАВЛЕНО: объявлена переменная
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const t = e.results[i][0].transcript;
-        if (e.results[i].isFinal) finalTranscript = t;
+        if (e.results[i].isFinal) {
+          finalTranscript = t;
+        } else {
+          interimTranscript += t; // ✅ Используем правильную переменную
+        }
       }
       setRecognizedText(finalTranscript || interimTranscript);
 
@@ -158,7 +162,7 @@ export default function VoiceAssistant() {
     rec.onend = () => setIsRecording(false);
 
     recognitionRef.current = rec;
-  }, []);
+  }, [sendMessage]); // ✅ ИСПРАВЛЕНО: добавлена зависимость
 
   const toggleRecording = () => {
     if (!recognitionRef.current) return;
