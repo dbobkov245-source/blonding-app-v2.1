@@ -22,9 +22,9 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run generate-lessons
-      - run: npm run generate-quizzes -- --force   # ← JSON-режим, gemma-2-27b-it
+      - run: npm run generate-quizzes -- --force
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: 🤖 Auto: processed lessons + JSON tests (gemma-2-27b-it)
-          file_pattern: public/lessons/ public/content/quizzes/ README.md
-          
+          commit_message: "🤖 Auto: processed lessons + Quiz tests"
+          file_pattern: "public/lessons/ public/content/quizzes/ README.md"
+          commit_author: "GitHub Actions <actions@github.com>"
