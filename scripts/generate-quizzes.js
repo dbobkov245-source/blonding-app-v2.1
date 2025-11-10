@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 
-const lessonsDir = './public/lessons';
-const quizzesDir = './public/content/quizzes';
-const isForce = process.argv.includes('--force');
-const maxRetries = 3;
+const lessonsDir   = './public/lessons';
+const quizzesDir   = './public/content/quizzes';
+const isForce      = process.argv.includes('--force');
+const maxRetries   = 3;
 
 if (!fs.existsSync(quizzesDir)) fs.mkdirSync(quizzesDir, { recursive: true });
 
@@ -12,27 +12,31 @@ function cleanMarkdown(text) {
   return text.replace(/---[\s\S]*?---/, '').trim();
 }
 
-const JSON_GENERATION_SYSTEM_PROMPT = `Ты — автоматизированный ETL-инструмент. Твоя единственная задача — извлекать информацию из текста и возвращать только валидный JSON. Верни JSON-массив объектов строго формата:
+// ✅ 1. Технический промпт (никакого «разговорчивого»)
+const JSON_GENERATION_SYSTEM_PROMPT = `Ты — ETL-инструмент. Верни только валидный JSON-массив объектов строго формата:
 [{"question":"...","options":["...", "..."],"correctAnswer":"...","explanation":"..."}]`;
 
+// ✅ 2. Отправляем ПОЛНЫЙ текст урока (никакого substring(0, 1500))
 function createQuizUserPrompt(title, content) {
-  return `НАЗВАНИЕ УРОКА: "${title}"
+  return `
+НАЗВАНИЕ УРОКА: "${title}"
 ПОЛНЫЙ ТЕКСТ УРОКА:
 ${content}
 ---
-ЗАДАЧА: Создай 5 уникальных вопросов по тексту. Верни JSON-массив.`;
+ЗАДАНИЕ: Создай 5 вопросов с 4 вариантами ответов, строго по содержанию урока. Вопросы должны проверять: цифры, технику, % окислителя, зонирование, последовательность нанесения. ВЕРНИ JSON-МАССИВ без слов «вот», «json» и прочего.`;
 }
 
+// ✅ 3. Прямой вызов Gemma-2-27b-it + JSON-режим
 async function callHFDirect(systemPrompt, userPrompt, hfToken) {
   const url = "https://router.huggingface.co/v1/chat/completions";
   const body = {
     model: "google/gemma-2-27b-it",
     messages: [
       { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt }
+      { role: "user",   content: userPrompt }
     ],
     max_tokens: 4096,
-    temperature: 0.3,
+    temperature: 0.25,
     response_format: { type: "json_object" }
   };
   const res = await fetch(url, {
@@ -42,9 +46,8 @@ async function callHFDirect(systemPrompt, userPrompt, hfToken) {
   });
   if (!res.ok) throw new Error(await res.text());
   const data = await res.json();
-  const jsonString = data.choices?.[0]?.message?.content;
-  if (!jsonString) throw new Error("Пустой ответ");
-  const parsed = JSON.parse(jsonString);
+  const raw = data.choices?.[0]?.message?.content || "";
+  const parsed = JSON.parse(raw);
   return Array.isArray(parsed) ? parsed : Object.values(parsed).find(Array.isArray) || [];
 }
 
