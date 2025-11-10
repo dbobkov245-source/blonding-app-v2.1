@@ -15,19 +15,13 @@ export default function VoiceAssistant() {
   const [isLoading, setIsLoading] = useState(false);
   const [recognizedText, setRecognizedText] = useState('');
   const [isMobile, setIsMobile] = useState(false);
+  const [lastRequestTime, setLastRequestTime] = useState<number>(0);
 
-  // ✅ Защита от спама (2 с)
-  const lastReqRef = useRef<number>(0);
-
-  // ✅ AbortController для прерывания старого запроса
+  // ✅ AbortController для прерывания запросов
   const abortRef = useRef<AbortController | null>(null);
-
-  // ✅ SpeechRecognition
   const recognitionRef = useRef<any>(null);
-
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  /* ---------- helpers ---------- */
   const scrollToBottom = () =>
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
 
@@ -35,19 +29,19 @@ export default function VoiceAssistant() {
     scrollToBottom();
   }, [messages]);
 
-  /* ---------- отправка запроса ---------- */
+  /* ---------- Отправка запроса ---------- */
   const sendMessage = async (text: string, isVoiceInput = false) => {
     if (!text.trim()) return;
 
-    // ✅ анти-спам
+    // ✅ Защита от спама (2 сек)
     const now = Date.now();
-    if (now - lastReqRef.current < 2000) {
-      window.toast?.('Подождите немного перед следующим запросом');
+    if (now - lastRequestTime < 2000) {
+      alert('Подождите немного перед следующим запросом');
       return;
     }
-    lastReqRef.current = now;
+    setLastRequestTime(now);
 
-    // ✅ прерываем предыдущий запрос, если он ещё летит
+    // ✅ Прерываем предыдущий запрос, если он ещё летит
     if (abortRef.current) {
       abortRef.current.abort();
       abortRef.current = null;
@@ -63,7 +57,7 @@ export default function VoiceAssistant() {
     setMessages((m) => [...m, userMsg]);
     setIsLoading(true);
 
-    // ✅ чистим старые «ошибки» ассистента (чтобы не плодились)
+    // ✅ Чистим старые ошибки перед новым запросом
     setMessages((m) =>
       m.filter((msg) => !(msg.role === 'assistant' && msg.text.includes('Ошибка')))
     );
@@ -80,12 +74,11 @@ export default function VoiceAssistant() {
           systemPrompt: `Ты — голосовой ассистент для колориста. Отвечай кратко, по существу.`,
         }),
         signal: controller.signal,
-        // @ts-ignore - some environments support timeout
-        timeout: 30000, // 30 с таймаут
+        // @ts-ignore
+        timeout: 30000,
       });
 
       if (!res.ok) {
-        // ✅ точная причина
         const details = await res.text();
         throw new Error(`Сервер вернул ${res.status}: ${details}`);
       }
@@ -99,10 +92,12 @@ export default function VoiceAssistant() {
 
       setMessages((m) => [...m, assistantMsg]);
     } catch (err: any) {
-      // ✅ не показываем технические детали пользователю
+      // ✅ Точная причина сбоя
       let userText = 'Ошибка соединения. Попробуйте позже.';
       if (err.name === 'AbortError') userText = 'Запрос отменён.';
-      if (err.message.includes('500')) userText = 'Сервер перегружен. Подождите минуту.';
+      if (err.message?.includes('429')) userText = 'Слишком много запросов. Подождите минуту.';
+      if (err.message?.includes('timeout')) userText = 'Таймаут запроса. Попробуйте ещё раз.';
+      if (err.message?.includes('500')) userText = 'Сервер перегружен. Подождите минуту.';
 
       const errorMsg: VoiceMessage = {
         role: 'assistant',
@@ -111,21 +106,19 @@ export default function VoiceAssistant() {
       };
       setMessages((m) => [...m, errorMsg]);
 
-      // ✅ лог для отладки
       console.error('[VoiceAssistant] Fetch error:', err);
     } finally {
-      // ❗❗❗ главное: всегда снимаем флаг
+      // ✅ ГАРАНТИРОВАННО снимаем флаг
       setIsLoading(false);
       abortRef.current = null;
     }
   };
 
-  /* ---------- кнопка «Стоп» ---------- */
+  /* ---------- Кнопка «Стоп» ---------- */
   const stopSpeaking = () => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
     }
-    // ✅ если запрос ещё летит — прерываем
     if (abortRef.current) {
       abortRef.current.abort();
       abortRef.current = null;
@@ -133,7 +126,7 @@ export default function VoiceAssistant() {
     setIsLoading(false);
   };
 
-  /* ---------- распознавание речи ---------- */
+  /* ---------- Распознавание речи ---------- */
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const SpeechRecognition =
@@ -145,16 +138,13 @@ export default function VoiceAssistant() {
     rec.interimResults = true;
     rec.continuous = false;
 
-    let finalTranscript = '';
-
     rec.onresult = (e: any) => {
-      let interim = '';
+      let finalTranscript = '';
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const t = e.results[i][0].transcript;
         if (e.results[i].isFinal) finalTranscript = t;
-        else interim += t;
       }
-      setRecognizedText(interim || finalTranscript);
+      setRecognizedText(finalTranscript || interimTranscript);
 
       if (finalTranscript.trim()) {
         setTimeout(() => {
@@ -181,7 +171,7 @@ export default function VoiceAssistant() {
     }
   };
 
-  /* ---------- синтез речи ---------- */
+  /* ---------- Синтез речи ---------- */
   const speakResponse = (text: string) => {
     if (typeof window === 'undefined') return;
     if (!('speechSynthesis' in window)) return;
@@ -192,7 +182,7 @@ export default function VoiceAssistant() {
     window.speechSynthesis.speak(utter);
   };
 
-  /* ---------- lifecycle ---------- */
+  /* ---------- Адаптивность ---------- */
   useEffect(() => {
     const check = () =>
       setIsMobile(typeof window !== 'undefined' && window.innerWidth < 768);
@@ -234,7 +224,7 @@ export default function VoiceAssistant() {
             <p className={`font-semibold ${isRecording ? 'text-red-500' : 'text-gray-700'} text-base sm:text-lg`}>
               {isRecording ? 'Слушаю... Говорите!' : 'Нажмите и говорите'}
             </p>
-            {recognizedText && isRecording && (
+            {recognizedText && (
               <p className="text-sm text-gray-500 mt-1 break-words">
                 Распознано: "{recognizedText}"
               </p>
