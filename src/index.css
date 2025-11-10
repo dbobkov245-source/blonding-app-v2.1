@@ -7,58 +7,25 @@ body {
   margin: 0;
 }
 
-/* Анимация пульсации для кнопки записи */
 @keyframes pulse-record {
-  0% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 20px rgba(239, 68, 68, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-  }
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
-
 .animate-pulse-record {
   animation: pulse-record 1.5s infinite;
 }
 
-/* Скрытие элементов при печати */
 @media print {
-  .no-print {
-    display: none !important;
-  }
+  .no-print { display: none !important; }
 }
 
-/* Мобильные стили */
 @media (max-width: 768px) {
-  /* Увеличенные шрифты для лучшей читаемости */
-  html {
-    font-size: 16px; /* Базовый размер */
-  }
-  
-  /* Улучшение нажатия на кнопки */
-  button {
-    min-height: 44px; /* Apple рекомендация */
-    min-width: 44px;
-  }
-
-  /* Улучшенная прокрутка */
-  .overflow-y-auto {
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-  }
-
-  /* Убрать выделение при долгом нажатии */
-  * {
-    -webkit-tap-highlight-color: transparent;
-  }
+  html { font-size: 16px; }
+  button, a[class*="px-"] { min-height: 44px; min-width: 44px; }
+  .overflow-y-auto { -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+  * { -webkit-tap-highlight-color: transparent; }
 }
-
-/* Очень маленькие экраны */
 @media (max-width: 380px) {
-  html {
-    font-size: 15px;
-  }
+  html { font-size: 15px; }
 }
