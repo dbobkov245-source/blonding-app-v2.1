@@ -1,8 +1,6 @@
 import { LRUCache } from 'lru-cache';
 
-// ✅ Определение SYSTEM_PROMPT по умолчанию
 const SYSTEM_PROMPT = `Ты — эксперт-преподаватель по блондированию волос. Отвечай профессионально, кратко и по существу.`;
-
 const cache = new LRUCache({ max: 500, ttl: 1000 * 60 });
 
 export default async function handler(req, res) {
@@ -11,7 +9,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  // ✅ Rate-limit 10 запросов в минуту с IP
+  // ✅ Rate-limit 10 запросов/мин
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
   const key = `rate:${ip}`;
   let count = cache.get(key) || 0;
@@ -26,6 +24,9 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Сервер не настроен' });
   }
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 25000); // Таймаут 25с
+
   try {
     const { inputs, systemPrompt, image, jsonMode } = req.body;
     
@@ -34,7 +35,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Пустой запрос' });
     }
 
-    // ✅ Проверка размера изображения (если есть)
+    // ✅ Проверка размера изображения
     if (image) {
       const base64Data = image.split(',')[1] || '';
       if (Buffer.from(base64Data, 'base64').length > 2 * 1024 * 1024) {
@@ -44,14 +45,11 @@ export default async function handler(req, res) {
 
     // ✅ Подготовка сообщений
     const messages = [];
-    
-    // Системный промпт (по умолчанию или кастомный)
     const sysPrompt = systemPrompt || SYSTEM_PROMPT;
     if (sysPrompt.trim()) {
       messages.push({ role: 'system', content: sysPrompt });
     }
 
-    // ✅ Пользовательское сообщение (с изображением, если есть)
     if (image) {
       messages.push({
         role: 'user',
@@ -64,7 +62,7 @@ export default async function handler(req, res) {
       messages.push({ role: 'user', content: inputs });
     }
 
-    // ✅ Запрос к Hugging Face
+    // ✅ Запрос с AbortController
     const resHF = await fetch('https://router.huggingface.co/v1/chat/completions', {
       method: 'POST',
       headers: { 
@@ -72,17 +70,17 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json' 
       },
       body: JSON.stringify({
-        model: 'Qwen/Qwen2.5-32B-Instruct', // можно сделать параметром
+        model: 'Qwen/Qwen2.5-32B-Instruct',
         messages,
         max_tokens: 1024,
         temperature: 0.7,
         top_p: 0.9,
-        // ✅ JSON mode для генерации тестов
         ...(jsonMode && { response_format: { type: "json_object" } })
       }),
-      // @ts-ignore - timeout поддерживается в некоторых средах
-      timeout: 25000
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     if (!resHF.ok) {
       const text = await resHF.text();
@@ -95,6 +93,7 @@ export default async function handler(req, res) {
     return res.status(200).json({ reply });
 
   } catch (err) {
+    clearTimeout(timeoutId);
     console.error('[API] Proxy crash:', err);
     
     // ✅ Обработка специфических ошибок
