@@ -31,38 +31,34 @@ body {
   }
 }
 
-/* Кастомные стили для голосового ассистента */
-.voice-assistant-container {
-  @apply bg-gradient-to-br from-gray-50 to-blue-50;
+/* Мобильные стили */
+@media (max-width: 768px) {
+  /* Увеличенные шрифты для лучшей читаемости */
+  html {
+    font-size: 16px; /* Базовый размер */
+  }
+  
+  /* Улучшение нажатия на кнопки */
+  button {
+    min-height: 44px; /* Apple рекомендация */
+    min-width: 44px;
+  }
+
+  /* Улучшенная прокрутка */
+  .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  /* Убрать выделение при долгом нажатии */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
-.voice-button {
-  @apply relative w-24 h-24 rounded-full flex items-center justify-center transition-all;
-}
-
-.voice-button.recording {
-  @apply bg-red-500 animate-pulse-record;
-}
-
-.voice-button.idle {
-  @apply bg-gradient-to-r from-purple-500 to-pink-500 hover:scale-105 hover:shadow-lg;
-}
-
-.message-bubble-user {
-  @apply bg-blue-500 text-white rounded-2xl px-4 py-3 max-w-[75%];
-}
-
-.message-bubble-assistant {
-  @apply bg-gray-100 text-gray-800 rounded-2xl px-4 py-3 max-w-[75%];
-}
-
-/* Анимация для индикатора записи */
-.recording-indicator {
-  @apply inline-block w-3 h-3 bg-red-500 rounded-full ml-2;
-  animation: blink 1s infinite;
-}
-
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+/* Очень маленькие экраны */
+@media (max-width: 380px) {
+  html {
+    font-size: 15px;
+  }
 }
