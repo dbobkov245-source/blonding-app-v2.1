@@ -1,0 +1,11 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "blonding-app-v2-1.vercel",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "blonding-app-v2-1.vercel",
+  "start_url": "/",
+  "theme_color": "#ffffff"
+}
