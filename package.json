@@ -19,7 +19,8 @@
     "generate-all": "npm run generate-lessons && npm run generate-quizzes",
     "test-quiz": "node -e \"import('./scripts/generate-quizzes.js').then(m => m.generateAllQuizzes())\"",
     "validate-token": "node -e \"import('./src/lib/ai.js').then(m => m.validateHFToken(process.env.HF_TOKEN)).then(console.log)\"",
-    "clean-cache": "rm -rf .next/cache && rm -rf node_modules/.cache"
+    "clean-cache": "rm -rf .next/cache && rm -rf node_modules/.cache",
+    "ci:install": "npm ci --legacy-peer-deps"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.15",
@@ -38,6 +39,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@bubblewrap/cli": "^1.24.1",
     "@types/node": "^22.6.0",
     "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",
