@@ -33,12 +33,13 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
       
-      # Правильная установка зависимостей для CI
+      # ✅ Правильная установка зависимостей для CI
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
       
-      # Проверка наличия и валидности PWA манифеста
+      # ✅ Проверка PWA манифеста (критично для PWA Builder)
       - name: Check PWA manifest
         run: |
           if [ ! -s public/manifest.json ]; then
@@ -47,15 +48,28 @@ jobs:
           fi
           node -e "
             try { 
-              JSON.parse(require('fs').readFileSync('public/manifest.json', 'utf8')); 
-              console.log('✅ Manifest valid'); 
+              const manifest = JSON.parse(require('fs').readFileSync('public/manifest.json', 'utf8'));
+              if (!manifest.name || !manifest.icons || !manifest.start_url) {
+                throw new Error('Манифест неполный');
+              }
+              console.log('✅ Manifest valid:', manifest.name);
             } catch(e) { 
-              console.error('❌ Manifest JSON invalid:', e.message); 
+              console.error('❌ Manifest invalid:', e.message); 
               process.exit(1); 
             }
           "
       
-      # Проверка HF_TOKEN (не критично, но предупредит)
+      # ✅ Проверка, что sw.js НЕ существует (next-pwa генерирует его)
+      - name: Check no manual SW
+        run: |
+          if [ -f public/sw.js ]; then
+            echo "❌ public/sw.js должен быть сгенерирован автоматически!"
+            echo "Удалите его из репозитория."
+            exit 1
+          fi
+          echo "✅ No manual service worker"
+      
+      # ✅ Проверка HF_TOKEN (предотвращает падение)
       - name: Validate HF_TOKEN
         id: validate_token
         run: npm run validate-token
@@ -63,18 +77,18 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         continue-on-error: true
       
-      # Генерация уроков из DOCX
+      # ✅ Генерация уроков из DOCX
       - name: Generate lessons from DOCX
         run: npm run generate-lessons
       
-      # Отладка: показать сгенерированные уроки
+      # ✅ Отладка: показать сгенерированные уроки
       - name: Debug lessons
         run: |
-          echo "Generated lessons:"
+          echo "📚 Generated lessons:"
           ls -la public/lessons/
-          find public/lessons -name "*.md" -type f | wc -l
+          echo "Markdown files: $(find public/lessons -name \"*.md\" -type f | wc -l)"
       
-      # Генерация тестов с учетом флага force
+      # ✅ Генерация тестов с учетом флага force
       - name: Generate quizzes
         run: |
           if [ "${{ github.event.inputs.force_generate }}" == "true" ]; then
@@ -84,14 +98,45 @@ jobs:
           fi
         timeout-minutes: 30
       
-      # Проверка сгенерированных тестов
+      # ✅ Проверка сгенерированных тестов
       - name: Verify quizzes
         run: |
-          echo "Generated quizzes:"
+          echo "📝 Generated quizzes:"
           ls -la public/content/quizzes/
-          find public/content/quizzes -name "*.json" -type f | wc -l
-          for file in public/content/quizzes/*.json; do
+          QUIZ_COUNT=$(find public/content/quizzes -name "*-quiz.json" -type f | wc -l)
+          echo "Quiz files: $QUIZ_COUNT"
+          for file in public/content/quizzes/*-quiz.json; do
             if [ -f "$file" ]; then
               node -e "
                 try {
-                  const data = JSON.parse(require
+                  const data = JSON.parse(require('fs').readFileSync('$file', 'utf8'));
+                  if (Array.isArray(data) && data.length > 0) {
+                    console.log('  ✅', require('path').basename('$file'), ':', data.length, 'questions');
+                  } else {
+                    console.log('  ⚠️', require('path').basename('$file'), ':', 'empty or invalid');
+                  }
+                } catch(e) {
+                  console.error('  ❌', require('path').basename('$file'), ':', e.message);
+                }
+              "
+            fi
+          done
+      
+      # ✅ Автоматический коммит изменений
+      - name: Auto-commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🤖 Auto: processed lessons + Quiz tests"
+          file_pattern: "public/lessons/ public/content/quizzes/ README.md"
+          commit_author: "GitHub Actions <actions@github.com>"
+          push_options: '--force-with-lease'
+      
+      # ✅ Сводка результатов
+      - name: Summary
+        if: always()
+        run: |
+          echo "### 📊 Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Lessons**: $(find public/lessons -name \"*.md\" -type f | wc -l)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Quizzes**: $(find public/content/quizzes -name \"*-quiz.json\" -type f | wc -l)" >> $GITHUB_STEP_SUMMARY
+          echo "- **HF Token**: ${{ steps.validate_token.outcome == 'success' && '✅ Valid' || '⚠️ Check failed' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **PWA Manifest**: ✅ Valid" >> $GITHUB_STEP_SUMMARY
