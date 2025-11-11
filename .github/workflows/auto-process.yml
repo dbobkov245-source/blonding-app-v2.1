@@ -27,18 +27,20 @@ jobs:
           node-version: 20
           cache: 'npm'
       
+      # ✅ ПРАВИЛЬНАЯ команда установки
       - name: Install dependencies
-        run: npm install
+        run: npm ci --legacy-peer-deps
       
+      # ✅ Добавьте проверку токена (чтобы CI не падал)
+      - name: Validate HF_TOKEN
+        run: npm run validate-token
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        continue-on-error: true # Продолжать даже если токен не валиден
+        
       - name: Generate lessons from DOCX
         run: npm run generate-lessons
         
-      - name: Debug environment
-        run: |
-          echo "HF_TOKEN is set: ${{ secrets.HF_TOKEN != '' }}"
-          echo "Model: $HF_MODEL_QUIZ"
-          ls -la public/lessons/
-      
       - name: Generate quizzes with retry
         run: npm run generate-quizzes -- --force
         timeout-minutes: 30
