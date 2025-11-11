@@ -5,11 +5,26 @@ const withPWA = pwa({
   dest: 'public',
   register: true,
   skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development'
+  disable: process.env.NODE_ENV === 'development',
+  // ✅ Стабильность сборки
+  buildExcludes: [/middleware-manifest.json$/],
+  runtimeCaching: [
+    {
+      urlPattern: /^https?.*/,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'offlineCache',
+        expiration: {
+          maxEntries: 200,
+        },
+      },
+    },
+  ],
 });
 
 const nextConfig = withPWA({
   reactStrictMode: true,
+  swcMinify: true,
 });
 
 export default nextConfig;
