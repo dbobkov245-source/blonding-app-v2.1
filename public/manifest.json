@@ -2,6 +2,10 @@
   "name": "Blonding App v2.2",
   "short_name": "Blonding",
   "description": "PWA для обучения техникам блондирования с AI-генерацией тестов",
+  
+  // ✅ ДОБАВЛЕНО: Стабильный ID для PWA
+  "id": "blonding-app-v2.2",
+
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -21,6 +25,25 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+
+  // ✅ ДОБАВЛЕНО: Скриншоты для установки
+  "screenshots": [
+    {
+      "src": "/lessons/urok-1-podgotovka-klienta-k-blondirovaniyu/images/image-2.jpeg",
+      "type": "image/jpeg",
+      "sizes": "auto" 
+    },
+    {
+      "src": "/lessons/urok-2-4-zony-osvetleniya-vybor-percent-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos/images/image-1.jpeg",
+      "type": "image/jpeg",
+      "sizes": "auto"
+    },
+    {
+      "src": "/lessons/urok-4-blondirovanie-ochen-temnyh-i-aziatskih-volos-dvoinoe-blondirovanie/images/image-4.jpeg",
+      "type": "image/jpeg",
+      "sizes": "auto"
     }
   ]
 }
