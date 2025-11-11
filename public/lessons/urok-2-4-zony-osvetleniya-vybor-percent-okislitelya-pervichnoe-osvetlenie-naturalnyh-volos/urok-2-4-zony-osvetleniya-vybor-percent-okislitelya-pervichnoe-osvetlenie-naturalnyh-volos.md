@@ -1,7 +1,7 @@
 ---
 title: "Урок 2. 4 зоны осветления. Выбор % окислителя. Первичное осветление натуральных волос"
 slug: "urok-2-4-zony-osvetleniya-vybor-percent-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos"
-date: "2025-11-09"
+date: "2025-11-11"
 ---
 
 **Как осветляются волосы на разных участках. 4 участка осветления.**

@@ -1,7 +1,7 @@
 ---
 title: "Урок 1. Подготовка клиента к блондированию"
 slug: "urok-1-podgotovka-klienta-k-blondirovaniyu"
-date: "2025-11-09"
+date: "2025-11-11"
 ---
 
 **Чистые или грязные волосы.  
