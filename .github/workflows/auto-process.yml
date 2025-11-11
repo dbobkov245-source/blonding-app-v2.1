@@ -5,6 +5,11 @@ on:
     paths:
       - 'lessons/source/**'
   workflow_dispatch:
+    inputs:
+      force_generate:
+        description: 'Force regenerate all quizzes'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -15,6 +20,8 @@ jobs:
     env:
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
       HF_MODEL_QUIZ: ${{ vars.HF_MODEL_QUIZ || 'mistralai/Mixtral-8x22B-Instruct-v0.1' }}
+      NODE_OPTIONS: "--max-old-space-size=4096"
+      
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,36 +34,64 @@ jobs:
           node-version: 20
           cache: 'npm'
       
-      # ✅ ПРАВИЛЬНАЯ команда установки
+      # Правильная установка зависимостей для CI
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
       
-      # ✅ Добавьте проверку токена (чтобы CI не падал)
+      # Проверка наличия и валидности PWA манифеста
+      - name: Check PWA manifest
+        run: |
+          if [ ! -s public/manifest.json ]; then
+            echo "❌ public/manifest.json пуст или отсутствует!"
+            exit 1
+          fi
+          node -e "
+            try { 
+              JSON.parse(require('fs').readFileSync('public/manifest.json', 'utf8')); 
+              console.log('✅ Manifest valid'); 
+            } catch(e) { 
+              console.error('❌ Manifest JSON invalid:', e.message); 
+              process.exit(1); 
+            }
+          "
+      
+      # Проверка HF_TOKEN (не критично, но предупредит)
       - name: Validate HF_TOKEN
+        id: validate_token
         run: npm run validate-token
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        continue-on-error: true # Продолжать даже если токен не валиден
-        
+        continue-on-error: true
+      
+      # Генерация уроков из DOCX
       - name: Generate lessons from DOCX
         run: npm run generate-lessons
-        
-      - name: Generate quizzes with retry
-        run: npm run generate-quizzes -- --force
-        timeout-minutes: 30
-        env:
-          NODE_OPTIONS: "--max-old-space-size=4096"
       
-      - name: Check generated files
+      # Отладка: показать сгенерированные уроки
+      - name: Debug lessons
+        run: |
+          echo "Generated lessons:"
+          ls -la public/lessons/
+          find public/lessons -name "*.md" -type f | wc -l
+      
+      # Генерация тестов с учетом флага force
+      - name: Generate quizzes
+        run: |
+          if [ "${{ github.event.inputs.force_generate }}" == "true" ]; then
+            npm run generate-quizzes -- --force
+          else
+            npm run generate-quizzes
+          fi
+        timeout-minutes: 30
+      
+      # Проверка сгенерированных тестов
+      - name: Verify quizzes
         run: |
           echo "Generated quizzes:"
           ls -la public/content/quizzes/
-          wc -l public/content/quizzes/*.json || true
-      
-      - name: Auto-commit changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "🤖 Auto: processed lessons + Quiz tests"
-          file_pattern: "public/lessons/ public/content/quizzes/ README.md"
-          commit_author: "GitHub Actions <actions@github.com>"
-          push_options: '--force-with-lease'
+          find public/content/quizzes -name "*.json" -type f | wc -l
+          for file in public/content/quizzes/*.json; do
+            if [ -f "$file" ]; then
+              node -e "
+                try {
+                  const data = JSON.parse(require
