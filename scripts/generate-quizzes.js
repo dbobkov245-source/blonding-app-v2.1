@@ -10,7 +10,8 @@ const quizzesDir = path.join(process.cwd(), 'public/content/quizzes');
 const isForce = process.argv.includes('--force');
 const maxRetries = 5;
 
-const HF_MODEL = process.env.HF_MODEL_QUIZ || 'mistralai/Mixtral-8x22B-Instruct-v0.1';
+// ✅ ИЗМЕНЕНО: Заменена модель Mistral на Cohere Command R+
+const HF_MODEL = process.env.HF_MODEL_QUIZ || 'CohereLabs/c4ai-command-r-plus';
 
 if (!fs.existsSync(quizzesDir)) {
   fs.mkdirSync(quizzesDir, { recursive: true });
@@ -256,7 +257,7 @@ function readLesson(lessonSlug) {
       content 
     };
   } catch (e) {
-    console.error(` ❌ Ошибка чтения урока ${lesson.slug}: ${e.message}`);
+    console.error(` ❌ Ошибка чтения урока ${lessonSlug}: ${e.message}`);
     return null;
   }
 }
