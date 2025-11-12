@@ -1,11 +1,9 @@
 import { LRUCache } from 'lru-cache';
 
-const SYSTEM_PROMPT = `Ты — эксперт-преподаватель по блондированию волос. Отвечай профессионально, кратко и по существу.`;
+// ✅ ИЗМЕНЕНО: Теперь SYSTEM_PROMPT используется только как fallback для специализированных запросов
+const BLONDING_SYSTEM_PROMPT = `Ты — эксперт-преподаватель по блондированию волос. Отвечай профессионально, кратко и по существу.`;
 
-// ✅ ИСПРАВЛЕНО: используем вашу 72B модель
-// Возможные варианты:
-// - Qwen/Qwen2.5-72B-Instruct (полная модель)
-// - Qwen/Qwen2.5-32B-Instruct (если 72B временно недоступна)
+// Модель по умолчанию для свободного чата
 const HF_MODEL = process.env.HF_MODEL || 'Qwen/Qwen2.5-72B-Instruct';
 
 const cache = new LRUCache({ max: 500, ttl: 1000 * 60 });
@@ -37,7 +35,7 @@ export default async function handler(req, res) {
   }
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30000); // 30с для большой модели
+  const timeoutId = setTimeout(() => controller.abort(), 30000);
 
   try {
     const { inputs, systemPrompt, image, jsonMode } = req.body;
@@ -57,9 +55,15 @@ export default async function handler(req, res) {
 
     // ✅ Подготовка сообщений
     const messages = [];
-    const sysPrompt = systemPrompt || SYSTEM_PROMPT;
-    if (sysPrompt.trim()) {
-      messages.push({ role: 'system', content: sysPrompt });
+    
+    // ✅ ИСПРАВЛЕНО: Используем промпт из запроса, если он есть. Если нет — НЕ добавляем системный промпт
+    // Для ChatRaw.tsx systemPrompt не передается, поэтому AI будет вести свободный диалог
+    if (systemPrompt && systemPrompt.trim()) {
+      messages.push({ role: 'system', content: systemPrompt });
+    } else {
+      // Для совместимости с другими компонентами (Chat.tsx, Assistant) можно использовать BLONDING_SYSTEM_PROMPT
+      // Но здесь мы оставляем пустым для свободного чата
+      console.log('[API] Свободный режим чата (без системного промпта)');
     }
 
     if (image) {
@@ -74,7 +78,7 @@ export default async function handler(req, res) {
       messages.push({ role: 'user', content: inputs });
     }
 
-    console.log(`[API] Запрос к модели: ${HF_MODEL}`); // ✅ Для отладки
+    console.log(`[API] Запрос к модели: ${HF_MODEL}`);
 
     // ✅ Запрос с правильной моделью
     const resHF = await fetch('https://router.huggingface.co/v1/chat/completions', {
@@ -84,7 +88,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json' 
       },
       body: JSON.stringify({
-        model: HF_MODEL, // ✅ ИСПРАВЛЕНО: используем вашу 72B модель
+        model: HF_MODEL,
         messages,
         max_tokens: 1024,
         temperature: 0.7,
