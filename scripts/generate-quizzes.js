@@ -10,7 +10,7 @@ const quizzesDir = path.join(process.cwd(), 'public/content/quizzes');
 const isForce = process.argv.includes('--force');
 const maxRetries = 5;
 
-// ✅ ИЗМЕНЕНО: Используем быструю и надежную модель для генерации тестов
+// ✅ Используем быструю и надежную модель для генерации тестов
 const HF_MODEL = process.env.HF_MODEL_QUIZ || 'Qwen/Qwen2.5-7B-Instruct';
 
 if (!fs.existsSync(quizzesDir)) {
@@ -182,7 +182,8 @@ export async function generateQuizForLesson(lessonSlug, lessonData) {
             validateQuestion(q, chunk.content);
             allQuestions.push(q);
             validatedCount++;
-          } catch (validateErr: any) {
+          // ✅ ИСПРАВЛЕНО: убран синтаксис TypeScript
+          } catch (validateErr) {
              console.warn(`[Validate] ⚠️  Вопрос пропущен: ${validateErr.message} (Вопрос: ${q.question?.substring(0, 20)}...)`);
           }
         }
@@ -190,7 +191,7 @@ export async function generateQuizForLesson(lessonSlug, lessonData) {
         console.log(` ✅ Сгенерировано ${validatedCount} валидных вопросов`);
         success = true;
         
-      } catch (err: any) {
+      } catch (err) {
         console.warn(` ❌ Попытка ${attempts}/${maxRetries}: ${err.message}`);
         if (attempts < maxRetries) {
           await new Promise(r => setTimeout(r, 3000 * attempts));
@@ -245,7 +246,7 @@ export async function generateAllQuizzes() {
       if (res.questionsCount > 0) {
         generatedCount++;
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error(` ❌ Критическая ошибка для ${lesson.slug}: ${err.message}`);
     }
   }
@@ -281,7 +282,8 @@ function readLesson(lessonSlug) {
       title: titleMatch ? titleMatch[1] : lessonSlug, 
       content 
     };
-  } catch (e: any) {
+  // ✅ ИСПРАВЛЕНО: убран синтаксис TypeScript
+  } catch (e) {
     console.error(` ❌ Ошибка чтения урока ${lessonSlug}: ${e.message}`);
     return null;
   }
