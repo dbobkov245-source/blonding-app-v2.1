@@ -172,27 +172,21 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { slug } = params as { slug: string };
-  let quiz: QuizItem[] = [];
-  try {
-    // ИСПРАВЛЕННЫЙ ПУТЬ: ${slug}-quiz.json
-    const jsonPath = path.join(process.cwd(), 'public', 'content', 'quizzes', `${slug}-quiz.json`);
-    
-    if (fs.existsSync(jsonPath)) {
-      const data = fs.readFileSync(jsonPath, 'utf-8');
-      quiz = JSON.parse(data);
-    } else {
-      console.warn(`Quiz file not found: ${jsonPath}`);
-    }
-  } catch (e) {
-    console.error(`Error loading quiz for slug: ${slug}`, (e as Error).message);
+  const quizPath = path.join(process.cwd(), 'public', 'content', 'quizzes', `${slug}-quiz.json`);
+  
+  // ✅ Добавь явную проверку существования
+  if (!fs.existsSync(quizPath)) {
+    console.warn(`⚠️ Quiz not found: ${quizPath}`);
+    return {
+      props: {
+        quiz: [], // Пустой массив = безопасная заглушка
+        lessonSlug: slug,
+      },
+    };
   }
-
-  return {
-    props: {
-      quiz, // Будет [] если не найден
-      lessonSlug: slug,
-    },
-  };
+  
+  const quiz = JSON.parse(fs.readFileSync(quizPath, 'utf-8'));
+  return { props: { quiz, lessonSlug: slug } };
 };
 
 export default TestPage;
