@@ -36,10 +36,18 @@ const LessonAIAssistant: React.FC<LessonAIAssistantProps> = ({ lessonTitle, less
   const send = async (questionText = text) => {
     if (!questionText.trim()) return;
 
-    const contextPrompt = `Урок: "${lessonTitle}"
-Содержание: ${lessonContent.substring(0, 4000)}...
-Вопрос: ${questionText}
-Ответь на основе урока.`;
+    // ✅ ИСПРАВЛЕНО: Мы разделяем системный промпт (контекст) и инпут (вопрос)
+    
+    // 1. Системный промпт — это наш урок
+    const systemPrompt = `Ты — AI-помощник по уроку "${lessonTitle}". 
+Отвечай на вопросы студента, используя ТОЛЬКО следующий контекст.
+Не придумывай ничего, чего нет в тексте.
+
+КОНТЕКСТ УРОКА:
+${lessonContent.substring(0, 4000)}...`;
+
+    // 2. Инпут — это только вопрос студента
+    const inputs = questionText;
 
     setMessages((m) => [...m, { role: 'user', text: questionText }]);
     setText('');
@@ -49,13 +57,23 @@ const LessonAIAssistant: React.FC<LessonAIAssistantProps> = ({ lessonTitle, less
       const res = await fetch('/api/proxy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ inputs: contextPrompt }),
+        // ✅ ИСПРАВЛЕНО: Отправляем оба поля
+        body: JSON.stringify({ 
+          inputs: inputs,
+          systemPrompt: systemPrompt 
+        }),
       });
-      if (!res.ok) throw new Error('API error');
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || `HTTP error ${res.status}`);
+      }
+
       const json = await res.json();
       setMessages((m) => [...m, { role: 'assistant', text: json.reply || 'Нет ответа' }]);
-    } catch (e) {
-      setMessages((m) => [...m, { role: 'assistant', text: 'Ошибка AI' }]);
+    } catch (e: any) {
+      console.error("[LessonAIAssistant] Ошибка:", e);
+      setMessages((m) => [...m, { role: 'assistant', text: `Ошибка AI: ${e.message}` }]);
     } finally {
       setLoading(false);
     }
@@ -197,7 +215,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   try {
     const decodedSlug = decodeURIComponent(slug); 
     
-    // ✅ ИСПРАВЛЕНО: проверка существования файла
     const mdPath = path.join(process.cwd(), 'public', 'lessons', decodedSlug, `${decodedSlug}.md`);
     
     if (!fs.existsSync(mdPath)) {
@@ -220,8 +237,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         },
       },
     };
-  } catch (e) {
-    console.error(`Error for slug: ${slug}`, (e as Error).message);
+  } catch (e: any) {
+    console.error(`Error for slug: ${slug}`, e.message);
     return { props: { lesson: null } }; 
   }
 };
