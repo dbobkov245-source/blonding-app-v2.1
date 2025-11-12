@@ -10,7 +10,7 @@ const quizzesDir = path.join(process.cwd(), 'public/content/quizzes');
 const isForce = process.argv.includes('--force');
 const maxRetries = 5;
 
-// ✅ Используем быструю и надежную модель для генерации тестов
+// ✅ Оставляем надежную модель. Vercel подставит ее из HF_MODEL_QUIZ.
 const HF_MODEL = process.env.HF_MODEL_QUIZ || 'mistralai/Mixtral-8x7B-Instruct-v0.1';
 
 if (!fs.existsSync(quizzesDir)) {
@@ -53,18 +53,7 @@ const SYSTEM_PROMPT = `Ты — профессиональная система 
 2. В explanation ДОБАВЬ Цитата: [точная копия 5-15 слов из текста]
 3. Один правильный ответ из 4-х вариантов
 4. Всё на русском языке
-5. Верни ТОЛЬКО JSON, без текста`;
-
-function createPrompt(title, chunk) {
-  return `УРОК: "${title}"
-БЛОК: "${chunk.title}"
-
-ТЕКСТ:
-${chunk.content.substring(0, 15000)}
-
-СОЗДАЙ 2-3 ВОПРОСА. Каждый explanation ДОЛЖЕН содержать "Цитата: [цитата]"
-`;
-}
+5. Верни ТОЛЬКО JSON, без текста до или после.`; // Уточнили промпт
 
 async function callHFAPI(systemPrompt, userPrompt, token) {
   const url = "https://router.huggingface.co/v1/chat/completions";
@@ -77,8 +66,8 @@ async function callHFAPI(systemPrompt, userPrompt, token) {
     ],
     max_tokens: 4096,
     temperature: 0.25,
-    top_p: 0.95,
-    response_format: { type: "json_object" }
+    top_p: 0.95
+    // ✅ ИСПРАВЛЕНО: УБРАНА строка response_format, вызывавшая ошибку
   };
 
   const response = await fetch(url, {
@@ -182,7 +171,6 @@ export async function generateQuizForLesson(lessonSlug, lessonData) {
             validateQuestion(q, chunk.content);
             allQuestions.push(q);
             validatedCount++;
-          // ✅ ИСПРАВЛЕНО: убран синтаксис TypeScript
           } catch (validateErr) {
              console.warn(`[Validate] ⚠️  Вопрос пропущен: ${validateErr.message} (Вопрос: ${q.question?.substring(0, 20)}...)`);
           }
@@ -282,7 +270,6 @@ function readLesson(lessonSlug) {
       title: titleMatch ? titleMatch[1] : lessonSlug, 
       content 
     };
-  // ✅ ИСПРАВЛЕНО: убран синтаксис TypeScript
   } catch (e) {
     console.error(` ❌ Ошибка чтения урока ${lessonSlug}: ${e.message}`);
     return null;
