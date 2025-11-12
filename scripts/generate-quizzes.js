@@ -10,8 +10,8 @@ const quizzesDir = path.join(process.cwd(), 'public/content/quizzes');
 const isForce = process.argv.includes('--force');
 const maxRetries = 5;
 
-// ✅ Оставляем надежную модель. Vercel подставит ее из HF_MODEL_QUIZ.
-const HF_MODEL = process.env.HF_MODEL_QUIZ || 'mistralai/Mixtral-8x7B-Instruct-v0.1';
+// ✅ Мы оставляем Qwen-72B, так как он работает, но просто улучшаем промпт
+const HF_MODEL = process.env.HF_MODEL_QUIZ || 'Qwen/Qwen2.5-72B-Instruct';
 
 if (!fs.existsSync(quizzesDir)) {
   fs.mkdirSync(quizzesDir, { recursive: true });
@@ -45,6 +45,7 @@ function splitIntoSemanticChunks(markdown, maxTokens = 12000) {
   return chunks.filter(chunk => chunk.content.length > 200);
 }
 
+// ✅ ИЗМЕНЕНО: Промпт усилен примером JSON-структуры
 const SYSTEM_PROMPT = `Ты — профессиональная система генерации тестов для колористов. 
 Создавай вопросы строго по предоставленному тексту.
 
@@ -53,9 +54,20 @@ const SYSTEM_PROMPT = `Ты — профессиональная система 
 2. В explanation ДОБАВЬ Цитата: [точная копия 5-15 слов из текста]
 3. Один правильный ответ из 4-х вариантов
 4. Всё на русском языке
-5. Верни ТОЛЬКО JSON, без текста до или после.`;
+5. Верни ТОЛЬКО JSON в виде МАССИВА ОБЪЕКТОВ.
 
-// ✅ ВОТ ЭТА ФУНКЦИЯ, КОТОРАЯ ПРОПАЛА
+СТРОГИЙ ФОРМАТ JSON:
+[
+  {
+    "question": "Текст вопроса",
+    "options": ["Вариант 1", "Вариант 2", "Вариант 3", "Вариант 4"],
+    "correctAnswer": "Один из вариантов",
+    "explanation": "Объяснение. Цитата: [текст из урока]"
+  }
+]
+
+НЕ ДОБАВЛЯЙ НИКАКОГО ТЕКСТА до или после JSON-массива.`;
+
 function createPrompt(title, chunk) {
   return `УРОК: "${title}"
 БЛОК: "${chunk.title}"
@@ -79,7 +91,6 @@ async function callHFAPI(systemPrompt, userPrompt, token) {
     max_tokens: 4096,
     temperature: 0.25,
     top_p: 0.95
-    // ✅ УБРАНА строка response_format, вызывавшая ошибку
   };
 
   const response = await fetch(url, {
@@ -101,7 +112,6 @@ async function callHFAPI(systemPrompt, userPrompt, token) {
   const content = data.choices?.[0]?.message?.content || "";
   
   try {
-    // Попытка исправить "грязный" JSON, если модель добавляет лишний текст
     const jsonMatch = content.match(/\[[\s\S]*\]|\{[\s\S]*\}/);
     if (jsonMatch) {
       return JSON.parse(jsonMatch[0]);
@@ -128,7 +138,6 @@ function validateQuestion(q, chunkContent) {
   }
   
   if (q.explanation.length < 30) {
-    // Мягкая проверка, т.к. цитата может быть короткой
     console.warn(`[Validate] Короткое объяснение: ${q.explanation}`);
   }
   
@@ -160,7 +169,6 @@ export async function generateQuizForLesson(lessonSlug, lessonData) {
     const chunk = chunks[i];
     console.log(` 🤖 Блок ${i+1}: "${chunk.title}"`);
     
-    // ✅ ФУНКЦИЯ ВЫЗЫВАЕТСЯ ЗДЕСЬ
     const prompt = createPrompt(lessonData.title, chunk);
     
     let attempts = 0;
@@ -171,7 +179,6 @@ export async function generateQuizForLesson(lessonSlug, lessonData) {
       try {
         const result = await callHFAPI(SYSTEM_PROMPT, prompt, token);
         
-        // Модель может вернуть объект с ключом "questions" или просто массив
         const questions = Array.isArray(result) ? result : result.questions;
 
         if (!Array.isArray(questions)) {
@@ -184,7 +191,6 @@ export async function generateQuizForLesson(lessonSlug, lessonData) {
             validateQuestion(q, chunk.content);
             allQuestions.push(q);
             validatedCount++;
-          // ✅ ИСПРАВЛЕН СИНТАКСИС
           } catch (validateErr) {
              console.warn(`[Validate] ⚠️  Вопрос пропущен: ${validateErr.message} (Вопрос: ${q.question?.substring(0, 20)}...)`);
           }
@@ -209,7 +215,6 @@ export async function generateQuizForLesson(lessonSlug, lessonData) {
   const finalQuestions = allQuestions.slice(0, 5);
   
   if (finalQuestions.length === 0) {
-    // Не бросаем ошибку, а просто логируем, чтобы не ломать сборку
     console.error(` ❌ Ни одного валидного вопроса не сгенерировано для ${lessonSlug}`);
     return { slug: lessonSlug, title: lessonData.title, questionsCount: 0 };
   }
@@ -248,14 +253,13 @@ export async function generateAllQuizzes() {
       if (res.questionsCount > 0) {
         generatedCount++;
       }
-    // ✅ ИСПРАВЛЕН СИНТАКСИС
     } catch (err) {
       console.error(` ❌ Критическая ошибка для ${lesson.slug}: ${err.message}`);
     }
   }
 
   const quizIndex = results
-    .filter(r => r.questionsCount > 0 || r.exists) // Добавляем в индекс только те, что существуют или были созданы
+    .filter(r => r.questionsCount > 0 || r.exists) 
     .map(r => ({ 
       slug: r.slug, 
       title: r.title, 
@@ -285,7 +289,6 @@ function readLesson(lessonSlug) {
       title: titleMatch ? titleMatch[1] : lessonSlug, 
       content 
     };
-  // ✅ ИСПРАВЛЕН СИНТАКСИС
   } catch (e) {
     console.error(` ❌ Ошибка чтения урока ${lessonSlug}: ${e.message}`);
     return null;
