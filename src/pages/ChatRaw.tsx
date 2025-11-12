@@ -8,9 +8,9 @@ interface Message {
 
 export default function ChatRaw() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [text, setText] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [systemPromptInput, setSystemPromptInput] = useState('');
+  const [text, setText] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [systemPromptInput, setSystemPromptInput] = useState<string>(''); // Оставляем пустым для свободного чата
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -21,7 +21,7 @@ export default function ChatRaw() {
     scrollToBottom();
   }, [messages]);
 
-  const send = async (messageText = text) => {
+  const send = async (messageText: string = text) => {
     if (!messageText.trim()) return;
 
     const userMessage: Message = {
@@ -40,8 +40,8 @@ export default function ChatRaw() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           inputs: messageText,
-          // ✅ Передаем systemPrompt ТОЛЬКО если он не пустой
-          ...(systemPromptInput.trim() && { systemPrompt: systemPromptInput })
+          // ✅ Гарантируем отсутствие системного промпта для свободного чата
+          systemPrompt: systemPromptInput.trim() || undefined // undefined = свободный режим
         }),
       });
 
@@ -91,7 +91,7 @@ export default function ChatRaw() {
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Чат с ИИ</h2>
           <p className="text-sm text-gray-600 mt-1">
-            Общайтесь с моделью Qwen2.5-72B без специализированного контекста
+            Свободное общение с Qwen2.5-72B без специализации
           </p>
         </div>
         <button 
@@ -102,21 +102,13 @@ export default function ChatRaw() {
         </button>
       </div>
 
-      <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-        <label className="block text-sm font-semibold text-gray-800 mb-2">
-          Системный промпт (необязательно):
-        </label>
-        <textarea
-          value={systemPromptInput}
-          onChange={(e) => setSystemPromptInput(e.target.value)}
-          placeholder="Оставьте пустым для свободного общения"
-          className="w-full p-2 border border-gray-300 rounded-md text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-          rows={2}
-        />
-        <p className="text-xs text-gray-600 mt-2">
-          Если оставить пустым — модель будет отвечать в свободном стиле без специализации на блондировании
-        </p>
-      </div>
+      {systemPromptInput.trim() && (
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-sm text-yellow-800">
+            ⚠️ Внимание: установлен системный промпт (может влиять на ответы AI)
+          </p>
+        </div>
+      )}
 
       <div className="bg-white rounded-xl shadow-lg border border-gray-200">
         <div className="h-[500px] overflow-auto p-4 space-y-4">
@@ -152,6 +144,9 @@ export default function ChatRaw() {
         </div>
 
         <div className="border-t border-gray-200 p-4">
+          {/* ✅ Добавлено: скрытое поле для системного промпта (по умолчанию пустое) */}
+          <input type="hidden" value={systemPromptInput} onChange={setSystemPromptInput} />
+          
           <div className="flex gap-2">
             <textarea
               value={text}
@@ -176,7 +171,7 @@ export default function ChatRaw() {
             </button>
           </div>
           <p className="text-xs text-gray-500 mt-2 text-center">
-            Модель: Qwen/Qwen2.5-72B-Instruct • Свободное общение без ограничений
+            Режим: Свободный чат • Модель: Qwen/Qwen2.5-72B-Instruct
           </p>
         </div>
       </div>
