@@ -24,7 +24,7 @@ const withPWA = pwa({
 
 const nextConfig = withPWA({
   reactStrictMode: true,
-  swcMinify: true,
+  // swcMinify: true, // ❌ Устарело в Next.js 15, удалено
 });
 
 export default nextConfig;
