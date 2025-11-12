@@ -10,7 +10,6 @@ export default function ChatRaw() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [text, setText] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const [systemPromptInput, setSystemPromptInput] = useState<string>(''); // Оставляем пустым для свободного чата
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -40,8 +39,7 @@ export default function ChatRaw() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           inputs: messageText,
-          // ✅ Гарантируем отсутствие системного промпта для свободного чата
-          systemPrompt: systemPromptInput.trim() || undefined // undefined = свободный режим
+          // Свободный режим чата без системного промпта
         }),
       });
 
@@ -91,7 +89,7 @@ export default function ChatRaw() {
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Чат с ИИ</h2>
           <p className="text-sm text-gray-600 mt-1">
-            Свободное общение с Qwen2.5-72B без специализации
+            Свободное общение с Qwen2.5-72B без ограничений
           </p>
         </div>
         <button 
@@ -101,14 +99,6 @@ export default function ChatRaw() {
           Очистить историю
         </button>
       </div>
-
-      {systemPromptInput.trim() && (
-        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p className="text-sm text-yellow-800">
-            ⚠️ Внимание: установлен системный промпт (может влиять на ответы AI)
-          </p>
-        </div>
-      )}
 
       <div className="bg-white rounded-xl shadow-lg border border-gray-200">
         <div className="h-[500px] overflow-auto p-4 space-y-4">
@@ -144,9 +134,6 @@ export default function ChatRaw() {
         </div>
 
         <div className="border-t border-gray-200 p-4">
-          {/* ✅ Добавлено: скрытое поле для системного промпта (по умолчанию пустое) */}
-          <input type="hidden" value={systemPromptInput} onChange={setSystemPromptInput} />
-          
           <div className="flex gap-2">
             <textarea
               value={text}
@@ -163,7 +150,7 @@ export default function ChatRaw() {
             >
               {loading ? (
                 <span className="flex items-center gap-2">
-                  <span className="animate-spin">⏳</span> Думает...
+                  <span className="animate-spin">⏳</span> Думаю...
                 </span>
               ) : (
                 'Отправить'
