@@ -53,7 +53,19 @@ const SYSTEM_PROMPT = `Ты — профессиональная система 
 2. В explanation ДОБАВЬ Цитата: [точная копия 5-15 слов из текста]
 3. Один правильный ответ из 4-х вариантов
 4. Всё на русском языке
-5. Верни ТОЛЬКО JSON, без текста до или после.`; // Уточнили промпт
+5. Верни ТОЛЬКО JSON, без текста до или после.`;
+
+// ✅ ВОТ ЭТА ФУНКЦИЯ, КОТОРАЯ ПРОПАЛА
+function createPrompt(title, chunk) {
+  return `УРОК: "${title}"
+БЛОК: "${chunk.title}"
+
+ТЕКСТ:
+${chunk.content.substring(0, 15000)}
+
+СОЗДАЙ 2-3 ВОПРОСА. Каждый explanation ДОЛЖЕН содержать "Цитата: [цитата]"
+`;
+}
 
 async function callHFAPI(systemPrompt, userPrompt, token) {
   const url = "https://router.huggingface.co/v1/chat/completions";
@@ -67,7 +79,7 @@ async function callHFAPI(systemPrompt, userPrompt, token) {
     max_tokens: 4096,
     temperature: 0.25,
     top_p: 0.95
-    // ✅ ИСПРАВЛЕНО: УБРАНА строка response_format, вызывавшая ошибку
+    // ✅ УБРАНА строка response_format, вызывавшая ошибку
   };
 
   const response = await fetch(url, {
@@ -148,6 +160,7 @@ export async function generateQuizForLesson(lessonSlug, lessonData) {
     const chunk = chunks[i];
     console.log(` 🤖 Блок ${i+1}: "${chunk.title}"`);
     
+    // ✅ ФУНКЦИЯ ВЫЗЫВАЕТСЯ ЗДЕСЬ
     const prompt = createPrompt(lessonData.title, chunk);
     
     let attempts = 0;
@@ -171,6 +184,7 @@ export async function generateQuizForLesson(lessonSlug, lessonData) {
             validateQuestion(q, chunk.content);
             allQuestions.push(q);
             validatedCount++;
+          // ✅ ИСПРАВЛЕН СИНТАКСИС
           } catch (validateErr) {
              console.warn(`[Validate] ⚠️  Вопрос пропущен: ${validateErr.message} (Вопрос: ${q.question?.substring(0, 20)}...)`);
           }
@@ -234,6 +248,7 @@ export async function generateAllQuizzes() {
       if (res.questionsCount > 0) {
         generatedCount++;
       }
+    // ✅ ИСПРАВЛЕН СИНТАКСИС
     } catch (err) {
       console.error(` ❌ Критическая ошибка для ${lesson.slug}: ${err.message}`);
     }
@@ -270,6 +285,7 @@ function readLesson(lessonSlug) {
       title: titleMatch ? titleMatch[1] : lessonSlug, 
       content 
     };
+  // ✅ ИСПРАВЛЕН СИНТАКСИС
   } catch (e) {
     console.error(` ❌ Ошибка чтения урока ${lessonSlug}: ${e.message}`);
     return null;
