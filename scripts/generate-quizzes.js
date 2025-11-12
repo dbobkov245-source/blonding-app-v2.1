@@ -10,8 +10,8 @@ const quizzesDir = path.join(process.cwd(), 'public/content/quizzes');
 const isForce = process.argv.includes('--force');
 const maxRetries = 5;
 
-// ✅ ИЗМЕНЕНО: Заменена модель Mistral на Cohere Command R+
-const HF_MODEL = process.env.HF_MODEL_QUIZ || 'CohereLabs/c4ai-command-r-plus';
+// ✅ ИЗМЕНЕНО: Используем быструю и надежную модель для генерации тестов
+const HF_MODEL = process.env.HF_MODEL_QUIZ || 'Qwen/Qwen2.5-7B-Instruct';
 
 if (!fs.existsSync(quizzesDir)) {
   fs.mkdirSync(quizzesDir, { recursive: true });
@@ -88,6 +88,7 @@ async function callHFAPI(systemPrompt, userPrompt, token) {
       "Content-Type": "application/json" 
     },
     body: JSON.stringify(body),
+    // @ts-ignore
     timeout: 90000
   });
   
@@ -99,8 +100,14 @@ async function callHFAPI(systemPrompt, userPrompt, token) {
   const content = data.choices?.[0]?.message?.content || "";
   
   try {
-    return JSON.parse(content);
-  } catch {
+    // Попытка исправить "грязный" JSON, если модель добавляет лишний текст
+    const jsonMatch = content.match(/\[[\s\S]*\]|\{[\s\S]*\}/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[0]);
+    }
+    throw new Error("No JSON object found in response");
+  } catch (e) {
+    console.error("Failed to parse JSON, raw content:", content);
     throw new Error("Невалидный JSON от модели");
   }
 }
@@ -120,11 +127,12 @@ function validateQuestion(q, chunkContent) {
   }
   
   if (q.explanation.length < 30) {
-    throw new Error('explanation слишком короткое');
+    // Мягкая проверка, т.к. цитата может быть короткой
+    console.warn(`[Validate] Короткое объяснение: ${q.explanation}`);
   }
   
   if (!q.explanation.includes('Цитата:')) {
-    throw new Error('explanation не содержит цитату');
+    throw new Error('explanation не содержит "Цитата:"');
   }
 }
 
@@ -134,7 +142,7 @@ export async function generateQuizForLesson(lessonSlug, lessonData) {
   const quizPath = path.join(quizzesDir, `${lessonSlug}-quiz.json`);
   if (fs.existsSync(quizPath) && !isForce) {
     console.log(` ⏭️ Уже существует`);
-    return { slug: lessonSlug, exists: true };
+    return { slug: lessonSlug, title: lessonData.title, exists: true, questionsCount: 0 };
   }
 
   const token = process.env.HF_TOKEN;
@@ -159,21 +167,30 @@ export async function generateQuizForLesson(lessonSlug, lessonData) {
     while (attempts < maxRetries && !success) {
       attempts++;
       try {
-        const questions = await callHFAPI(SYSTEM_PROMPT, prompt, token);
+        const result = await callHFAPI(SYSTEM_PROMPT, prompt, token);
         
+        // Модель может вернуть объект с ключом "questions" или просто массив
+        const questions = Array.isArray(result) ? result : result.questions;
+
         if (!Array.isArray(questions)) {
           throw new Error("Ответ не массив");
         }
         
+        let validatedCount = 0;
         for (const q of questions) {
-          validateQuestion(q, chunk.content);
-          allQuestions.push(q);
+          try {
+            validateQuestion(q, chunk.content);
+            allQuestions.push(q);
+            validatedCount++;
+          } catch (validateErr: any) {
+             console.warn(`[Validate] ⚠️  Вопрос пропущен: ${validateErr.message} (Вопрос: ${q.question?.substring(0, 20)}...)`);
+          }
         }
         
-        console.log(` ✅ Сгенерировано ${questions.length} вопросов`);
+        console.log(` ✅ Сгенерировано ${validatedCount} валидных вопросов`);
         success = true;
         
-      } catch (err) {
+      } catch (err: any) {
         console.warn(` ❌ Попытка ${attempts}/${maxRetries}: ${err.message}`);
         if (attempts < maxRetries) {
           await new Promise(r => setTimeout(r, 3000 * attempts));
@@ -189,7 +206,9 @@ export async function generateQuizForLesson(lessonSlug, lessonData) {
   const finalQuestions = allQuestions.slice(0, 5);
   
   if (finalQuestions.length === 0) {
-    throw new Error('Ни одного валидного вопроса не сгенерировано');
+    // Не бросаем ошибку, а просто логируем, чтобы не ломать сборку
+    console.error(` ❌ Ни одного валидного вопроса не сгенерировано для ${lessonSlug}`);
+    return { slug: lessonSlug, title: lessonData.title, questionsCount: 0 };
   }
 
   fs.writeFileSync(quizPath, JSON.stringify(finalQuestions, null, 2), 'utf-8');
@@ -214,6 +233,7 @@ export async function generateAllQuizzes() {
 
   const lessons = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
   const results = [];
+  let generatedCount = 0;
 
   for (const lesson of lessons) {
     const data = readLesson(lesson.slug);
@@ -222,17 +242,22 @@ export async function generateAllQuizzes() {
     try {
       const res = await generateQuizForLesson(lesson.slug, data);
       results.push(res);
-    } catch (err) {
-      console.error(` ❌ Ошибка для ${lesson.slug}: ${err.message}`);
+      if (res.questionsCount > 0) {
+        generatedCount++;
+      }
+    } catch (err: any) {
+      console.error(` ❌ Критическая ошибка для ${lesson.slug}: ${err.message}`);
     }
   }
 
-  const quizIndex = results.map(r => ({ 
-    slug: r.slug, 
-    title: r.title, 
-    questionsCount: r.questionsCount, 
-    quizPath: `/content/quizzes/${r.slug}-quiz.json` 
-  }));
+  const quizIndex = results
+    .filter(r => r.questionsCount > 0 || r.exists) // Добавляем в индекс только те, что существуют или были созданы
+    .map(r => ({ 
+      slug: r.slug, 
+      title: r.title, 
+      questionsCount: r.questionsCount, 
+      quizPath: `/content/quizzes/${r.slug}-quiz.json` 
+    }));
   
   fs.writeFileSync(
     path.join(quizzesDir, 'index.json'), 
@@ -240,7 +265,7 @@ export async function generateAllQuizzes() {
     'utf-8'
   );
   
-  console.log(`\n📋 Индекс обновлен. Создано: ${results.length} тестов`);
+  console.log(`\n📋 Индекс обновлен. Сгенерировано ${generatedCount} новых тестов.`);
 }
 
 function readLesson(lessonSlug) {
@@ -256,7 +281,7 @@ function readLesson(lessonSlug) {
       title: titleMatch ? titleMatch[1] : lessonSlug, 
       content 
     };
-  } catch (e) {
+  } catch (e: any) {
     console.error(` ❌ Ошибка чтения урока ${lessonSlug}: ${e.message}`);
     return null;
   }
