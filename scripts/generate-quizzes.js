@@ -11,7 +11,7 @@ const isForce = process.argv.includes('--force');
 const maxRetries = 5;
 
 // ✅ Используем быструю и надежную модель для генерации тестов
-const HF_MODEL = process.env.HF_MODEL_QUIZ || 'Qwen/Qwen2.5-7B-Instruct';
+const HF_MODEL = process.env.HF_MODEL_QUIZ || 'mistralai/Mixtral-8x7B-Instruct-v0.1';
 
 if (!fs.existsSync(quizzesDir)) {
   fs.mkdirSync(quizzesDir, { recursive: true });
