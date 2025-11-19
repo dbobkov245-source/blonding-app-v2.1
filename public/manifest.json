@@ -1,49 +1,141 @@
 {
-  "name": "Blonding App v2.2",
+  "name": "Blonding App - Обучение Блондированию",
   "short_name": "Blonding",
-  "description": "PWA для обучения техникам блондирования с AI-генерацией тестов",
-  
-  // ✅ ДОБАВЛЕНО: Стабильный ID для PWA
+  "description": "PWA для обучения техникам блондирования с AI-консультантом и интерактивными тестами",
   "id": "blonding-app-v2.2",
-
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
   "background_color": "#ffffff",
   "theme_color": "#8b5cf6",
   "orientation": "portrait-primary",
-  "categories": ["education", "business"],
+  "categories": [
+    "education",
+    "business",
+    "lifestyle"
+  ],
   "lang": "ru-RU",
+  "dir": "ltr",
   "icons": [
+    {
+      "src": "/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
-
-  // ✅ ДОБАВЛЕНО: Скриншоты для установки
   "screenshots": [
     {
       "src": "/lessons/urok-1-podgotovka-klienta-k-blondirovaniyu/images/image-2.jpeg",
       "type": "image/jpeg",
-      "sizes": "auto" 
+      "sizes": "1280x720",
+      "form_factor": "wide"
     },
     {
-      "src": "/lessons/urok-2-4-zony-osvetleniya-vybor-percent-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos/images/image-1.jpeg",
+      "src": "/lessons/urok-3-op-bonusnyi-urok/images/image-1.jpeg",
       "type": "image/jpeg",
-      "sizes": "auto"
+      "sizes": "720x1280",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Теория",
+      "short_name": "Уроки",
+      "description": "Открыть список уроков",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
-      "src": "/lessons/urok-4-blondirovanie-ochen-temnyh-i-aziatskih-volos-dvoinoe-blondirovanie/images/image-4.jpeg",
-      "type": "image/jpeg",
-      "sizes": "auto"
+      "name": "AI-Консультант",
+      "short_name": "AI",
+      "description": "Задать вопрос AI",
+      "url": "/Chat",
+      "icons": [
+        {
+          "src": "/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Голосовой помощник",
+      "short_name": "Голос",
+      "description": "Голосовой AI-помощник",
+      "url": "/Assistant",
+      "icons": [
+        {
+          "src": "/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }
