@@ -1,0 +1,12 @@
+{
+  "/_app": "pages/_app.js",
+  "/Assistant": "pages/Assistant.html",
+  "/_document": "pages/_document.js",
+  "/Chat": "pages/Chat.html",
+  "/ChatRaw": "pages/ChatRaw.html",
+  "/_error": "pages/_error.js",
+  "/": "pages/index.js",
+  "/Test/[slug]": "pages/Test/[slug].js",
+  "/Theory/[slug]": "pages/Theory/[slug].js",
+  "/404": "pages/404.html"
+}
