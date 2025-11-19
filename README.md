@@ -26,7 +26,7 @@
 
 ## Уроки
 - [Урок 1. Подготовка клиента к блондированию](/Theory/urok-1-podgotovka-klienta-k-blondirovaniyu)
-- [Урок 2. 4 зоны осветления. Выбор % окислителя. Первичное осветление натуральных волос](/Theory/urok-2-4-zony-osvetleniya-vybor-percent-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos)
+- [Урок 2. 4 зоны осветления. Выбор % окислителя. Первичное осветление натуральных волос](/Theory/urok-2-4-zony-osvetleniya-vybor-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos)
 - [Урок 3 ОП БОНУСНЫЙ УРОК](/Theory/urok-3-op-bonusnyi-urok)
 - [Урок 4. Блондирование очень темных и азиатских волос. Двойное блондирование.](/Theory/urok-4-blondirovanie-ochen-temnyh-i-aziatskih-volos-dvoinoe-blondirovanie)
 - [Урок 5. Блондирование корней разной длины. Блондирование неоднородных баз с пятнами и полосами.](/Theory/urok-5-blondirovanie-kornei-raznoi-dliny-blondirovanie-neodnorodnyh-baz-s-pyatnami-i-polosami)
