@@ -87,13 +87,13 @@
     {
       "src": "/lessons/urok-1-podgotovka-klienta-k-blondirovaniyu/images/image-2.jpeg",
       "type": "image/jpeg",
-      "sizes": "1280x720",
-      "form_factor": "wide"
+      "sizes": "410x547",
+      "form_factor": "narrow"
     },
     {
       "src": "/lessons/urok-3-op-bonusnyi-urok/images/image-1.jpeg",
       "type": "image/jpeg",
-      "sizes": "720x1280",
+      "sizes": "648x648",
       "form_factor": "narrow"
     }
   ],
