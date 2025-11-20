@@ -4,7 +4,7 @@
   "version": "2.2.1",
   "description": "PWA для обучения техникам блондирования с AI-консультантом и интерактивными тестами",
   "id": "blonding-app-v2.2",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
   "display_override": [
