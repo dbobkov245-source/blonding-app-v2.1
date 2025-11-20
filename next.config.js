@@ -4,7 +4,7 @@ import pwa from 'next-pwa';
 const withPWA = pwa({
   dest: 'public',
   register: true,
-  skipWaiting: true,
+  skipWaiting: false, // Контролируемое обновление - пользователь выбирает когда обновляться
   disable: process.env.NODE_ENV === 'development',
   buildExcludes: [/middleware-manifest.json$/],
 

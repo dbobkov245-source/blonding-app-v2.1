@@ -10,7 +10,8 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "npm run generate-all && next build",
+    "build": "npm run sync-version && npm run generate-all && next build",
+    "sync-version": "node scripts/sync-version.js",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",

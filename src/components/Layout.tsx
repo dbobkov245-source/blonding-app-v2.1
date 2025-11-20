@@ -1,6 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import UpdateNotification from './UpdateNotification';
+import { useServiceWorker } from '../hooks/useServiceWorker';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -9,6 +11,7 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const router = useRouter();
   const isActive = (path: string) => router.asPath === path;
+  const { updateAvailable, currentVersion, newVersion, updateServiceWorker, dismiss } = useServiceWorker();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 text-gray-900">
@@ -39,6 +42,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           Blonding App v2.2 • {new Date().getFullYear()}
         </div>
       </footer>
+      <UpdateNotification
+        show={updateAvailable}
+        currentVersion={currentVersion}
+        newVersion={newVersion}
+        onUpdate={updateServiceWorker}
+        onDismiss={dismiss}
+      />
     </div>
   );
 };
