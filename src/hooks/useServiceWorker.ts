@@ -21,7 +21,53 @@ export function useServiceWorker(): ServiceWorkerHook {
             return;
         }
 
-        // Загружаем custom SW скрипт для добавления логики обновления
+        // Функция для принудительной проверки версии
+        const forceVersionCheck = async () => {
+            try {
+                // Загружаем актуальную версию с сервера (без кеша)
+                const response = await fetch('/sw-custom.js?t=' + Date.now(), {
+                    cache: 'no-cache',
+                    headers: { 'Cache-Control': 'no-cache' }
+                });
+
+                if (response.ok) {
+                    const script = await response.text();
+                    const serverVersionMatch = script.match(/const APP_VERSION = '(.+)'/);
+
+                    if (serverVersionMatch) {
+                        const serverVersion = serverVersionMatch[1];
+                        console.log('[App] Server version:', serverVersion);
+
+                        // Получаем локальную версию
+                        const localResponse = await fetch('/sw-custom.js');
+                        const localScript = await localResponse.text();
+                        const localVersionMatch = localScript.match(/const APP_VERSION = '(.+)'/);
+
+                        if (localVersionMatch) {
+                            const localVersion = localVersionMatch[1];
+                            console.log('[App] Local version:', localVersion);
+                            setCurrentVersion(localVersion);
+
+                            // Сравниваем версии
+                            if (serverVersion !== localVersion) {
+                                console.log('[App] Version mismatch detected! Update available.');
+                                setNewVersion(serverVersion);
+                                setUpdateAvailable(true);
+                            } else {
+                                console.log('[App] Versions match, no update needed');
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('[App] Force version check failed:', error);
+            }
+        };
+
+        // КРИТИЧНО: Проверяем версию сразу при загрузке (для TWA)
+        forceVersionCheck();
+
+        // Загружаем custom SW скрипт
         const loadCustomSW = async () => {
             try {
                 const response = await fetch('/sw-custom.js');
@@ -37,27 +83,26 @@ export function useServiceWorker(): ServiceWorkerHook {
 
         // Получаем текущую регистрацию SW (next-pwa автоматически регистрирует)
         navigator.serviceWorker.ready
-            .then((reg) => {
+            .then(async (reg) => {
                 console.log('[App] Service Worker ready');
                 setRegistration(reg);
 
                 // Получаем текущую версию
                 if (reg.active) {
-                    // Импортируем и запускаем кастомный SW скрипт
                     fetch('/sw-custom.js')
                         .then(r => r.text())
                         .then(script => {
-                            // Извлекаем версию из скрипта
                             const versionMatch = script.match(/const APP_VERSION = '(.+)'/);
-                            if (versionMatch) {
+                            if (versionMatch && !currentVersion) {
                                 setCurrentVersion(versionMatch[1]);
                                 console.log('[App] Current version from SW:', versionMatch[1]);
                             }
                         });
                 }
 
-                // Проверяем обновления при загрузке
-                reg.update();
+                // Принудительно проверяем обновления
+                console.log('[App] Forcing SW update check...');
+                await reg.update();
 
                 // Слушаем изменения в регистрации
                 reg.addEventListener('updatefound', () => {
@@ -72,11 +117,10 @@ export function useServiceWorker(): ServiceWorkerHook {
 
                         if (newWorker.state === 'installed') {
                             if (navigator.serviceWorker.controller) {
-                                // Новая версия доступна
                                 console.log('[App] New version available - SW installed');
 
                                 // Получаем версию нового SW
-                                fetch('/sw-custom.js?t=' + Date.now())
+                                fetch('/sw-custom.js?t=' + Date.now(), { cache: 'no-cache' })
                                     .then(r => r.text())
                                     .then(script => {
                                         const versionMatch = script.match(/const APP_VERSION = '(.+)'/);
@@ -88,7 +132,6 @@ export function useServiceWorker(): ServiceWorkerHook {
                                         }
                                     });
                             } else {
-                                // Первая установка
                                 console.log('[App] SW installed for the first time');
                             }
                         }
@@ -110,21 +153,30 @@ export function useServiceWorker(): ServiceWorkerHook {
             }
         });
 
-        // Проверяем обновления каждые 60 секунд
+        // Проверяем обновления чаще для TWA (каждые 30 секунд)
         const interval = setInterval(() => {
+            console.log('[App] Periodic update check...');
+            forceVersionCheck();
             if (registration) {
-                console.log('[App] Checking for updates...');
                 registration.update();
             }
-        }, 60000);
+        }, 30000);
 
         return () => {
             clearInterval(interval);
         };
-    }, [registration]);
+    }, [registration, currentVersion]);
 
     const updateServiceWorker = () => {
         console.log('[App] Applying update...');
+
+        // Для TWA просто перезагружаем приложение
+        // Это очистит весь кеш и загрузит новую версию
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            console.log('[App] Running in standalone mode (TWA/PWA), forcing reload...');
+            window.location.href = window.location.href.split('?')[0] + '?t=' + Date.now();
+            return;
+        }
 
         const worker = waitingWorker || registration?.waiting;
 
@@ -142,9 +194,9 @@ export function useServiceWorker(): ServiceWorkerHook {
                 }
             });
         } else {
-            // Если нет waiting worker, просто перезагружаем
-            console.log('[App] No waiting worker, reloading...');
-            window.location.reload();
+            // Если нет waiting worker, принудительная перезагрузка с очисткой кеша
+            console.log('[App] No waiting worker, forcing cache-busting reload...');
+            window.location.href = window.location.href.split('?')[0] + '?t=' + Date.now();
         }
     };
 
