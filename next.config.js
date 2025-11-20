@@ -8,6 +8,11 @@ const withPWA = pwa({
   disable: process.env.NODE_ENV === 'development',
   buildExcludes: [/middleware-manifest.json$/],
 
+  // Добавляем кастомный SW файл в precache
+  additionalManifestEntries: [
+    { url: '/sw-custom.js', revision: Date.now().toString() }
+  ],
+
   // Offline fallback
   fallbacks: {
     document: '/offline.html',

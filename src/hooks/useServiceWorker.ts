@@ -13,6 +13,7 @@ export function useServiceWorker(): ServiceWorkerHook {
     const [currentVersion, setCurrentVersion] = useState<string | null>(null);
     const [newVersion, setNewVersion] = useState<string | null>(null);
     const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null);
+    const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
 
     useEffect(() => {
         // Проверяем поддержку Service Worker
@@ -20,60 +21,90 @@ export function useServiceWorker(): ServiceWorkerHook {
             return;
         }
 
-        // Регистрируем Service Worker
-        navigator.serviceWorker
-            .register('/sw.js')
+        // Загружаем custom SW скрипт для добавления логики обновления
+        const loadCustomSW = async () => {
+            try {
+                const response = await fetch('/sw-custom.js');
+                if (response.ok) {
+                    console.log('[App] Custom SW script loaded');
+                }
+            } catch (error) {
+                console.error('[App] Failed to load custom SW:', error);
+            }
+        };
+
+        loadCustomSW();
+
+        // Получаем текущую регистрацию SW (next-pwa автоматически регистрирует)
+        navigator.serviceWorker.ready
             .then((reg) => {
-                console.log('[App] Service Worker registered');
+                console.log('[App] Service Worker ready');
                 setRegistration(reg);
 
                 // Получаем текущую версию
                 if (reg.active) {
-                    const messageChannel = new MessageChannel();
-                    messageChannel.port1.onmessage = (event) => {
-                        if (event.data && event.data.version) {
-                            setCurrentVersion(event.data.version);
-                        }
-                    };
-                    reg.active.postMessage({ type: 'GET_VERSION' }, [messageChannel.port2]);
+                    // Импортируем и запускаем кастомный SW скрипт
+                    fetch('/sw-custom.js')
+                        .then(r => r.text())
+                        .then(script => {
+                            // Извлекаем версию из скрипта
+                            const versionMatch = script.match(/const APP_VERSION = '(.+)'/);
+                            if (versionMatch) {
+                                setCurrentVersion(versionMatch[1]);
+                                console.log('[App] Current version from SW:', versionMatch[1]);
+                            }
+                        });
                 }
 
                 // Проверяем обновления при загрузке
                 reg.update();
 
-                // Обработчик обновления SW
+                // Слушаем изменения в регистрации
                 reg.addEventListener('updatefound', () => {
                     const newWorker = reg.installing;
                     if (!newWorker) return;
 
                     console.log('[App] New Service Worker found');
+                    setWaitingWorker(newWorker);
 
                     newWorker.addEventListener('statechange', () => {
-                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            // Новая версия доступна
-                            console.log('[App] New version available');
+                        console.log('[App] SW state changed:', newWorker.state);
 
-                            // Получаем версию нового SW
-                            const messageChannel = new MessageChannel();
-                            messageChannel.port1.onmessage = (event) => {
-                                if (event.data && event.data.version) {
-                                    setNewVersion(event.data.version);
-                                    setUpdateAvailable(true);
-                                }
-                            };
-                            newWorker.postMessage({ type: 'GET_VERSION' }, [messageChannel.port2]);
+                        if (newWorker.state === 'installed') {
+                            if (navigator.serviceWorker.controller) {
+                                // Новая версия доступна
+                                console.log('[App] New version available - SW installed');
+
+                                // Получаем версию нового SW
+                                fetch('/sw-custom.js?t=' + Date.now())
+                                    .then(r => r.text())
+                                    .then(script => {
+                                        const versionMatch = script.match(/const APP_VERSION = '(.+)'/);
+                                        if (versionMatch) {
+                                            const version = versionMatch[1];
+                                            console.log('[App] New version detected:', version);
+                                            setNewVersion(version);
+                                            setUpdateAvailable(true);
+                                        }
+                                    });
+                            } else {
+                                // Первая установка
+                                console.log('[App] SW installed for the first time');
+                            }
                         }
                     });
                 });
             })
             .catch((error) => {
-                console.error('[App] Service Worker registration failed:', error);
+                console.error('[App] Service Worker ready error:', error);
             });
 
         // Слушаем сообщения от Service Worker
         navigator.serviceWorker.addEventListener('message', (event) => {
+            console.log('[App] Received message from SW:', event.data);
+
             if (event.data && event.data.type === 'NEW_VERSION_AVAILABLE') {
-                console.log('[App] Received NEW_VERSION_AVAILABLE message');
+                console.log('[App] New version available message:', event.data.version);
                 setNewVersion(event.data.version);
                 setUpdateAvailable(true);
             }
@@ -82,6 +113,7 @@ export function useServiceWorker(): ServiceWorkerHook {
         // Проверяем обновления каждые 60 секунд
         const interval = setInterval(() => {
             if (registration) {
+                console.log('[App] Checking for updates...');
                 registration.update();
             }
         }, 60000);
@@ -92,26 +124,32 @@ export function useServiceWorker(): ServiceWorkerHook {
     }, [registration]);
 
     const updateServiceWorker = () => {
-        if (!registration || !registration.waiting) {
-            // Если нет ожидающего SW, просто перезагружаем страницу
+        console.log('[App] Applying update...');
+
+        const worker = waitingWorker || registration?.waiting;
+
+        if (worker) {
+            // Отправляем сообщение waiting SW для активации
+            worker.postMessage({ type: 'SKIP_WAITING' });
+
+            // Перезагружаем страницу после активации нового SW
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    refreshing = true;
+                    console.log('[App] Controller changed, reloading...');
+                    window.location.reload();
+                }
+            });
+        } else {
+            // Если нет waiting worker, просто перезагружаем
+            console.log('[App] No waiting worker, reloading...');
             window.location.reload();
-            return;
         }
-
-        // Отправляем сообщение ожидающему SW для активации
-        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-
-        // Перезагружаем страницу после активации нового SW
-        let refreshing = false;
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-            if (!refreshing) {
-                refreshing = true;
-                window.location.reload();
-            }
-        });
     };
 
     const dismiss = () => {
+        console.log('[App] Update dismissed');
         setUpdateAvailable(false);
     };
 
