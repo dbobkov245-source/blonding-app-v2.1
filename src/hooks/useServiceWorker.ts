@@ -166,8 +166,13 @@ export function useServiceWorker(): ServiceWorkerHook {
     }, [registration, currentVersion]);
 
     const updateServiceWorker = () => {
-        console.log('[App] Reloading for update...');
-        window.location.reload();
+        if (registration && registration.waiting) {
+            console.log('[App] Sending SKIP_WAITING to new worker...');
+            registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        } else {
+            console.log('[App] No waiting worker found, reloading...');
+            window.location.reload();
+        }
     };
 
     useEffect(() => {

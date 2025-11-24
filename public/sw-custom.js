@@ -1,7 +1,7 @@
 // Кастомный public service worker для добавления логики обновления
 // Этот файл будет добавлен в precache list через next-pwa
 
-const APP_VERSION = 'v2.2.3';
+const APP_VERSION = 'v2.2.4';
 
 // Обработка сообщений от клиента
 self.addEventListener('message', (event) => {

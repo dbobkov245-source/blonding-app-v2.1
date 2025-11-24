@@ -60,7 +60,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             }}
             className="hover:text-purple-600 transition-colors"
           >
-            Blonding App v2.2.3 • {new Date().getFullYear()}
+            Blonding App v2.2.4 • {new Date().getFullYear()}
           </button>
         </div>
       </footer>
