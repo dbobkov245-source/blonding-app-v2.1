@@ -4,11 +4,14 @@ import pwa from 'next-pwa';
 const withPWA = pwa({
   dest: 'public',
   register: true,
-  skipWaiting: false, // Контролируемое обновление - пользователь выбирает когда обновляться
+  skipWaiting: true, // Автоматическое обновление
   disable: process.env.NODE_ENV === 'development',
   buildExcludes: [/middleware-manifest.json$/],
 
-  // Добавляем кастомный SW файл в precache
+  // Импортируем кастомный скрипт в основной SW
+  importScripts: ['/sw-custom.js'],
+
+  // Добавляем кастомный SW файл в precache (чтобы он обновлялся)
   additionalManifestEntries: [
     { url: '/sw-custom.js', revision: Date.now().toString() }
   ],

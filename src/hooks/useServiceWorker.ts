@@ -13,7 +13,6 @@ export function useServiceWorker(): ServiceWorkerHook {
     const [currentVersion, setCurrentVersion] = useState<string | null>(null);
     const [newVersion, setNewVersion] = useState<string | null>(null);
     const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null);
-    const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
 
     useEffect(() => {
         // Проверяем поддержку Service Worker
@@ -110,7 +109,6 @@ export function useServiceWorker(): ServiceWorkerHook {
                     if (!newWorker) return;
 
                     console.log('[App] New Service Worker found');
-                    setWaitingWorker(newWorker);
 
                     newWorker.addEventListener('statechange', () => {
                         console.log('[App] SW state changed:', newWorker.state);
@@ -168,37 +166,20 @@ export function useServiceWorker(): ServiceWorkerHook {
     }, [registration, currentVersion]);
 
     const updateServiceWorker = () => {
-        console.log('[App] Applying update...');
-
-        // Для TWA просто перезагружаем приложение
-        // Это очистит весь кеш и загрузит новую версию
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            console.log('[App] Running in standalone mode (TWA/PWA), forcing reload...');
-            window.location.href = window.location.href.split('?')[0] + '?t=' + Date.now();
-            return;
-        }
-
-        const worker = waitingWorker || registration?.waiting;
-
-        if (worker) {
-            // Отправляем сообщение waiting SW для активации
-            worker.postMessage({ type: 'SKIP_WAITING' });
-
-            // Перезагружаем страницу после активации нового SW
-            let refreshing = false;
-            navigator.serviceWorker.addEventListener('controllerchange', () => {
-                if (!refreshing) {
-                    refreshing = true;
-                    console.log('[App] Controller changed, reloading...');
-                    window.location.reload();
-                }
-            });
-        } else {
-            // Если нет waiting worker, принудительная перезагрузка с очисткой кеша
-            console.log('[App] No waiting worker, forcing cache-busting reload...');
-            window.location.href = window.location.href.split('?')[0] + '?t=' + Date.now();
-        }
+        console.log('[App] Reloading for update...');
+        window.location.reload();
     };
+
+    useEffect(() => {
+        // Если контроллер изменился (новый SW активировался), перезагружаем страницу
+        const handleControllerChange = () => {
+            console.log('[App] Controller changed, reloading...');
+            window.location.reload();
+        };
+
+        navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange);
+        return () => navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
+    }, []);
 
     const dismiss = () => {
         console.log('[App] Update dismissed');
