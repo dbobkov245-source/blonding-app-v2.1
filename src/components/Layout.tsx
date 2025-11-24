@@ -39,7 +39,29 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">{children}</main>
       <footer className="bg-white border-t mt-12 sm:mt-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 text-center text-base sm:text-sm text-gray-600">
-          Blonding App v2.2 • {new Date().getFullYear()}
+          <button
+            onClick={async () => {
+              if (window.confirm('Обновить приложение и сбросить кэш?')) {
+                try {
+                  if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (const registration of registrations) {
+                      await registration.unregister();
+                    }
+                  }
+                  const keys = await caches.keys();
+                  await Promise.all(keys.map(key => caches.delete(key)));
+                  window.location.reload();
+                } catch (e) {
+                  console.error(e);
+                  window.location.reload();
+                }
+              }
+            }}
+            className="hover:text-purple-600 transition-colors"
+          >
+            Blonding App v2.2.3 • {new Date().getFullYear()}
+          </button>
         </div>
       </footer>
       <UpdateNotification
