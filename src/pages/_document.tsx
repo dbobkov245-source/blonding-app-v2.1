@@ -5,6 +5,9 @@ class MyDocument extends Document {
     return (
       <Html lang="ru">
         <Head>
+          {/* Viewport для мобильных устройств - КРИТИЧНО для APK */}
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+
           {/* Favicon */}
           <link rel="icon" href="/icon-192x192.png" />
 

@@ -1,6 +1,6 @@
 {
   "name": "blonding-app-v2.2",
-  "version": "2.2.5",
+  "version": "2.2.6",
   "description": "PWA для обучения техникам блондирования с AI-генерацией тестов",
   "private": true,
   "type": "module",
