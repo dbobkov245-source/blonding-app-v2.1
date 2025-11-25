@@ -6,3 +6,5 @@ node_modules
 .DS_Store
 tsconfig.tsbuildinfo
 
+# Генерируемые папки уроков (создаются при билде из lessons/source/*.docx)
+public/lessons/urok-*/
