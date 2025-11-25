@@ -32,8 +32,8 @@ try {
     const swCustomPath = join(rootDir, 'public', 'sw-custom.js');
     let swContent = readFileSync(swCustomPath, 'utf8');
     swContent = swContent.replace(
-        /const CACHE_VERSION = 'v[\d.]+';/,
-        `const CACHE_VERSION = 'v${version}';`
+        /const APP_VERSION = 'v[\d.]+';/,
+        `const APP_VERSION = 'v${version}';`
     );
     writeFileSync(swCustomPath, swContent, 'utf8');
     console.log(`✅ Updated sw-custom.js version to v${version}`);

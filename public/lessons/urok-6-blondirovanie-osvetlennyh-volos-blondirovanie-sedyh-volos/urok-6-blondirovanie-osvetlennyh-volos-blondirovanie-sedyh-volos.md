@@ -1,7 +1,7 @@
 ---
 title: "Урок 6. Блондирование осветлённых волос. Блондирование седых волос"
 slug: "urok-6-blondirovanie-osvetlennyh-volos-blondirovanie-sedyh-volos"
-date: "2025-11-24"
+date: "2025-11-25"
 ---
 
 **Блондирование ранее осветленных волос.**

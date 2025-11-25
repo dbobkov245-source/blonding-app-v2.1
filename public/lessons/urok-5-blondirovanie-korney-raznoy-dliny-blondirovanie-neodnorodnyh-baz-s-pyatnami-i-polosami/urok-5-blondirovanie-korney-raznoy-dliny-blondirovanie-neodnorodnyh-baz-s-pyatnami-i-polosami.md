@@ -1,7 +1,7 @@
 ---
 title: "Урок 5. Блондирование корней разной длины. Блондирование неоднородных баз с пятнами и полосами"
 slug: "urok-5-blondirovanie-korney-raznoy-dliny-blondirovanie-neodnorodnyh-baz-s-pyatnami-i-polosami"
-date: "2025-11-24"
+date: "2025-11-25"
 ---
 
 **Блондированние корней.**

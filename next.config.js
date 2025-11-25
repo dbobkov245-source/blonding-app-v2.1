@@ -1,4 +1,10 @@
 import pwa from 'next-pwa';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+// Читаем версию из package.json для ревизии кеша
+const packageJson = JSON.parse(readFileSync(join(process.cwd(), 'package.json'), 'utf-8'));
+const APP_VERSION = packageJson.version;
 
 /** @type {import('next').NextConfig} */
 const withPWA = pwa({
@@ -13,7 +19,7 @@ const withPWA = pwa({
 
   // Добавляем кастомный SW файл в precache (чтобы он обновлялся)
   additionalManifestEntries: [
-    { url: '/sw-custom.js', revision: Date.now().toString() }
+    { url: '/sw-custom.js', revision: APP_VERSION }
   ],
 
   // Offline fallback

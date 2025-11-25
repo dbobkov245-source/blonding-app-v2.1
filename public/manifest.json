@@ -1,7 +1,7 @@
 {
   "name": "Blonding App - Обучение Блондированию",
   "short_name": "Blonding",
-  "version": "2.2.3",
+  "version": "2.2.5",
   "description": "PWA для обучения техникам блондирования с AI-консультантом и интерактивными тестами",
   "id": "blonding-app-v2.2",
   "start_url": "/?source=pwa",

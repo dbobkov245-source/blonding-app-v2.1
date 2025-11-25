@@ -1,7 +1,7 @@
 ---
 title: "Урок 4. Блондирование очень темных и азиатских волос. Двойное блондирование"
 slug: "urok-4-blondirovanie-ochen-temnyh-i-aziatskih-volos-dvoynoe-blondirovanie"
-date: "2025-11-24"
+date: "2025-11-25"
 ---
 
 **Резистентные волосы. Осветление очень темных волос.**
