@@ -14,7 +14,7 @@ interface HomeProps {
 
 const Home = ({ lessons }: HomeProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {lessons.length ? (
         lessons.map((l) => (
           <Link

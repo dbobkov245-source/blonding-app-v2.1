@@ -122,3 +122,68 @@ body {
     /* Немного меньше для очень маленьких экранов */
   }
 }
+
+/* Принудительный мобильный режим для TWA/APK */
+@media (display-mode: standalone) and (max-width: 1024px) {
+  /* Отключаем desktop grid для TWA даже на планшетах */
+  .lg\:grid-cols-3 {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  }
+  
+  .lg\:grid-cols-2 {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  }
+  
+  /* Убеждаемся что текст достаточно крупный */
+  html {
+    font-size: 18px !important;
+  }
+  
+  body {
+    font-size: 1rem !important;
+    line-height: 1.7 !important;
+  }
+  
+  h1 {
+    font-size: 1.75rem !important;
+  }
+  
+  h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  h3 {
+    font-size: 1.25rem !important;
+  }
+  
+  /* Минимальные размеры для touch targets */
+  button,
+  a,
+  input[type="button"],
+  input[type="submit"] {
+    min-height: 48px !important;
+  }
+}
+
+/* Дополнительная мобильная оптимизация для всех standalone приложений */
+@media (display-mode: standalone) {
+  /* Убираем выделение при тапе */
+  * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+  
+  /* Улучшаем scroll */
+  html {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  /* Оптимизация для безопасных зон (notch) */
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
