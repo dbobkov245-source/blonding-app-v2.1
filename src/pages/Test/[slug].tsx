@@ -158,7 +158,14 @@ export const getStaticPaths: GetStaticPaths = async () => {
     // ВАЖНО: Тесты создаются на основе `lessons/index.json`
     const jsonPath = path.join(process.cwd(), 'public', 'lessons', 'index.json');
     const data = fs.readFileSync(jsonPath, 'utf-8');
-    lessons = JSON.parse(data);
+    const indexData = JSON.parse(data);
+
+    // Поддержка нового формата с модулями
+    if (indexData.modules && indexData.lessons) {
+      lessons = Object.values(indexData.lessons).flat() as { slug: string }[];
+    } else {
+      lessons = indexData;
+    }
   } catch (e) {
     console.warn("index.json not found for getStaticPaths in Test");
   }
@@ -173,7 +180,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { slug } = params as { slug: string };
   const quizPath = path.join(process.cwd(), 'public', 'content', 'quizzes', `${slug}-quiz.json`);
-  
+
   // ✅ Добавь явную проверку существования
   if (!fs.existsSync(quizPath)) {
     console.warn(`⚠️ Quiz not found: ${quizPath}`);
@@ -184,7 +191,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       },
     };
   }
-  
+
   const quiz = JSON.parse(fs.readFileSync(quizPath, 'utf-8'));
   return { props: { quiz, lessonSlug: slug } };
 };

@@ -12,7 +12,7 @@ interface Lesson {
 }
 
 interface TheoryPageProps {
-  lesson: Lesson | null; 
+  lesson: Lesson | null;
 }
 
 const cleanMarkdown = (rawText: string): string => rawText.replace(/---[\s\S]*?---/, '');
@@ -37,7 +37,7 @@ const LessonAIAssistant: React.FC<LessonAIAssistantProps> = ({ lessonTitle, less
     if (!questionText.trim()) return;
 
     // ✅ ИСПРАВЛЕНО: Мы разделяем системный промпт (контекст) и инпут (вопрос)
-    
+
     // 1. Системный промпт — это наш урок
     const systemPrompt = `Ты — AI-помощник по уроку "${lessonTitle}". 
 Отвечай на вопросы студента, используя ТОЛЬКО следующий контекст.
@@ -58,12 +58,12 @@ ${lessonContent.substring(0, 4000)}...`;
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         // ✅ ИСПРАВЛЕНО: Отправляем оба поля
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           inputs: inputs,
-          systemPrompt: systemPrompt 
+          systemPrompt: systemPrompt
         }),
       });
-      
+
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(errorData.error || `HTTP error ${res.status}`);
@@ -176,8 +176,8 @@ const TheoryPage: React.FC<TheoryPageProps> = ({ lesson }) => {
         <div className="mt-8 p-6 bg-blue-50 rounded-lg text-center">
           <h3 className="text-xl font-bold text-blue-900 mb-3">Готовы проверить себя?</h3>
           <p className="text-blue-800 mb-4">Пройдите тест.</p>
-          <Link 
-            href={`/Test/${lesson.slug}`} 
+          <Link
+            href={`/Test/${lesson.slug}`}
             className="inline-block px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-lg"
           >
             Пройти тест
@@ -200,7 +200,14 @@ export const getStaticPaths: GetStaticPaths = async () => {
   try {
     const jsonPath = path.join(process.cwd(), 'public', 'lessons', 'index.json');
     const data = fs.readFileSync(jsonPath, 'utf-8');
-    lessons = JSON.parse(data);
+    const indexData = JSON.parse(data);
+
+    // Поддержка нового формата с модулями
+    if (indexData.modules && indexData.lessons) {
+      lessons = Object.values(indexData.lessons).flat() as { slug: string }[];
+    } else {
+      lessons = indexData;
+    }
   } catch (e) {
     console.warn("index.json not found");
   }
@@ -213,15 +220,15 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { slug } = params as { slug: string };
   try {
-    const decodedSlug = decodeURIComponent(slug); 
-    
+    const decodedSlug = decodeURIComponent(slug);
+
     const mdPath = path.join(process.cwd(), 'public', 'lessons', decodedSlug, `${decodedSlug}.md`);
-    
+
     if (!fs.existsSync(mdPath)) {
       console.warn(`Lesson file not found: ${mdPath}`);
       return { props: { lesson: null } };
     }
-    
+
     const rawText = fs.readFileSync(mdPath, 'utf-8');
     const content = cleanMarkdown(rawText);
 
@@ -239,7 +246,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     };
   } catch (e: any) {
     console.error(`Error for slug: ${slug}`, e.message);
-    return { props: { lesson: null } }; 
+    return { props: { lesson: null } };
   }
 };
 

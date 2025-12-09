@@ -25,13 +25,13 @@ function splitIntoSemanticChunks(markdown, maxTokens = 12000) {
   const sections = markdown.split(/^(?:##|###)\s+/m).filter(Boolean);
   const chunks = [];
   let currentChunk = { title: 'Введение', content: '', tokenEstimate: 0 };
-  
+
   for (const section of sections) {
     const lines = section.split('\n');
     const title = lines[0]?.trim() || 'Раздел';
     const content = lines.slice(1).join('\n').trim();
     const tokenEstimate = (content.split(/\s+/).length * 1.5);
-    
+
     if (tokenEstimate > maxTokens || currentChunk.tokenEstimate + tokenEstimate > maxTokens) {
       if (currentChunk.content) chunks.push(currentChunk);
       currentChunk = { title, content, tokenEstimate };
@@ -40,7 +40,7 @@ function splitIntoSemanticChunks(markdown, maxTokens = 12000) {
       currentChunk.tokenEstimate += tokenEstimate;
     }
   }
-  
+
   if (currentChunk.content) chunks.push(currentChunk);
   return chunks.filter(chunk => chunk.content.length > 200);
 }
@@ -81,7 +81,7 @@ ${chunk.content.substring(0, 15000)}
 
 async function callHFAPI(systemPrompt, userPrompt, token) {
   const url = "https://router.huggingface.co/v1/chat/completions";
-  
+
   const body = {
     model: HF_MODEL,
     messages: [
@@ -95,22 +95,22 @@ async function callHFAPI(systemPrompt, userPrompt, token) {
 
   const response = await fetch(url, {
     method: "POST",
-    headers: { 
-      Authorization: `Bearer ${token}`, 
-      "Content-Type": "application/json" 
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json"
     },
     body: JSON.stringify(body),
     // @ts-ignore
     timeout: 90000
   });
-  
+
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}: ${await response.text()}`);
   }
-  
+
   const data = await response.json();
   const content = data.choices?.[0]?.message?.content || "";
-  
+
   try {
     const jsonMatch = content.match(/\[[\s\S]*\]|\{[\s\S]*\}/);
     if (jsonMatch) {
@@ -128,19 +128,19 @@ function validateQuestion(q, chunkContent) {
   for (const field of required) {
     if (!q[field]) throw new Error(`Отсутствует поле: ${field}`);
   }
-  
+
   if (!Array.isArray(q.options) || q.options.length !== 4) {
     throw new Error('Неверное количество опций');
   }
-  
+
   if (!q.options.includes(q.correctAnswer)) {
     throw new Error('correctAnswer не найден в options');
   }
-  
+
   if (q.explanation.length < 30) {
     console.warn(`[Validate] Короткое объяснение: ${q.explanation}`);
   }
-  
+
   if (!q.explanation.includes('Цитата:')) {
     throw new Error('explanation не содержит "Цитата:"');
   }
@@ -148,7 +148,7 @@ function validateQuestion(q, chunkContent) {
 
 export async function generateQuizForLesson(lessonSlug, lessonData) {
   console.log(`\n📝 Генерация теста: ${lessonSlug}`);
-  
+
   const quizPath = path.join(quizzesDir, `${lessonSlug}-quiz.json`);
   if (fs.existsSync(quizPath) && !isForce) {
     console.log(` ⏭️ Уже существует`);
@@ -164,27 +164,27 @@ export async function generateQuizForLesson(lessonSlug, lessonData) {
   console.log(` 📄 Урок разбит на ${chunks.length} блоков`);
 
   const allQuestions = [];
-  
+
   for (let i = 0; i < chunks.length && allQuestions.length < 5; i++) {
     const chunk = chunks[i];
-    console.log(` 🤖 Блок ${i+1}: "${chunk.title}"`);
-    
+    console.log(` 🤖 Блок ${i + 1}: "${chunk.title}"`);
+
     const prompt = createPrompt(lessonData.title, chunk);
-    
+
     let attempts = 0;
     let success = false;
-    
+
     while (attempts < maxRetries && !success) {
       attempts++;
       try {
         const result = await callHFAPI(SYSTEM_PROMPT, prompt, token);
-        
+
         const questions = Array.isArray(result) ? result : result.questions;
 
         if (!Array.isArray(questions)) {
           throw new Error("Ответ не массив");
         }
-        
+
         let validatedCount = 0;
         for (const q of questions) {
           try {
@@ -192,13 +192,13 @@ export async function generateQuizForLesson(lessonSlug, lessonData) {
             allQuestions.push(q);
             validatedCount++;
           } catch (validateErr) {
-             console.warn(`[Validate] ⚠️  Вопрос пропущен: ${validateErr.message} (Вопрос: ${q.question?.substring(0, 20)}...)`);
+            console.warn(`[Validate] ⚠️  Вопрос пропущен: ${validateErr.message} (Вопрос: ${q.question?.substring(0, 20)}...)`);
           }
         }
-        
+
         console.log(` ✅ Сгенерировано ${validatedCount} валидных вопросов`);
         success = true;
-        
+
       } catch (err) {
         console.warn(` ❌ Попытка ${attempts}/${maxRetries}: ${err.message}`);
         if (attempts < maxRetries) {
@@ -206,14 +206,14 @@ export async function generateQuizForLesson(lessonSlug, lessonData) {
         }
       }
     }
-    
+
     if (i < chunks.length - 1) {
       await new Promise(r => setTimeout(r, 2000));
     }
   }
 
   const finalQuestions = allQuestions.slice(0, 5);
-  
+
   if (finalQuestions.length === 0) {
     console.error(` ❌ Ни одного валидного вопроса не сгенерировано для ${lessonSlug}`);
     return { slug: lessonSlug, title: lessonData.title, questionsCount: 0 };
@@ -222,31 +222,42 @@ export async function generateQuizForLesson(lessonSlug, lessonData) {
   fs.writeFileSync(quizPath, JSON.stringify(finalQuestions, null, 2), 'utf-8');
   console.log(` ✅ Сохранено ${finalQuestions.length} вопросов`);
 
-  return { 
-    slug: lessonSlug, 
-    title: lessonData.title, 
-    questionsCount: finalQuestions.length, 
-    path: quizPath 
+  return {
+    slug: lessonSlug,
+    title: lessonData.title,
+    questionsCount: finalQuestions.length,
+    path: quizPath
   };
 }
 
 export async function generateAllQuizzes() {
   console.log('\n🎓 Начало генерации тестов...\n');
-  
+
   const indexPath = path.join(lessonsDir, 'index.json');
   if (!fs.existsSync(indexPath)) {
     console.error('❌ Индекс не найден');
     process.exit(1);
   }
 
-  const lessons = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
+  const indexData = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
+
+  // Поддержка нового формата с модулями
+  let lessons;
+  if (indexData.modules && indexData.lessons) {
+    // Новый формат: объединяем все уроки из всех модулей
+    lessons = Object.values(indexData.lessons).flat();
+  } else {
+    // Старый формат: плоский массив
+    lessons = indexData;
+  }
+
   const results = [];
   let generatedCount = 0;
 
   for (const lesson of lessons) {
     const data = readLesson(lesson.slug);
     if (!data) continue;
-    
+
     try {
       const res = await generateQuizForLesson(lesson.slug, data);
       results.push(res);
@@ -259,20 +270,20 @@ export async function generateAllQuizzes() {
   }
 
   const quizIndex = results
-    .filter(r => r.questionsCount > 0 || r.exists) 
-    .map(r => ({ 
-      slug: r.slug, 
-      title: r.title, 
-      questionsCount: r.questionsCount, 
-      quizPath: `/content/quizzes/${r.slug}-quiz.json` 
+    .filter(r => r.questionsCount > 0 || r.exists)
+    .map(r => ({
+      slug: r.slug,
+      title: r.title,
+      questionsCount: r.questionsCount,
+      quizPath: `/content/quizzes/${r.slug}-quiz.json`
     }));
-  
+
   fs.writeFileSync(
-    path.join(quizzesDir, 'index.json'), 
-    JSON.stringify(quizIndex, null, 2), 
+    path.join(quizzesDir, 'index.json'),
+    JSON.stringify(quizIndex, null, 2),
     'utf-8'
   );
-  
+
   console.log(`\n📋 Индекс обновлен. Сгенерировано ${generatedCount} новых тестов.`);
 }
 
@@ -280,14 +291,14 @@ function readLesson(lessonSlug) {
   try {
     const mdPath = path.join(lessonsDir, lessonSlug, `${lessonSlug}.md`);
     if (!fs.existsSync(mdPath)) return null;
-    
+
     const raw = fs.readFileSync(mdPath, 'utf-8');
     const content = cleanMarkdown(raw);
     const titleMatch = raw.match(/title:\s*"([^"]+)"/);
-    
-    return { 
-      title: titleMatch ? titleMatch[1] : lessonSlug, 
-      content 
+
+    return {
+      title: titleMatch ? titleMatch[1] : lessonSlug,
+      content
     };
   } catch (e) {
     console.error(` ❌ Ошибка чтения урока ${lessonSlug}: ${e.message}`);

@@ -4,14 +4,17 @@ import mammoth from 'mammoth';
 import sharp from 'sharp';
 import TurndownService from 'turndown';
 
-const sourceDir = './lessons/source';
+// Мультимодульная структура курса
+const lessonsDir = './lessons';
 const outPublicDir = './public/lessons';
 const readmeFile = './README.md';
+
+// Список модулей курса (папки в lessons/)
+const MODULES = ['блондирование', 'тонирование'];
 
 const turndownService = new TurndownService();
 
 function slugify(text) {
-  // Более строгая и консистентная транслитерация
   const translit = {
     "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e", 
     "ж": "zh", "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m", 
@@ -22,24 +25,21 @@ function slugify(text) {
   };
   
   return text.toLowerCase().trim()
-    // Сначала заменяем все кириллические буквы
     .replace(/[а-яё]/g, (char) => translit[char] || '')
-    // Заменяем пробелы и спецсимволы
     .replace(/[%_\s.]+/g, '-')
-    // Удаляем все что не латиница, цифры или дефис
     .replace(/[^a-z0-9-]/g, '')
-    // Убираем множественные дефисы
     .replace(/-+/g, '-')
-    // Убираем дефисы в начале и конце
     .replace(/^-|-$/g, '');
 }
 
-[sourceDir, outPublicDir].forEach(dir => {
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-});
+function slugifyModule(moduleName) {
+  return slugify(moduleName);
+}
 
-async function processLessonFile(file) {
-  const filePath = path.join(sourceDir, file);
+if (!fs.existsSync(outPublicDir)) fs.mkdirSync(outPublicDir, { recursive: true });
+
+async function processLessonFile(file, moduleSourceDir, moduleSlug) {
+  const filePath = path.join(moduleSourceDir, file);
   const baseName = path.basename(file, path.extname(file));
   const slug = slugify(baseName);
   const ext = path.extname(file);
@@ -86,38 +86,80 @@ async function processLessonFile(file) {
   const mdFile = `---
 title: "${title}"
 slug: "${slug}"
+module: "${moduleSlug}"
 date: "${new Date().toISOString().split('T')[0]}"
 ---
 
 ${content}`;
 
   fs.writeFileSync(path.join(lessonPublicDir, `${slug}.md`), mdFile, 'utf-8');
-  return { slug, title };
+  return { slug, title, module: moduleSlug };
 }
 
-async function generateLessons() {
-  const files = fs.readdirSync(sourceDir).filter(f => 
+async function processModule(moduleName) {
+  const moduleSourceDir = path.join(lessonsDir, moduleName);
+  const moduleSlug = slugifyModule(moduleName);
+  
+  if (!fs.existsSync(moduleSourceDir)) {
+    console.warn(`[generate-md] ⚠️ Модуль не найден: ${moduleName}`);
+    return { name: moduleName, slug: moduleSlug, lessons: [] };
+  }
+
+  const files = fs.readdirSync(moduleSourceDir).filter(f => 
     ['.txt', '.md', '.docx'].includes(path.extname(f))
   );
 
-  const lessons = (await Promise.all(files.map(processLessonFile))).filter(Boolean);
-  fs.writeFileSync(path.join(outPublicDir, 'index.json'), JSON.stringify(lessons, null, 2), 'utf-8');
+  console.log(`[generate-md] 📚 Модуль "${moduleName}": ${files.length} файлов`);
 
+  const lessons = (await Promise.all(
+    files.map(file => processLessonFile(file, moduleSourceDir, moduleSlug))
+  )).filter(Boolean);
+
+  return { name: moduleName, slug: moduleSlug, lessons };
+}
+
+async function generateLessons() {
+  console.log('[generate-md] 🚀 Начало генерации...\n');
+
+  const modulesData = await Promise.all(MODULES.map(processModule));
+  
+  // Формируем index.json с группировкой по модулям
+  const indexData = {
+    modules: modulesData.map(m => ({
+      name: m.name,
+      slug: m.slug,
+      lessonsCount: m.lessons.length
+    })),
+    lessons: modulesData.reduce((acc, m) => {
+      acc[m.slug] = m.lessons.map(l => ({ slug: l.slug, title: l.title }));
+      return acc;
+    }, {})
+  };
+
+  // Также сохраняем плоский список для обратной совместимости
+  const flatLessons = modulesData.flatMap(m => m.lessons);
+  
+  fs.writeFileSync(path.join(outPublicDir, 'index.json'), JSON.stringify(indexData, null, 2), 'utf-8');
+  
+  // Обновляем README
   if (fs.existsSync(readmeFile)) {
     try {
       let readme = fs.readFileSync(readmeFile, 'utf-8');
-      const list = lessons.map(l => `- [${l.title}](/Theory/${encodeURIComponent(l.slug)})`).join('\n');
+      const list = modulesData.map(m => 
+        `### ${m.name}\n` + m.lessons.map(l => `- [${l.title}](/Theory/${encodeURIComponent(l.slug)})`).join('\n')
+      ).join('\n\n');
       const sectionHeader = '## Уроки';
       if (readme.includes(sectionHeader)) {
-        readme = readme.replace(/(## Уроки[\s\S]*?)(?=##|$)/, `${sectionHeader}\n${list}\n\n`);
+        readme = readme.replace(/(## Уроки[\s\S]*?)(?=##|$)/, `${sectionHeader}\n\n${list}\n\n`);
       } else {
-        readme += `\n${sectionHeader}\n${list}\n`;
+        readme += `\n${sectionHeader}\n\n${list}\n`;
       }
       fs.writeFileSync(readmeFile, readme, 'utf-8');
     } catch {}
   }
 
-  console.log(`[generate-md] Готово! ${lessons.length} уроков обработано.`);
+  const totalLessons = flatLessons.length;
+  console.log(`\n[generate-md] ✅ Готово! ${totalLessons} уроков в ${modulesData.length} модулях.`);
 }
 
 const generatedDir = './lessons/generated';
