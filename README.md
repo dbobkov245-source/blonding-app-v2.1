@@ -113,3 +113,39 @@ npm run dev
 
 **Версия**: 2.1  
 **Дата обновления**: 2025-12-10
+
+## Уроки
+
+### ФУНДАМЕНТАЛЬНАЯ ТЕОРИЯ КОЛОРИСТИКИ (ПРЕДОБУЧЕНИЕ)
+- [Урок 1](/Theory/urok-1)
+- [Урок 2](/Theory/urok-2)
+- [Урок 3](/Theory/urok-3)
+- [Урок 4](/Theory/urok-4)
+- [Урок 5](/Theory/urok-5)
+- [Урок 6](/Theory/urok-6)
+- [Урок 7](/Theory/urok-7)
+- [Урок 8](/Theory/urok-8)
+- [Урок 9](/Theory/urok-9)
+- [Урок 10](/Theory/urok-10)
+- [Урок 11](/Theory/urok-11)
+- [Урок 12](/Theory/urok-12)
+- [Урок 13](/Theory/urok-13)
+- [Урок 14](/Theory/urok-14)
+- [Урок 15](/Theory/urok-15)
+- [Урок 16](/Theory/urok-16)
+
+### блондирование
+- [Чистые или грязные?](/Theory/urok1podgotovkaklientakblondirovaniyu)
+- [Как осветляются волосы на разных участках. 4 участка осветления.](/Theory/urok2zonyosvetleniyavyborokislitelyapervichnoeosv)
+- [12% окислитель при блондировании волос.](/Theory/urok3opbonusnyjurok)
+- [Резистентные волосы. Осветление очень темных волос.](/Theory/urok4blondirovanieochentemnyhiaziatskihvolosdvojno)
+- [Блондированние корней.](/Theory/urok5blondirovaniekornejraznojdlinyblondirovaniene)
+- [Блондирование ранее осветленных волос.](/Theory/urok6blondirovanieosvetlyonnyhvolosblondirovaniese)
+- [Дополнительное тепло при блондировании. Время выдержки при блондировании. Предельное время выдержки.  Постобработка волос - 4 концепции финального мытья.](/Theory/urok7dopolnitelnoeteplopriblondirovaniivremyavyder)
+
+### тонирование
+- [Сверхточные весы.](/Theory/urok1vyborkrasitelyaiokislitelyapritonirovaniiprav)
+- [Перед просмотром урока в обязательном порядке просмотрите урок 4 из ПРЕДОБУЧЕНИЯ.](/Theory/urok2neitralizatsiyazheltogoizhelto-oranzhevogofoi)
+- [Работа с переосветленными базами и с базами с высокой пористостью.](/Theory/urok3tonirovanieblondirovannyhvolosholodnymiottenk)
+- [Как бороться с негативными оттенками при тонировании (матовый, зеленый, фиолетовый, голубой, слишком серый).](/Theory/urok4predotvraschenienezhelatelnyhottenkovpritonir)
+- [Выравнивание неоднородной базы перед тонированием:](/Theory/urok5vyravnivanieneodnorodnoibazypritonirovaniirep)
