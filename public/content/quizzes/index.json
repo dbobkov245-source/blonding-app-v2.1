@@ -1,38 +1,26 @@
 [
-  {
-    "slug": "urok-1-podgotovka-klienta-k-blondirovaniyu",
-    "title": "Урок 1. Подготовка клиента к блондированию",
-    "questionsCount": 0,
-    "quizPath": "/content/quizzes/urok-1-podgotovka-klienta-k-blondirovaniyu-quiz.json"
-  },
-  {
-    "slug": "urok-2-4-zony-osvetleniya-vybor-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos",
-    "title": "Урок 2. 4 зоны осветления. Выбор % окислителя. Первичное осветление натуральных волос",
-    "questionsCount": 0,
-    "quizPath": "/content/quizzes/urok-2-4-zony-osvetleniya-vybor-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos-quiz.json"
-  },
-  {
-    "slug": "urok-4-blondirovanie-ochen-temnyh-i-aziatskih-volos-dvoynoe-blondirovanie",
-    "title": "Урок 4. Блондирование очень темных и азиатских волос. Двойное блондирование",
-    "questionsCount": 0,
-    "quizPath": "/content/quizzes/urok-4-blondirovanie-ochen-temnyh-i-aziatskih-volos-dvoynoe-blondirovanie-quiz.json"
-  },
-  {
-    "slug": "urok-5-blondirovanie-korney-raznoy-dliny-blondirovanie-neodnorodnyh-baz-s-pyatnami-i-polosami",
-    "title": "Урок 5. Блондирование корней разной длины. Блондирование неоднородных баз с пятнами и полосами",
-    "questionsCount": 0,
-    "quizPath": "/content/quizzes/urok-5-blondirovanie-korney-raznoy-dliny-blondirovanie-neodnorodnyh-baz-s-pyatnami-i-polosami-quiz.json"
-  },
-  {
-    "slug": "urok-6-blondirovanie-osvetlennyh-volos-blondirovanie-sedyh-volos",
-    "title": "Урок 6. Блондирование осветлённых волос. Блондирование седых волос",
-    "questionsCount": 0,
-    "quizPath": "/content/quizzes/urok-6-blondirovanie-osvetlennyh-volos-blondirovanie-sedyh-volos-quiz.json"
-  },
-  {
-    "slug": "urok-7-dopolnitelnoe-teplo-pri-blondirovanii-vremya-vyderzhki-postobrabotka",
-    "title": "Урок 7. Дополнительное тепло при блондировании. Время выдержки. Постобработка",
-    "questionsCount": 0,
-    "quizPath": "/content/quizzes/urok-7-dopolnitelnoe-teplo-pri-blondirovanii-vremya-vyderzhki-postobrabotka-quiz.json"
-  }
+    {
+        "slug": "urok-4-predotvrashchenie-nezhelatelnyh-ottenkov-pri-tonirovanii",
+        "title": "Урок_4_Предотвращение_нежелательных_оттенков_при_тонировании_",
+        "questionsCount": 5,
+        "quizPath": "/content/quizzes/urok-4-predotvrashchenie-nezhelatelnyh-ottenkov-pri-tonirovanii-quiz.json"
+    },
+    {
+        "slug": "urok-5-vyravnivanie-neodnorodnoi-bazy-pri-tonirovanii-repigmentatsiya",
+        "title": "Урок_5_Выравнивание_неоднородной_базы_при_тонировании_Репигментация",
+        "questionsCount": 5,
+        "quizPath": "/content/quizzes/urok-5-vyravnivanie-neodnorodnoi-bazy-pri-tonirovanii-repigmentatsiya-quiz.json"
+    },
+    {
+        "slug": "urok-2-uznaete-kak-legko-podgotovit-ili-kak-priobresti-testovye-pryadi-nauchites",
+        "title": "Урок 2 Узнаете, как легко подготовить или как приобрести тестовые пряди. Научитесь создавать личную библиотеку блондиньеро – портфолио оттенков для тонирования.",
+        "questionsCount": 5,
+        "quizPath": "/content/quizzes/urok-2-uznaete-kak-legko-podgotovit-ili-kak-priobresti-testovye-pryadi-nauchites-quiz.json"
+    },
+    {
+        "slug": "urok-3-izuchite-naturalnye-pigmenty-poimete-raznitsu-mezhdu-vliyaniem-eumelanina",
+        "title": "Урок 3 Изучите натуральные пигменты. Поймете разницу между влиянием эумеланина и феомеланина на результат осветления и блондирования.",
+        "questionsCount": 5,
+        "quizPath": "/content/quizzes/urok-3-izuchite-naturalnye-pigmenty-poimete-raznitsu-mezhdu-vliyaniem-eumelanina-quiz.json"
+    }
 ]

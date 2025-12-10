@@ -29,7 +29,8 @@ function slugify(text) {
     .replace(/[%_\s.]+/g, '-')
     .replace(/[^a-z0-9-]/g, '')
     .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
+    .replace(/^-|-$/g, '')
+    .slice(0, 80); // Limit length to 80 chars
 }
 
 function slugifyModule(moduleName) {
