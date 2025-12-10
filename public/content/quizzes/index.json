@@ -1,38 +1,38 @@
 [
-    {
-        "slug": "urok-1-podgotovka-klienta-k-blondirovaniyu",
-        "title": "Урок 1. Подготовка клиента к блондированию",
-        "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-1-podgotovka-klienta-k-blondirovaniyu-quiz.json"
-    },
-    {
-        "slug": "urok-2-4-zony-osvetleniya-vybor-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos",
-        "title": "Урок 2. 4 зоны осветления. Выбор % окислителя. Первичное осветление натуральных волос",
-        "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-2-4-zony-osvetleniya-vybor-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos-quiz.json"
-    },
-    {
-        "slug": "urok-3-op-bonusnyi-urok",
-        "title": "Урок 3 ОП БОНУСНЫЙ УРОК",
-        "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-3-op-bonusnyi-urok-quiz.json"
-    },
-    {
-        "slug": "urok-4-blondirovanie-ochen-temnyh-i-aziatskih-volos-dvoynoe-blondirovanie",
-        "title": "Урок 4. Блондирование очень темных и азиатских волос. Двойное блондирование",
-        "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-4-blondirovanie-ochen-temnyh-i-aziatskih-volos-dvoynoe-blondirovanie-quiz.json"
-    },
-    {
-        "slug": "urok-5-blondirovanie-korney-raznoy-dliny-blondirovanie-neodnorodnyh-baz-s-pyatnami-i-polosami",
-        "title": "Урок 5. Блондирование корней разной длины. Блондирование неоднородных баз с пятнами и полосами",
-        "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-5-blondirovanie-korney-raznoy-dliny-blondirovanie-neodnorodnyh-baz-s-pyatnami-i-polosami-quiz.json"
-    },
-    {
-        "slug": "urok-6-blondirovanie-osvetlennyh-volos-blondirovanie-sedyh-volos",
-        "title": "Урок 6. Блондирование осветлённых волос. Блондирование седых волос",
-        "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-6-blondirovanie-osvetlennyh-volos-blondirovanie-sedyh-volos-quiz.json"
-    }
+  {
+    "slug": "urok-1-podgotovka-klienta-k-blondirovaniyu",
+    "title": "Урок 1. Подготовка клиента к блондированию",
+    "questionsCount": 0,
+    "quizPath": "/content/quizzes/urok-1-podgotovka-klienta-k-blondirovaniyu-quiz.json"
+  },
+  {
+    "slug": "urok-2-4-zony-osvetleniya-vybor-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos",
+    "title": "Урок 2. 4 зоны осветления. Выбор % окислителя. Первичное осветление натуральных волос",
+    "questionsCount": 0,
+    "quizPath": "/content/quizzes/urok-2-4-zony-osvetleniya-vybor-okislitelya-pervichnoe-osvetlenie-naturalnyh-volos-quiz.json"
+  },
+  {
+    "slug": "urok-4-blondirovanie-ochen-temnyh-i-aziatskih-volos-dvoynoe-blondirovanie",
+    "title": "Урок 4. Блондирование очень темных и азиатских волос. Двойное блондирование",
+    "questionsCount": 0,
+    "quizPath": "/content/quizzes/urok-4-blondirovanie-ochen-temnyh-i-aziatskih-volos-dvoynoe-blondirovanie-quiz.json"
+  },
+  {
+    "slug": "urok-5-blondirovanie-korney-raznoy-dliny-blondirovanie-neodnorodnyh-baz-s-pyatnami-i-polosami",
+    "title": "Урок 5. Блондирование корней разной длины. Блондирование неоднородных баз с пятнами и полосами",
+    "questionsCount": 0,
+    "quizPath": "/content/quizzes/urok-5-blondirovanie-korney-raznoy-dliny-blondirovanie-neodnorodnyh-baz-s-pyatnami-i-polosami-quiz.json"
+  },
+  {
+    "slug": "urok-6-blondirovanie-osvetlennyh-volos-blondirovanie-sedyh-volos",
+    "title": "Урок 6. Блондирование осветлённых волос. Блондирование седых волос",
+    "questionsCount": 0,
+    "quizPath": "/content/quizzes/urok-6-blondirovanie-osvetlennyh-volos-blondirovanie-sedyh-volos-quiz.json"
+  },
+  {
+    "slug": "urok-7-dopolnitelnoe-teplo-pri-blondirovanii-vremya-vyderzhki-postobrabotka",
+    "title": "Урок 7. Дополнительное тепло при блондировании. Время выдержки. Постобработка",
+    "questionsCount": 0,
+    "quizPath": "/content/quizzes/urok-7-dopolnitelnoe-teplo-pri-blondirovanii-vremya-vyderzhki-postobrabotka-quiz.json"
+  }
 ]

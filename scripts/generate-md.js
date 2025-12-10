@@ -10,20 +10,20 @@ const outPublicDir = './public/lessons';
 const readmeFile = './README.md';
 
 // Список модулей курса (папки в lessons/)
-const MODULES = ['блондирование', 'тонирование'];
+const MODULES = ['ФУНДАМЕНТАЛЬНАЯ ТЕОРИЯ КОЛОРИСТИКИ (ПРЕДОБУЧЕНИЕ)', 'блондирование', 'тонирование'];
 
 const turndownService = new TurndownService();
 
 function slugify(text) {
   const translit = {
-    "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e", 
-    "ж": "zh", "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m", 
-    "н": "n", "о": "o", "п": "p", "р": "r", "с": "s", "т": "t", "у": "u", 
-    "ф": "f", "х": "h", "ц": "ts", "ч": "ch", "ш": "sh", "щ": "shch", 
+    "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e",
+    "ж": "zh", "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m",
+    "н": "n", "о": "o", "п": "p", "р": "r", "с": "s", "т": "t", "у": "u",
+    "ф": "f", "х": "h", "ц": "ts", "ч": "ch", "ш": "sh", "щ": "shch",
     "ъ": "", "ы": "y", "ь": "", "э": "e", "ю": "yu", "я": "ya",
     "%": "percent", " ": "-", "_": "-", ".": ""
   };
-  
+
   return text.toLowerCase().trim()
     .replace(/[а-яё]/g, (char) => translit[char] || '')
     .replace(/[%_\s.]+/g, '-')
@@ -74,8 +74,13 @@ async function processLessonFile(file, moduleSourceDir, moduleSlug) {
   if (ext === '.txt' || ext === '.md') {
     content = fs.readFileSync(filePath, 'utf-8');
   } else if (ext === '.docx') {
-    const htmlResult = await mammoth.convertToHtml({ path: filePath }, mammothOptions);
-    content = turndownService.turndown(htmlResult.value);
+    try {
+      const htmlResult = await mammoth.convertToHtml({ path: filePath }, mammothOptions);
+      content = turndownService.turndown(htmlResult.value);
+    } catch (err) {
+      console.warn(`[generate-md] ⚠️ Ошибка обработки файла ${file}: ${err.message}`);
+      return null;
+    }
   } else {
     return null;
   }
@@ -99,13 +104,13 @@ ${content}`;
 async function processModule(moduleName) {
   const moduleSourceDir = path.join(lessonsDir, moduleName);
   const moduleSlug = slugifyModule(moduleName);
-  
+
   if (!fs.existsSync(moduleSourceDir)) {
     console.warn(`[generate-md] ⚠️ Модуль не найден: ${moduleName}`);
     return { name: moduleName, slug: moduleSlug, lessons: [] };
   }
 
-  const files = fs.readdirSync(moduleSourceDir).filter(f => 
+  const files = fs.readdirSync(moduleSourceDir).filter(f =>
     ['.txt', '.md', '.docx'].includes(path.extname(f))
   );
 
@@ -122,7 +127,7 @@ async function generateLessons() {
   console.log('[generate-md] 🚀 Начало генерации...\n');
 
   const modulesData = await Promise.all(MODULES.map(processModule));
-  
+
   // Формируем index.json с группировкой по модулям
   const indexData = {
     modules: modulesData.map(m => ({
@@ -138,14 +143,14 @@ async function generateLessons() {
 
   // Также сохраняем плоский список для обратной совместимости
   const flatLessons = modulesData.flatMap(m => m.lessons);
-  
+
   fs.writeFileSync(path.join(outPublicDir, 'index.json'), JSON.stringify(indexData, null, 2), 'utf-8');
-  
+
   // Обновляем README
   if (fs.existsSync(readmeFile)) {
     try {
       let readme = fs.readFileSync(readmeFile, 'utf-8');
-      const list = modulesData.map(m => 
+      const list = modulesData.map(m =>
         `### ${m.name}\n` + m.lessons.map(l => `- [${l.title}](/Theory/${encodeURIComponent(l.slug)})`).join('\n')
       ).join('\n\n');
       const sectionHeader = '## Уроки';
@@ -155,7 +160,7 @@ async function generateLessons() {
         readme += `\n${sectionHeader}\n\n${list}\n`;
       }
       fs.writeFileSync(readmeFile, readme, 'utf-8');
-    } catch {}
+    } catch { }
   }
 
   const totalLessons = flatLessons.length;
