@@ -1,115 +1,115 @@
 [
     {
         "slug": "urok-1",
-        "title": "Урок 1 - Как проходить уроки предобучения",
+        "title": "Урок 1 - Введение",
         "questionsCount": 5,
         "quizPath": "/content/quizzes/urok-1-quiz.json"
     },
     {
-        "slug": "urok-2-uznaete-kak-legko-podgotovit-ili-kak-priobresti-testovye-pryadi-nauchites",
-        "title": "Урок 2 - Тестовые пряди и портфолио оттенков",
+        "slug": "urok-2",
+        "title": "Урок 2 - Тестовые пряди",
         "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-2-uznaete-kak-legko-podgotovit-ili-kak-priobresti-testovye-pryadi-nauchites-quiz.json"
+        "quizPath": "/content/quizzes/urok-2-quiz.json"
     },
     {
-        "slug": "urok-3-izuchite-naturalnye-pigmenty-poimete-raznitsu-mezhdu-vliyaniem-eumelanina",
-        "title": "Урок 3 - Натуральные пигменты: эумеланин и феомеланин",
+        "slug": "urok-3",
+        "title": "Урок 3 - Натуральные пигменты",
         "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-3-izuchite-naturalnye-pigmenty-poimete-raznitsu-mezhdu-vliyaniem-eumelanina-quiz.json"
+        "quizPath": "/content/quizzes/urok-3-quiz.json"
     },
     {
-        "slug": "urok-4-usvoite-kak-protekaet-protsess-okrashivaniya-s-osvetleniem-i-kak-protekae",
-        "title": "Урок 4 - Процесс окрашивания и блондирования",
+        "slug": "urok-4",
+        "title": "Урок 4 - Процесс окрашивания",
         "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-4-usvoite-kak-protekaet-protsess-okrashivaniya-s-osvetleniem-i-kak-protekae-quiz.json"
+        "quizPath": "/content/quizzes/urok-4-quiz.json"
     },
     {
-        "slug": "urok-5-izuchite-rovni-glubiny-tona-i-fony-osvetleniya-nauchites-ponimat-harakter",
-        "title": "Урок 5 - Уровни глубины тона и фоны осветления",
+        "slug": "urok-5",
+        "title": "Урок 5 - Уровни глубины тона",
         "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-5-izuchite-rovni-glubiny-tona-i-fony-osvetleniya-nauchites-ponimat-harakter-quiz.json"
+        "quizPath": "/content/quizzes/urok-5-quiz.json"
     },
     {
-        "slug": "urok-6-poluchite-shkalu-ugt-i-fo-poimete-ih-vliyanie-na-rezultat-tonirovaniya-uz",
-        "title": "Урок 6 - Шкала УГТ и ФО, идеальный фон осветления",
+        "slug": "urok-6",
+        "title": "Урок 6 - Шкала УГТ и ФО",
         "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-6-poluchite-shkalu-ugt-i-fo-poimete-ih-vliyanie-na-rezultat-tonirovaniya-uz-quiz.json"
+        "quizPath": "/content/quizzes/urok-6-quiz.json"
     },
     {
-        "slug": "urok-7-priobretete-glubinnoe-ponimanie-i-navyki-raboty-s-tsvetovym-krugom-izuchi",
-        "title": "Урок 7 - Цветовой круг и правила колористики",
+        "slug": "urok-7",
+        "title": "Урок 7 - Цветовой круг",
         "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-7-priobretete-glubinnoe-ponimanie-i-navyki-raboty-s-tsvetovym-krugom-izuchi-quiz.json"
+        "quizPath": "/content/quizzes/urok-7-quiz.json"
     },
     {
-        "slug": "urok-8-na-ponyatnyh-primerah-bezuprechno-osvoite-reaktsiyu-neitralizatsii-nezhel",
-        "title": "Урок 8 - Нейтрализация нежелательных фонов осветления",
+        "slug": "urok-8",
+        "title": "Урок 8 - Нейтрализация ФО",
         "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-8-na-ponyatnyh-primerah-bezuprechno-osvoite-reaktsiyu-neitralizatsii-nezhel-quiz.json"
+        "quizPath": "/content/quizzes/urok-8-quiz.json"
     },
     {
-        "slug": "urok-9-poimete-znachenie-rn-pri-blondirovanii-i-okrashivanii-i-ego-vliyanie-na-b",
-        "title": "Урок 9 - Значение pH при блондировании",
+        "slug": "urok-9",
+        "title": "Урок 9 - Значение pH",
         "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-9-poimete-znachenie-rn-pri-blondirovanii-i-okrashivanii-i-ego-vliyanie-na-b-quiz.json"
+        "quizPath": "/content/quizzes/urok-9-quiz.json"
     },
     {
-        "slug": "urok-10-izuchite-blondirovanie-na-12-okislitele-proanaliziruete-plyusy-i-minusy-",
-        "title": "Урок 10 - Блондирование на 12% окислителе",
+        "slug": "urok-10",
+        "title": "Урок 10 - 12% окислитель",
         "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-10-izuchite-blondirovanie-na-12-okislitele-proanaliziruete-plyusy-i-minusy--quiz.json"
+        "quizPath": "/content/quizzes/urok-10-quiz.json"
     },
     {
-        "slug": "urok-11-poluchite-klassifikatsiyu-blondiruyushchih-preparatov-po-soderzhaniyu-am",
-        "title": "Урок 11 - Классификация блондирующих препаратов",
+        "slug": "urok-11",
+        "title": "Урок 11 - Классификация препаратов",
         "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-11-poluchite-klassifikatsiyu-blondiruyushchih-preparatov-po-soderzhaniyu-am-quiz.json"
+        "quizPath": "/content/quizzes/urok-11-quiz.json"
     },
     {
-        "slug": "urok-12-poimete-kak-smeshivat-produkt-chtoby-optimizirovat-rashody",
-        "title": "Урок 12 - Смешивание продукта для оптимизации расходов",
+        "slug": "urok-12",
+        "title": "Урок 12 - Смешивание продукта",
         "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-12-poimete-kak-smeshivat-produkt-chtoby-optimizirovat-rashody-quiz.json"
+        "quizPath": "/content/quizzes/urok-12-quiz.json"
     },
     {
-        "slug": "urok-13-uznaete-kak-izbegat-ozhoga-kozhi-poimete-chto-delat-esli-vse-taki-ozhog-",
-        "title": "Урок 13 - Ожог кожи головы: профилактика и лечение",
+        "slug": "urok-13",
+        "title": "Урок 13 - Ожог кожи головы",
         "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-13-uznaete-kak-izbegat-ozhoga-kozhi-poimete-chto-delat-esli-vse-taki-ozhog--quiz.json"
+        "quizPath": "/content/quizzes/urok-13-quiz.json"
     },
     {
-        "slug": "urok-14-izuchite-tselesoobraznost-dobavok-v-obestsvechivayushchii-poroshok-vazel",
-        "title": "Урок 14 - Добавки в осветляющий порошок: мифы и реальность",
+        "slug": "urok-14",
+        "title": "Урок 14 - Добавки в порошок",
         "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-14-izuchite-tselesoobraznost-dobavok-v-obestsvechivayushchii-poroshok-vazel-quiz.json"
+        "quizPath": "/content/quizzes/urok-14-quiz.json"
     },
     {
-        "slug": "urok-15-nauchites-pravilno-zadavat-voprosy-dlya-analiza-poluchite-spisok-iz-14-o",
-        "title": "Урок 15 - Диалог с клиентом: 14 обязательных пунктов",
+        "slug": "urok-15",
+        "title": "Урок 15 - Диалог с клиентом",
         "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-15-nauchites-pravilno-zadavat-voprosy-dlya-analiza-poluchite-spisok-iz-14-o-quiz.json"
+        "quizPath": "/content/quizzes/urok-15-quiz.json"
     },
     {
-        "slug": "urok-16-obrazets-pravilno-zapolnennogo-tehnicheskogo-tehnicheskogo-dose-pamyatka",
-        "title": "Урок 16 - Техническое досье и памятка по уходу",
+        "slug": "urok-16",
+        "title": "Урок 16 - Техническое досье",
         "questionsCount": 5,
-        "quizPath": "/content/quizzes/urok-16-obrazets-pravilno-zapolnennogo-tehnicheskogo-tehnicheskogo-dose-pamyatka-quiz.json"
+        "quizPath": "/content/quizzes/urok-16-quiz.json"
     },
     {
         "slug": "urok1podgotovkaklientakblondirovaniyu",
-        "title": "Урок 1 - Чистые или грязные?",
+        "title": "Урок 1 - Подготовка клиента",
         "questionsCount": 5,
         "quizPath": "/content/quizzes/urok1podgotovkaklientakblondirovaniyu-quiz.json"
     },
     {
         "slug": "urok2zonyosvetleniyavyborokislitelyapervichnoeosv",
-        "title": "Урок 2 - 4 участка осветления",
+        "title": "Урок 2 - 4 зоны осветления",
         "questionsCount": 5,
         "quizPath": "/content/quizzes/urok2zonyosvetleniyavyborokislitelyapervichnoeosv-quiz.json"
     },
     {
         "slug": "urok3opbonusnyjurok",
-        "title": "Урок 3 - 12% окислитель при блондировании",
+        "title": "Урок 3 - 12% окислитель",
         "questionsCount": 5,
         "quizPath": "/content/quizzes/urok3opbonusnyjurok-quiz.json"
     },
@@ -127,19 +127,19 @@
     },
     {
         "slug": "urok6blondirovanieosvetlyonnyhvolosblondirovaniese",
-        "title": "Урок 6 - Блондирование ранее осветленных волос",
+        "title": "Урок 6 - Блондирование осветленных волос",
         "questionsCount": 5,
         "quizPath": "/content/quizzes/urok6blondirovanieosvetlyonnyhvolosblondirovaniese-quiz.json"
     },
     {
         "slug": "urok7dopolnitelnoeteplopriblondirovaniivremyavyder",
-        "title": "Урок 7 - Дополнительное тепло и постобработка",
+        "title": "Урок 7 - Дополнительное тепло",
         "questionsCount": 5,
         "quizPath": "/content/quizzes/urok7dopolnitelnoeteplopriblondirovaniivremyavyder-quiz.json"
     },
     {
         "slug": "urok1vyborkrasitelyaiokislitelyapritonirovaniiprav",
-        "title": "Урок 1 - Сверхточные весы",
+        "title": "Урок 1 - Выбор красителя",
         "questionsCount": 5,
         "quizPath": "/content/quizzes/urok1vyborkrasitelyaiokislitelyapritonirovaniiprav-quiz.json"
     },
@@ -151,19 +151,19 @@
     },
     {
         "slug": "urok3tonirovanieblondirovannyhvolosholodnymiottenk",
-        "title": "Урок 3 - Работа с переосветленными базами",
+        "title": "Урок 3 - Холодные оттенки",
         "questionsCount": 5,
         "quizPath": "/content/quizzes/urok3tonirovanieblondirovannyhvolosholodnymiottenk-quiz.json"
     },
     {
         "slug": "urok4predotvraschenienezhelatelnyhottenkovpritonir",
-        "title": "Урок 4 - Борьба с негативными оттенками",
+        "title": "Урок 4 - Негативные оттенки",
         "questionsCount": 5,
         "quizPath": "/content/quizzes/urok4predotvraschenienezhelatelnyhottenkovpritonir-quiz.json"
     },
     {
         "slug": "urok5vyravnivanieneodnorodnoibazypritonirovaniirep",
-        "title": "Урок 5 - Выравнивание неоднородной базы",
+        "title": "Урок 5 - Выравнивание базы",
         "questionsCount": 5,
         "quizPath": "/content/quizzes/urok5vyravnivanieneodnorodnoibazypritonirovaniirep-quiz.json"
     }
