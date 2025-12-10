@@ -20,12 +20,12 @@ interface IndexData {
 }
 
 interface ModulePageProps {
-    module: Module;
+    moduleData: Module;
     lessons: Lesson[];
 }
 
-const ModulePage = ({ module, lessons }: ModulePageProps) => {
-    if (!module || lessons.length === 0) {
+const ModulePage = ({ moduleData, lessons }: ModulePageProps) => {
+    if (!moduleData || lessons.length === 0) {
         return (
             <div className="max-w-4xl mx-auto p-6 text-center">
                 <h1 className="text-2xl font-bold mb-4">Модуль не найден</h1>
@@ -48,7 +48,7 @@ const ModulePage = ({ module, lessons }: ModulePageProps) => {
             </div>
 
             <header className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">{module.name}</h1>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">{moduleData.name}</h1>
                 <p className="text-lg text-gray-600">
                     {lessons.length} {lessons.length === 1 ? 'урок' : 'уроков'}
                 </p>
@@ -100,7 +100,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async ({ params }) => {
     const { slug } = params as { slug: string };
 
-    let module: Module | null = null;
+    let moduleData: Module | null = null;
     let lessons: Lesson[] = [];
 
     try {
@@ -109,20 +109,20 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         const indexData: IndexData = JSON.parse(data);
 
         if (indexData.modules) {
-            module = indexData.modules.find((m) => m.slug === slug) || null;
+            moduleData = indexData.modules.find((m) => m.slug === slug) || null;
             lessons = indexData.lessons[slug] || [];
         }
     } catch (e) {
         console.error('Error reading index.json:', (e as Error).message);
     }
 
-    if (!module) {
+    if (!moduleData) {
         return { notFound: true };
     }
 
     return {
         props: {
-            module,
+            moduleData,
             lessons,
         },
     };
