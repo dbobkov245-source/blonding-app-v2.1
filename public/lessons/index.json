@@ -3,7 +3,7 @@
     {
       "name": "ФУНДАМЕНТАЛЬНАЯ ТЕОРИЯ КОЛОРИСТИКИ (ПРЕДОБУЧЕНИЕ)",
       "slug": "fundamentalnaya-teoriya-koloristiki-predobuchenie",
-      "lessonsCount": 17
+      "lessonsCount": 16
     },
     {
       "name": "блондирование",
@@ -19,72 +19,68 @@
   "lessons": {
     "fundamentalnaya-teoriya-koloristiki-predobuchenie": [
       {
-        "slug": "urok1",
-        "title": "Как проходить уроки предобучения?"
+        "slug": "urok-1",
+        "title": "Урок 1"
       },
       {
-        "slug": "urok2uznaetekaklegkopodgotovitilikakpriobrestitest",
-        "title": "Для чего нужны тестовые пряди"
+        "slug": "urok-2-uznaete-kak-legko-podgotovit-ili-kak-priobresti-testovye-pryadi-nauchites",
+        "title": "Урок 2 Узнаете, как легко подготовить или как приобрести тестовые пряди. Научитесь создавать личную библиотеку блондиньеро – портфолио оттенков для тонирования."
       },
       {
-        "slug": "urok3izuchitenaturalnyepigmentypoimeteraznitsumezh",
-        "title": "Натуральные пигменты."
+        "slug": "urok-3-izuchite-naturalnye-pigmenty-poimete-raznitsu-mezhdu-vliyaniem-eumelanina",
+        "title": "Урок 3 Изучите натуральные пигменты. Поймете разницу между влиянием эумеланина и феомеланина на результат осветления и блондирования."
       },
       {
-        "slug": "urok4usvoitekakprotekaetprotsessokrashivaniyasosve",
-        "title": "Натуральные пигменты."
+        "slug": "urok-4-usvoite-kak-protekaet-protsess-okrashivaniya-s-osvetleniem-i-kak-protekae",
+        "title": "Урок 4 Усвоите как протекает процесс окрашивания с осветлением и как протекает процесс блондирования."
       },
       {
-        "slug": "urok5izuchiterovniglubinytonaifonyosvetleniyanauch",
-        "title": "Уровни глубины тона, сокращенно УГТ."
+        "slug": "urok-5-izuchite-rovni-glubiny-tona-i-fony-osvetleniya-nauchites-ponimat-harakter",
+        "title": "Урок 5 Изучите ровни глубины тона и фоны осветления. Научитесь понимать характер каждого оттенка без привязки к бренду."
       },
       {
-        "slug": "urok6poluchiteshkaluugtifopoimeteihvliyanienarezul",
-        "title": "Уровни глубины тона, сокращенно УГТ."
+        "slug": "urok-6-poluchite-shkalu-ugt-i-fo-poimete-ih-vliyanie-na-rezultat-tonirovaniya-uz",
+        "title": "Урок 6 Получите шкалу УГТ и ФО, поймете их влияние на результат тонирования, узнаете про идеальный фон осветления."
       },
       {
-        "slug": "urok7priobreteteglubinnoeponimanieinavykirabotysts",
-        "title": "Основное правило колористики."
+        "slug": "urok-7-priobretete-glubinnoe-ponimanie-i-navyki-raboty-s-tsvetovym-krugom-izuchi",
+        "title": "Урок 7 Приобретете глубинное понимание и навыки работы с цветовым кругом. Изучите правила колористики и их практическое применение при тонировании."
       },
       {
-        "slug": "urok8",
-        "title": "Основное правило колористики."
+        "slug": "urok-8-na-ponyatnyh-primerah-bezuprechno-osvoite-reaktsiyu-neitralizatsii-nezhel",
+        "title": "Урок 8 На понятных примерах безупречно освоите реакцию нейтрализации нежелательных фонов осветления - желтого и желто-оранжевого."
       },
       {
-        "slug": "urok8naponyatnyhprimerahbezuprechnoosvoitereaktsiy",
-        "title": "Основное правило колористики."
+        "slug": "urok-9-poimete-znachenie-rn-pri-blondirovanii-i-okrashivanii-i-ego-vliyanie-na-b",
+        "title": "Урок 9 Поймете значение рН при блондировании и окрашивании и его влияние на белковую структуру волос."
       },
       {
-        "slug": "urok9poimeteznacheniernpriblondirovaniiiokrashivan",
-        "title": "Воздействие блондирующего порошка на структуру волос или почему волосы отваливаются."
+        "slug": "urok-10-izuchite-blondirovanie-na-12-okislitele-proanaliziruete-plyusy-i-minusy-",
+        "title": "Урок 10 Изучите блондирование на 12% окислителе. Проанализируете плюсы и минусы этого метода."
       },
       {
-        "slug": "urok10izuchiteblondirovaniena12okisliteleproanaliz",
-        "title": "Воздействие блондирующего порошка на структуру волос или почему волосы отваливаются."
+        "slug": "urok-11-poluchite-klassifikatsiyu-blondiruyushchih-preparatov-po-soderzhaniyu-am",
+        "title": "Урок 11 Получите классификацию блондирующих препаратов по содержанию аммиака по выбору техник по степени осветления."
       },
       {
-        "slug": "urok11poluchiteklassifikatsiyublondiruyuschihprepa",
-        "title": "Классификация блондирующих препаратов."
+        "slug": "urok-12-poimete-kak-smeshivat-produkt-chtoby-optimizirovat-rashody",
+        "title": "Урок 12 Поймете как смешивать продукт чтобы оптимизировать расходы."
       },
       {
-        "slug": "urok12poimetekaksmeshivatproduktchtobyoptimizirova",
-        "title": "Классификация блондирующих препаратов."
+        "slug": "urok-13-uznaete-kak-izbegat-ozhoga-kozhi-poimete-chto-delat-esli-vse-taki-ozhog-",
+        "title": "Урок 13 Узнаете как избегать ожога кожи. Поймете что делать если все-таки ожог произошел."
       },
       {
-        "slug": "urok13uznaetekakizbegatozhogakozhipoimetechtodelat",
-        "title": "Ожог кожи головы. Крем-протектор."
+        "slug": "urok-14-izuchite-tselesoobraznost-dobavok-v-obestsvechivayushchii-poroshok-vazel",
+        "title": "Урок 14 Изучите целесообразность добавок в обесцвечивающий порошок вазелин минеральное масло протеины"
       },
       {
-        "slug": "urok14izuchitetselesoobraznostdobavokvobestsvechiv",
-        "title": "Ожог кожи головы. Крем-протектор."
+        "slug": "urok-15-nauchites-pravilno-zadavat-voprosy-dlya-analiza-poluchite-spisok-iz-14-o",
+        "title": "Урок 15 Научитесь правильно задавать вопросы для анализа. Получите список из 14 обязательных пунктов необходимых для диалога с клиентом"
       },
       {
-        "slug": "urok15nauchitespravilnozadavatvoprosydlyaanalizapo",
-        "title": "Диалог с клиентом перед блондированием: правило 14 пунктов."
-      },
-      {
-        "slug": "urok16obrazetspravilnozapolnennogotehnicheskogoteh",
-        "title": "Диалог с клиентом перед блондированием: правило 14 пунктов."
+        "slug": "urok-16-obrazets-pravilno-zapolnennogo-tehnicheskogo-tehnicheskogo-dose-pamyatka",
+        "title": "Урок 16 Образец правильно заполненного технического технического досье. Памятка по уходу (как продавать, не продавая)"
       }
     ],
     "blondirovanie": [

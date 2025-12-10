@@ -86,17 +86,22 @@ async function processLessonFile(file, moduleSourceDir, moduleSlug) {
     return null;
   }
 
-  // Extract title from content
-  const titleMatch = content.match(/^# (.*)$/m);
-  const boldTitleMatch = content.match(/^\*\*(.*)\*\*/m);
+  // Use filename as title if it has readable Russian text (contains lesson number)
+  // Fallback to content extraction only if filename is a slug
+  const hasReadableName = /[а-яА-ЯёЁ]/.test(baseName);
 
-  if (titleMatch?.[1]) {
-    title = titleMatch[1].trim();
-  } else if (boldTitleMatch?.[1]) {
-    title = boldTitleMatch[1].trim();
-    // Optional: If the bold title is very long, maybe we shouldn't use it? 
-    // But for now, it's better than the filename.
+  if (!hasReadableName) {
+    // Filename is a slug like "urok1...", try to extract title from content
+    const titleMatch = content.match(/^# (.*)$/m);
+    const boldTitleMatch = content.match(/^\*\*(.+?)\*\*/m);
+
+    if (titleMatch?.[1]) {
+      title = titleMatch[1].trim();
+    } else if (boldTitleMatch?.[1]) {
+      title = boldTitleMatch[1].trim();
+    }
   }
+  // else: keep title = baseName (filename with lesson number)
 
   const mdFile = `---
 title: "${title}"
@@ -133,8 +138,8 @@ async function processModule(moduleName) {
   // Sort lessons numerically based on slug (most reliable)
   lessons.sort((a, b) => {
     const getNum = (item) => {
-      // Slug always starts with "urok" followed by number due to our renaming
-      const match = item.slug.match(/^urok(\d+)/i);
+      // Slug format: "urok-1..." or "urok1..." - extract number
+      const match = item.slug.match(/^urok-?(\d+)/i);
       return match ? parseInt(match[1], 10) : 999;
     };
     return getNum(a) - getNum(b);

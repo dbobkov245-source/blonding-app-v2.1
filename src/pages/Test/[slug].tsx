@@ -192,7 +192,19 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     };
   }
 
-  const quiz = JSON.parse(fs.readFileSync(quizPath, 'utf-8'));
+  const quizData = JSON.parse(fs.readFileSync(quizPath, 'utf-8'));
+  // Support both formats: array or object with questions property
+  const rawQuiz = Array.isArray(quizData) ? quizData : (quizData.questions || []);
+
+  // Normalize correctAnswer: convert index (number) to actual answer text (string)
+  const quiz = rawQuiz.map((item: { options: string[]; correctAnswer: number | string; explanation?: string }) => ({
+    ...item,
+    correctAnswer: typeof item.correctAnswer === 'number'
+      ? item.options[item.correctAnswer]
+      : item.correctAnswer,
+    explanation: item.explanation || 'Правильный ответ выделен зеленым.'
+  }));
+
   return { props: { quiz, lessonSlug: slug } };
 };
 
