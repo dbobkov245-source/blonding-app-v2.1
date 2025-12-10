@@ -130,6 +130,16 @@ async function processModule(moduleName) {
     files.map(file => processLessonFile(file, moduleSourceDir, moduleSlug))
   )).filter(Boolean);
 
+  // Sort lessons numerically based on slug (most reliable)
+  lessons.sort((a, b) => {
+    const getNum = (item) => {
+      // Slug always starts with "urok" followed by number due to our renaming
+      const match = item.slug.match(/^urok(\d+)/i);
+      return match ? parseInt(match[1], 10) : 999;
+    };
+    return getNum(a) - getNum(b);
+  });
+
   return { name: moduleName, slug: moduleSlug, lessons };
 }
 

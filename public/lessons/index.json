@@ -23,34 +23,6 @@
         "title": "Как проходить уроки предобучения?"
       },
       {
-        "slug": "urok10izuchiteblondirovaniena12okisliteleproanaliz",
-        "title": "Воздействие блондирующего порошка на структуру волос или почему волосы отваливаются."
-      },
-      {
-        "slug": "urok11poluchiteklassifikatsiyublondiruyuschihprepa",
-        "title": "Классификация блондирующих препаратов."
-      },
-      {
-        "slug": "urok12poimetekaksmeshivatproduktchtobyoptimizirova",
-        "title": "Классификация блондирующих препаратов."
-      },
-      {
-        "slug": "urok13uznaetekakizbegatozhogakozhipoimetechtodelat",
-        "title": "Ожог кожи головы. Крем-протектор."
-      },
-      {
-        "slug": "urok14izuchitetselesoobraznostdobavokvobestsvechiv",
-        "title": "Ожог кожи головы. Крем-протектор."
-      },
-      {
-        "slug": "urok15nauchitespravilnozadavatvoprosydlyaanalizapo",
-        "title": "Диалог с клиентом перед блондированием: правило 14 пунктов."
-      },
-      {
-        "slug": "urok16obrazetspravilnozapolnennogotehnicheskogoteh",
-        "title": "Диалог с клиентом перед блондированием: правило 14 пунктов."
-      },
-      {
         "slug": "urok2uznaetekaklegkopodgotovitilikakpriobrestitest",
         "title": "Для чего нужны тестовые пряди"
       },
@@ -85,6 +57,34 @@
       {
         "slug": "urok9poimeteznacheniernpriblondirovaniiiokrashivan",
         "title": "Воздействие блондирующего порошка на структуру волос или почему волосы отваливаются."
+      },
+      {
+        "slug": "urok10izuchiteblondirovaniena12okisliteleproanaliz",
+        "title": "Воздействие блондирующего порошка на структуру волос или почему волосы отваливаются."
+      },
+      {
+        "slug": "urok11poluchiteklassifikatsiyublondiruyuschihprepa",
+        "title": "Классификация блондирующих препаратов."
+      },
+      {
+        "slug": "urok12poimetekaksmeshivatproduktchtobyoptimizirova",
+        "title": "Классификация блондирующих препаратов."
+      },
+      {
+        "slug": "urok13uznaetekakizbegatozhogakozhipoimetechtodelat",
+        "title": "Ожог кожи головы. Крем-протектор."
+      },
+      {
+        "slug": "urok14izuchitetselesoobraznostdobavokvobestsvechiv",
+        "title": "Ожог кожи головы. Крем-протектор."
+      },
+      {
+        "slug": "urok15nauchitespravilnozadavatvoprosydlyaanalizapo",
+        "title": "Диалог с клиентом перед блондированием: правило 14 пунктов."
+      },
+      {
+        "slug": "urok16obrazetspravilnozapolnennogotehnicheskogoteh",
+        "title": "Диалог с клиентом перед блондированием: правило 14 пунктов."
       }
     ],
     "blondirovanie": [
@@ -93,7 +93,7 @@
         "title": "Чистые или грязные?"
       },
       {
-        "slug": "urok24zonyosvetleniyavyborokislitelyapervichnoeosv",
+        "slug": "urok2zonyosvetleniyavyborokislitelyapervichnoeosv",
         "title": "Как осветляются волосы на разных участках. 4 участка осветления."
       },
       {

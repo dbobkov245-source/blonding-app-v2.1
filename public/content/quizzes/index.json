@@ -1,5 +1,23 @@
 [
     {
+        "slug": "urok1vyborkrasitelyaiokislitelyapritonirovaniiprav",
+        "title": "Сверхточные весы.",
+        "questionsCount": 5,
+        "quizPath": "/content/quizzes/urok1vyborkrasitelyaiokislitelyapritonirovaniiprav-quiz.json"
+    },
+    {
+        "slug": "urok2neitralizatsiyazheltogoizhelto-oranzhevogofoi",
+        "title": "Перед просмотром урока в обязательном порядке просмотрите урок 4 из ПРЕДОБУЧЕНИЯ.",
+        "questionsCount": 5,
+        "quizPath": "/content/quizzes/urok2neitralizatsiyazheltogoizhelto-oranzhevogofoi-quiz.json"
+    },
+    {
+        "slug": "urok3tonirovanieblondirovannyhvolosholodnymiottenk",
+        "title": "Работа с переосветленными базами и с базами с высокой пористостью.",
+        "questionsCount": 5,
+        "quizPath": "/content/quizzes/urok3tonirovanieblondirovannyhvolosholodnymiottenk-quiz.json"
+    },
+    {
         "slug": "urok4predotvraschenienezhelatelnyhottenkovpritonir",
         "title": "Как бороться с негативными оттенками при тонировании (матовый, зеленый, фиолетовый, голубой, слишком серый).",
         "questionsCount": 5,
