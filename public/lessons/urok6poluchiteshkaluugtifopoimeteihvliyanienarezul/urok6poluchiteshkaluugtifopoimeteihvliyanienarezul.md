@@ -1,5 +1,5 @@
 ---
-title: "urok6poluchiteshkaluugtifopoimeteihvliyanienarezul"
+title: "Уровни глубины тона, сокращенно УГТ."
 slug: "urok6poluchiteshkaluugtifopoimeteihvliyanienarezul"
 module: "fundamentalnaya-teoriya-koloristiki-predobuchenie"
 date: "2025-12-10"

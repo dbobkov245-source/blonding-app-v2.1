@@ -1,5 +1,5 @@
 ---
-title: "urok5vyravnivanieneodnorodnoibazypritonirovaniirep"
+title: "Выравнивание неоднородной базы перед тонированием:"
 slug: "urok5vyravnivanieneodnorodnoibazypritonirovaniirep"
 module: "tonirovanie"
 date: "2025-12-10"

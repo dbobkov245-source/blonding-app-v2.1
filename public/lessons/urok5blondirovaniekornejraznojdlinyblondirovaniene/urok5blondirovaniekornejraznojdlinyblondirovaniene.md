@@ -1,5 +1,5 @@
 ---
-title: "urok5blondirovaniekornejraznojdlinyblondirovaniene"
+title: "Блондированние корней."
 slug: "urok5blondirovaniekornejraznojdlinyblondirovaniene"
 module: "blondirovanie"
 date: "2025-12-10"

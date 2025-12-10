@@ -1,5 +1,5 @@
 ---
-title: "urok7dopolnitelnoeteplopriblondirovaniivremyavyder"
+title: "Дополнительное тепло при блондировании. Время выдержки при блондировании. Предельное время выдержки.  Постобработка волос - 4 концепции финального мытья."
 slug: "urok7dopolnitelnoeteplopriblondirovaniivremyavyder"
 module: "blondirovanie"
 date: "2025-12-10"

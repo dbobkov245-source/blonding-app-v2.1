@@ -1,25 +1,25 @@
 [
     {
         "slug": "urok4predotvraschenienezhelatelnyhottenkovpritonir",
-        "title": "Урок_4_Предотвращение_нежелательных_оттенков_при_тонировании_",
+        "title": "Как бороться с негативными оттенками при тонировании (матовый, зеленый, фиолетовый, голубой, слишком серый).",
         "questionsCount": 5,
         "quizPath": "/content/quizzes/urok4predotvraschenienezhelatelnyhottenkovpritonir-quiz.json"
     },
     {
         "slug": "urok5vyravnivanieneodnorodnoibazypritonirovaniirep",
-        "title": "Урок_5_Выравнивание_неоднородной_базы_при_тонировании_Репигментация",
+        "title": "Выравнивание неоднородной базы перед тонированием:",
         "questionsCount": 5,
         "quizPath": "/content/quizzes/urok5vyravnivanieneodnorodnoibazypritonirovaniirep-quiz.json"
     },
     {
         "slug": "urok2uznaetekaklegkopodgotovitilikakpriobrestitest",
-        "title": "Урок 2 Узнаете, как легко подготовить или как приобрести тестовые пряди. Научитесь создавать личную библиотеку блондиньеро – портфолио оттенков для тонирования.",
+        "title": "Для чего нужны тестовые пряди",
         "questionsCount": 5,
         "quizPath": "/content/quizzes/urok2uznaetekaklegkopodgotovitilikakpriobrestitest-quiz.json"
     },
     {
         "slug": "urok3izuchitenaturalnyepigmentypoimeteraznitsumezh",
-        "title": "Урок 3 Изучите натуральные пигменты. Поймете разницу между влиянием эумеланина и феомеланина на результат осветления и блондирования.",
+        "title": "Натуральные пигменты.",
         "questionsCount": 5,
         "quizPath": "/content/quizzes/urok3izuchitenaturalnyepigmentypoimeteraznitsumezh-quiz.json"
     }

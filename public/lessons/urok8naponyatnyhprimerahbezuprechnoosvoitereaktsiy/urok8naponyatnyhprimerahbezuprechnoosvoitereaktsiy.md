@@ -1,5 +1,5 @@
 ---
-title: "urok8naponyatnyhprimerahbezuprechnoosvoitereaktsiy"
+title: "Основное правило колористики."
 slug: "urok8naponyatnyhprimerahbezuprechnoosvoitereaktsiy"
 module: "fundamentalnaya-teoriya-koloristiki-predobuchenie"
 date: "2025-12-10"

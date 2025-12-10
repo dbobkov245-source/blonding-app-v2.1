@@ -1,5 +1,5 @@
 ---
-title: "urok14izuchitetselesoobraznostdobavokvobestsvechiv"
+title: "Ожог кожи головы. Крем-протектор."
 slug: "urok14izuchitetselesoobraznostdobavokvobestsvechiv"
 module: "fundamentalnaya-teoriya-koloristiki-predobuchenie"
 date: "2025-12-10"

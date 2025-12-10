@@ -1,5 +1,5 @@
 ---
-title: "urok6blondirovanieosvetlyonnyhvolosblondirovaniese"
+title: "Блондирование ранее осветленных волос."
 slug: "urok6blondirovanieosvetlyonnyhvolosblondirovaniese"
 module: "blondirovanie"
 date: "2025-12-10"

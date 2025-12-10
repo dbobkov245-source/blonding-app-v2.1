@@ -1,5 +1,5 @@
 ---
-title: "urok12poimetekaksmeshivatproduktchtobyoptimizirova"
+title: "Классификация блондирующих препаратов."
 slug: "urok12poimetekaksmeshivatproduktchtobyoptimizirova"
 module: "fundamentalnaya-teoriya-koloristiki-predobuchenie"
 date: "2025-12-10"

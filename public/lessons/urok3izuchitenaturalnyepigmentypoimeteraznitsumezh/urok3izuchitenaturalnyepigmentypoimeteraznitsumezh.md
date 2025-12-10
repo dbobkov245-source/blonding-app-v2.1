@@ -1,5 +1,5 @@
 ---
-title: "urok3izuchitenaturalnyepigmentypoimeteraznitsumezh"
+title: "Натуральные пигменты."
 slug: "urok3izuchitenaturalnyepigmentypoimeteraznitsumezh"
 module: "fundamentalnaya-teoriya-koloristiki-predobuchenie"
 date: "2025-12-10"

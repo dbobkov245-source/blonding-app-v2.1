@@ -1,5 +1,5 @@
 ---
-title: "urok2neitralizatsiyazheltogoizhelto-oranzhevogofoi"
+title: "Перед просмотром урока в обязательном порядке просмотрите урок 4 из ПРЕДОБУЧЕНИЯ."
 slug: "urok2neitralizatsiyazheltogoizhelto-oranzhevogofoi"
 module: "tonirovanie"
 date: "2025-12-10"

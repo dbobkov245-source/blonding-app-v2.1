@@ -27,6 +27,41 @@
 ## Уроки
 
 ### ФУНДАМЕНТАЛЬНАЯ ТЕОРИЯ КОЛОРИСТИКИ (ПРЕДОБУЧЕНИЕ)
+- [Как проходить уроки предобучения?](/Theory/urok1)
+- [Воздействие блондирующего порошка на структуру волос или почему волосы отваливаются.](/Theory/urok10izuchiteblondirovaniena12okisliteleproanaliz)
+- [Классификация блондирующих препаратов.](/Theory/urok11poluchiteklassifikatsiyublondiruyuschihprepa)
+- [Классификация блондирующих препаратов.](/Theory/urok12poimetekaksmeshivatproduktchtobyoptimizirova)
+- [Ожог кожи головы. Крем-протектор.](/Theory/urok13uznaetekakizbegatozhogakozhipoimetechtodelat)
+- [Ожог кожи головы. Крем-протектор.](/Theory/urok14izuchitetselesoobraznostdobavokvobestsvechiv)
+- [Диалог с клиентом перед блондированием: правило 14 пунктов.](/Theory/urok15nauchitespravilnozadavatvoprosydlyaanalizapo)
+- [Диалог с клиентом перед блондированием: правило 14 пунктов.](/Theory/urok16obrazetspravilnozapolnennogotehnicheskogoteh)
+- [Для чего нужны тестовые пряди](/Theory/urok2uznaetekaklegkopodgotovitilikakpriobrestitest)
+- [Натуральные пигменты.](/Theory/urok3izuchitenaturalnyepigmentypoimeteraznitsumezh)
+- [Натуральные пигменты.](/Theory/urok4usvoitekakprotekaetprotsessokrashivaniyasosve)
+- [Уровни глубины тона, сокращенно УГТ.](/Theory/urok5izuchiterovniglubinytonaifonyosvetleniyanauch)
+- [Уровни глубины тона, сокращенно УГТ.](/Theory/urok6poluchiteshkaluugtifopoimeteihvliyanienarezul)
+- [Основное правило колористики.](/Theory/urok7priobreteteglubinnoeponimanieinavykirabotysts)
+- [Основное правило колористики.](/Theory/urok8)
+- [Основное правило колористики.](/Theory/urok8naponyatnyhprimerahbezuprechnoosvoitereaktsiy)
+- [Воздействие блондирующего порошка на структуру волос или почему волосы отваливаются.](/Theory/urok9poimeteznacheniernpriblondirovaniiiokrashivan)
+
+### блондирование
+- [Чистые или грязные?](/Theory/urok1podgotovkaklientakblondirovaniyu)
+- [Как осветляются волосы на разных участках. 4 участка осветления.](/Theory/urok24zonyosvetleniyavyborokislitelyapervichnoeosv)
+- [12% окислитель при блондировании волос.](/Theory/urok3opbonusnyjurok)
+- [Резистентные волосы. Осветление очень темных волос.](/Theory/urok4blondirovanieochentemnyhiaziatskihvolosdvojno)
+- [Блондированние корней.](/Theory/urok5blondirovaniekornejraznojdlinyblondirovaniene)
+- [Блондирование ранее осветленных волос.](/Theory/urok6blondirovanieosvetlyonnyhvolosblondirovaniese)
+- [Дополнительное тепло при блондировании. Время выдержки при блондировании. Предельное время выдержки.  Постобработка волос - 4 концепции финального мытья.](/Theory/urok7dopolnitelnoeteplopriblondirovaniivremyavyder)
+
+### тонирование
+- [Сверхточные весы.](/Theory/urok1vyborkrasitelyaiokislitelyapritonirovaniiprav)
+- [Перед просмотром урока в обязательном порядке просмотрите урок 4 из ПРЕДОБУЧЕНИЯ.](/Theory/urok2neitralizatsiyazheltogoizhelto-oranzhevogofoi)
+- [Работа с переосветленными базами и с базами с высокой пористостью.](/Theory/urok3tonirovanieblondirovannyhvolosholodnymiottenk)
+- [Как бороться с негативными оттенками при тонировании (матовый, зеленый, фиолетовый, голубой, слишком серый).](/Theory/urok4predotvraschenienezhelatelnyhottenkovpritonir)
+- [Выравнивание неоднородной базы перед тонированием:](/Theory/urok5vyravnivanieneodnorodnoibazypritonirovaniirep)
+
+### ФУНДАМЕНТАЛЬНАЯ ТЕОРИЯ КОЛОРИСТИКИ (ПРЕДОБУЧЕНИЕ)
 - [urok1](/Theory/urok1)
 - [urok10izuchiteblondirovaniena12okisliteleproanaliz](/Theory/urok10izuchiteblondirovaniena12okisliteleproanaliz)
 - [urok11poluchiteklassifikatsiyublondiruyuschihprepa](/Theory/urok11poluchiteklassifikatsiyublondiruyuschihprepa)

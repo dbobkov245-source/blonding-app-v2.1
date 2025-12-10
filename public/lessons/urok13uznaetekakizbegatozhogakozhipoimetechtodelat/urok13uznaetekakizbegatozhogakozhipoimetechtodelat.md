@@ -1,5 +1,5 @@
 ---
-title: "urok13uznaetekakizbegatozhogakozhipoimetechtodelat"
+title: "Ожог кожи головы. Крем-протектор."
 slug: "urok13uznaetekakizbegatozhogakozhipoimetechtodelat"
 module: "fundamentalnaya-teoriya-koloristiki-predobuchenie"
 date: "2025-12-10"

@@ -1,5 +1,5 @@
 ---
-title: "urok16obrazetspravilnozapolnennogotehnicheskogoteh"
+title: "Диалог с клиентом перед блондированием: правило 14 пунктов."
 slug: "urok16obrazetspravilnozapolnennogotehnicheskogoteh"
 module: "fundamentalnaya-teoriya-koloristiki-predobuchenie"
 date: "2025-12-10"

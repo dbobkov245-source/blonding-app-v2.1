@@ -1,5 +1,5 @@
 ---
-title: "urok3opbonusnyjurok"
+title: "12% окислитель при блондировании волос."
 slug: "urok3opbonusnyjurok"
 module: "blondirovanie"
 date: "2025-12-10"

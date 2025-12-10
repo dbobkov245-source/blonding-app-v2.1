@@ -1,5 +1,5 @@
 ---
-title: "urok11poluchiteklassifikatsiyublondiruyuschihprepa"
+title: "Классификация блондирующих препаратов."
 slug: "urok11poluchiteklassifikatsiyublondiruyuschihprepa"
 module: "fundamentalnaya-teoriya-koloristiki-predobuchenie"
 date: "2025-12-10"

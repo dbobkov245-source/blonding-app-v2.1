@@ -1,5 +1,5 @@
 ---
-title: "urok8"
+title: "Основное правило колористики."
 slug: "urok8"
 module: "fundamentalnaya-teoriya-koloristiki-predobuchenie"
 date: "2025-12-10"

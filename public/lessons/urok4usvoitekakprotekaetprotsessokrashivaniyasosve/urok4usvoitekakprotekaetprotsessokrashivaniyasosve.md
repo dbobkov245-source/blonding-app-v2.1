@@ -1,5 +1,5 @@
 ---
-title: "urok4usvoitekakprotekaetprotsessokrashivaniyasosve"
+title: "Натуральные пигменты."
 slug: "urok4usvoitekakprotekaetprotsessokrashivaniyasosve"
 module: "fundamentalnaya-teoriya-koloristiki-predobuchenie"
 date: "2025-12-10"

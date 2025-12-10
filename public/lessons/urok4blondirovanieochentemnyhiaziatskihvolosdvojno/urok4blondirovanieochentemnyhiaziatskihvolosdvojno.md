@@ -1,5 +1,5 @@
 ---
-title: "urok4blondirovanieochentemnyhiaziatskihvolosdvojno"
+title: "Резистентные волосы. Осветление очень темных волос."
 slug: "urok4blondirovanieochentemnyhiaziatskihvolosdvojno"
 module: "blondirovanie"
 date: "2025-12-10"

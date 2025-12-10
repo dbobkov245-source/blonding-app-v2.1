@@ -86,8 +86,17 @@ async function processLessonFile(file, moduleSourceDir, moduleSlug) {
     return null;
   }
 
+  // Extract title from content
   const titleMatch = content.match(/^# (.*)$/m);
-  if (titleMatch?.[1]) title = titleMatch[1].trim();
+  const boldTitleMatch = content.match(/^\*\*(.*)\*\*/m);
+
+  if (titleMatch?.[1]) {
+    title = titleMatch[1].trim();
+  } else if (boldTitleMatch?.[1]) {
+    title = boldTitleMatch[1].trim();
+    // Optional: If the bold title is very long, maybe we shouldn't use it? 
+    // But for now, it's better than the filename.
+  }
 
   const mdFile = `---
 title: "${title}"

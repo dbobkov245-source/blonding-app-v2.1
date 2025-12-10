@@ -1,5 +1,5 @@
 ---
-title: "urok1"
+title: "Как проходить уроки предобучения?"
 slug: "urok1"
 module: "fundamentalnaya-teoriya-koloristiki-predobuchenie"
 date: "2025-12-10"

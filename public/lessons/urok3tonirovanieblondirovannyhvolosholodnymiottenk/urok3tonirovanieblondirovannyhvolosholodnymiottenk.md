@@ -1,5 +1,5 @@
 ---
-title: "urok3tonirovanieblondirovannyhvolosholodnymiottenk"
+title: "Работа с переосветленными базами и с базами с высокой пористостью."
 slug: "urok3tonirovanieblondirovannyhvolosholodnymiottenk"
 module: "tonirovanie"
 date: "2025-12-10"

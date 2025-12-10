@@ -1,5 +1,5 @@
 ---
-title: "urok9poimeteznacheniernpriblondirovaniiiokrashivan"
+title: "Воздействие блондирующего порошка на структуру волос или почему волосы отваливаются."
 slug: "urok9poimeteznacheniernpriblondirovaniiiokrashivan"
 module: "fundamentalnaya-teoriya-koloristiki-predobuchenie"
 date: "2025-12-10"

@@ -1,5 +1,5 @@
 ---
-title: "urok10izuchiteblondirovaniena12okisliteleproanaliz"
+title: "Воздействие блондирующего порошка на структуру волос или почему волосы отваливаются."
 slug: "urok10izuchiteblondirovaniena12okisliteleproanaliz"
 module: "fundamentalnaya-teoriya-koloristiki-predobuchenie"
 date: "2025-12-10"

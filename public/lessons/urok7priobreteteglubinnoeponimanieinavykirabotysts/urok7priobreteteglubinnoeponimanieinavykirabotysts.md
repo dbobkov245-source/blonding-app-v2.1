@@ -1,5 +1,5 @@
 ---
-title: "urok7priobreteteglubinnoeponimanieinavykirabotysts"
+title: "Основное правило колористики."
 slug: "urok7priobreteteglubinnoeponimanieinavykirabotysts"
 module: "fundamentalnaya-teoriya-koloristiki-predobuchenie"
 date: "2025-12-10"

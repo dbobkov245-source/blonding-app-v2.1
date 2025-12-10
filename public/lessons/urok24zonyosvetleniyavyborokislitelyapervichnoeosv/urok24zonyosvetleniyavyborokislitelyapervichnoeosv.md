@@ -1,5 +1,5 @@
 ---
-title: "urok24zonyosvetleniyavyborokislitelyapervichnoeosv"
+title: "Как осветляются волосы на разных участках. 4 участка осветления."
 slug: "urok24zonyosvetleniyavyborokislitelyapervichnoeosv"
 module: "blondirovanie"
 date: "2025-12-10"

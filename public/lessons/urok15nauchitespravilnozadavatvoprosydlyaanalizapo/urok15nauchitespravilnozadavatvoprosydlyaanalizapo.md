@@ -1,5 +1,5 @@
 ---
-title: "urok15nauchitespravilnozadavatvoprosydlyaanalizapo"
+title: "Диалог с клиентом перед блондированием: правило 14 пунктов."
 slug: "urok15nauchitespravilnozadavatvoprosydlyaanalizapo"
 module: "fundamentalnaya-teoriya-koloristiki-predobuchenie"
 date: "2025-12-10"

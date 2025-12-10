@@ -1,5 +1,5 @@
 ---
-title: "urok1vyborkrasitelyaiokislitelyapritonirovaniiprav"
+title: "Сверхточные весы."
 slug: "urok1vyborkrasitelyaiokislitelyapritonirovaniiprav"
 module: "tonirovanie"
 date: "2025-12-10"

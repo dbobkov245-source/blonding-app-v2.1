@@ -1,5 +1,5 @@
 ---
-title: "urok4predotvraschenienezhelatelnyhottenkovpritonir"
+title: "Как бороться с негативными оттенками при тонировании (матовый, зеленый, фиолетовый, голубой, слишком серый)."
 slug: "urok4predotvraschenienezhelatelnyhottenkovpritonir"
 module: "tonirovanie"
 date: "2025-12-10"

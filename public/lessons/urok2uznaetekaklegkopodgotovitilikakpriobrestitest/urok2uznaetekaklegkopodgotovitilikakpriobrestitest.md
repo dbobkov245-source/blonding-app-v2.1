@@ -1,5 +1,5 @@
 ---
-title: "urok2uznaetekaklegkopodgotovitilikakpriobrestitest"
+title: "Для чего нужны тестовые пряди"
 slug: "urok2uznaetekaklegkopodgotovitilikakpriobrestitest"
 module: "fundamentalnaya-teoriya-koloristiki-predobuchenie"
 date: "2025-12-10"

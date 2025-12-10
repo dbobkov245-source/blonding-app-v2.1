@@ -1,5 +1,5 @@
 ---
-title: "urok1podgotovkaklientakblondirovaniyu"
+title: "Чистые или грязные?"
 slug: "urok1podgotovkaklientakblondirovaniyu"
 module: "blondirovanie"
 date: "2025-12-10"
