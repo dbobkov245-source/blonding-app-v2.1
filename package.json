@@ -18,7 +18,7 @@
     "type-check": "tsc --noEmit",
     "generate-lessons": "node scripts/generate-md.js",
     "generate-quizzes": "node scripts/generate-quizzes.js",
-    "generate-all": "npm run generate-lessons && npm run generate-quizzes",
+    "generate-all": "npm run generate-lessons",
     "test-quiz": "node -e \"import('./scripts/generate-quizzes.js').then(m => m.generateAllQuizzes())\"",
     "validate-token": "node -e \"import('./src/lib/ai.js').then(m => m.validateHFToken(process.env.HF_TOKEN)).then(console.log)\"",
     "clean-cache": "rm -rf .next/cache && rm -rf node_modules/.cache",
