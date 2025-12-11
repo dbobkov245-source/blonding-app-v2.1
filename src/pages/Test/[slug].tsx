@@ -70,22 +70,22 @@ const TestPage: React.FC<TestPageProps> = ({ quiz, lessonSlug }) => {
   // --- UI: Тест ---
   return (
     <div className="max-w-3xl mx-auto p-4 md:p-8">
-      <div className="mb-6">
+      <div className="mb-4">
         <Link
           href="/"
-          className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+          className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-purple-600 transition-colors"
         >
-          {'<'} Вернуться на главную
+          <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          К списку
         </Link>
       </div>
 
-      <header className="text-center mb-8">
-        <h1 className="font-heading text-3xl font-bold text-gray-900 mb-2">
-          Тест: {lessonSlug}
+      <header className="text-center mb-6">
+        <h1 className="text-2xl font-bold text-slate-900">
+          Тест
         </h1>
-        <p className="text-lg text-gray-600">
-          Проверьте свои знания.
-        </p>
       </header>
 
       <div className="space-y-6">

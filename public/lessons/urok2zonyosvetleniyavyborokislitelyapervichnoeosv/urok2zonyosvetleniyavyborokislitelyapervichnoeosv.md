@@ -2,7 +2,7 @@
 title: "Как осветляются волосы на разных участках. 4 участка осветления."
 slug: "urok2zonyosvetleniyavyborokislitelyapervichnoeosv"
 module: "blondirovanie"
-date: "2025-12-10"
+date: "2025-12-11"
 ---
 
 **Как осветляются волосы на разных участках. 4 участка осветления.**

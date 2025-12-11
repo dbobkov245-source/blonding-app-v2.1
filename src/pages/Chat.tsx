@@ -20,7 +20,7 @@ export default function EnhancedChat() {
   const [currentLesson, setCurrentLesson] = useState<LessonContext | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [lastRequestTime, setLastRequestTime] = useState<number>(0);
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -152,7 +152,7 @@ export default function EnhancedChat() {
   };
 
   const clearHistory = () => {
-    if (window.confirm('Очистить историю чата?')) { 
+    if (window.confirm('Очистить историю чата?')) {
       setMessages([]);
     }
   };
@@ -172,8 +172,8 @@ export default function EnhancedChat() {
             </p>
           )}
         </div>
-        <button 
-          onClick={clearHistory} 
+        <button
+          onClick={clearHistory}
           className="text-sm text-red-600 hover:text-red-800 px-3 py-1 border border-red-300 rounded-md"
         >
           Очистить историю
@@ -214,9 +214,8 @@ export default function EnhancedChat() {
                 className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div className={`flex items-start gap-3 max-w-[75%] ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-2xl flex-shrink-0 ${
-                    m.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gradient-to-br from-purple-500 to-pink-500 text-white'
-                  }`}>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-2xl flex-shrink-0 ${m.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gradient-to-br from-purple-500 to-pink-500 text-white'
+                    }`}>
                     {m.role === 'user' ? '👤' : '🤖'}
                   </div>
                   <div className={`rounded-2xl px-4 py-3 ${m.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'}`}>
@@ -239,8 +238,8 @@ export default function EnhancedChat() {
           {uploadedImage && (
             <div className="mb-3 relative inline-block">
               <img src={uploadedImage} alt="Preview" className="h-20 rounded-lg border-2 border-blue-400" />
-              <button 
-                onClick={removeImage} 
+              <button
+                onClick={removeImage}
                 className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold hover:bg-red-600"
               >
                 ×
@@ -250,14 +249,14 @@ export default function EnhancedChat() {
 
           {messages.length > 0 && messages[messages.length - 1].role === 'assistant' && (
             <div className="mb-3 flex gap-2">
-              <button 
-                onClick={() => handleQuickQuestion('Объясни проще')} 
+              <button
+                onClick={() => handleQuickQuestion('Объясни проще')}
                 className="text-xs px-3 py-1 bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200"
               >
                 Объясни проще
               </button>
-              <button 
-                onClick={() => handleQuickQuestion('Приведи пример')} 
+              <button
+                onClick={() => handleQuickQuestion('Приведи пример')}
                 className="text-xs px-3 py-1 bg-green-100 text-green-700 rounded-full hover:bg-green-200"
               >
                 Приведи пример
@@ -266,39 +265,39 @@ export default function EnhancedChat() {
           )}
 
           <div className="flex gap-2">
-            <button 
-              onClick={() => fileInputRef.current?.click()} 
-              className="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" 
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
               title="Прикрепить изображение"
             >
               📎
             </button>
-            <input 
-              ref={fileInputRef} 
-              type="file" 
-              accept="image/*" 
-              onChange={handleImageUpload} 
-              className="hidden" 
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
             />
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
-              className="flex-1 p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Задайте вопрос... (Shift+Enter для новой строки)"
-              rows={2}
+              className="flex-1 p-3 border border-gray-300 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 text-base"
+              placeholder="Задайте вопрос..."
+              rows={3}
               onKeyDown={handleKeyDown}
             />
             <button
               onClick={() => send()}
               disabled={loading || (!text.trim() && !uploadedImage)}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium"
+              className={`p-3 rounded-full transition-all duration-200 ${text.trim() || uploadedImage ? 'bg-purple-600 text-white hover:bg-purple-700 hover:scale-105 active:scale-95' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}`}
             >
               {loading ? (
-                <span className="flex items-center gap-2">
-                  <span className="animate-spin">⏳</span> Думаю...
-                </span>
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
-                'Отправить'
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
               )}
             </button>
           </div>

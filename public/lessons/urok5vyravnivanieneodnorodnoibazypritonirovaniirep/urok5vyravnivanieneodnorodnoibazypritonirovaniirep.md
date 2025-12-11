@@ -2,7 +2,7 @@
 title: "Выравнивание неоднородной базы перед тонированием:"
 slug: "urok5vyravnivanieneodnorodnoibazypritonirovaniirep"
 module: "tonirovanie"
-date: "2025-12-10"
+date: "2025-12-11"
 ---
 
 **Выравнивание неоднородной базы перед тонированием:**

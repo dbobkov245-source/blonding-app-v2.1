@@ -2,7 +2,7 @@
 title: "Блондированние корней."
 slug: "urok5blondirovaniekornejraznojdlinyblondirovaniene"
 module: "blondirovanie"
-date: "2025-12-10"
+date: "2025-12-11"
 ---
 
 **Блондированние корней.**
