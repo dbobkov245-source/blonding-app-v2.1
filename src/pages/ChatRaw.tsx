@@ -37,7 +37,7 @@ export default function ChatRaw() {
       const res = await fetch('/api/proxy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           inputs: messageText,
           // Свободный режим чата без системного промпта
         }),
@@ -69,7 +69,7 @@ export default function ChatRaw() {
   };
 
   const clearHistory = () => {
-    if (confirm('Очистить историю чата?')) { 
+    if (confirm('Очистить историю чата?')) {
       setMessages([]);
     }
   };
@@ -92,8 +92,8 @@ export default function ChatRaw() {
             Свободное общение с Qwen2.5-72B без ограничений
           </p>
         </div>
-        <button 
-          onClick={clearHistory} 
+        <button
+          onClick={clearHistory}
           className="text-sm text-red-600 hover:text-red-800 px-3 py-1 border border-red-300 rounded-md"
         >
           Очистить историю
@@ -115,9 +115,8 @@ export default function ChatRaw() {
                 className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div className={`flex items-start gap-3 max-w-[75%] ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-2xl flex-shrink-0 ${
-                    m.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gradient-to-br from-purple-500 to-pink-500 text-white'
-                  }`}>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-2xl flex-shrink-0 ${m.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gradient-to-br from-purple-500 to-pink-500 text-white'
+                    }`}>
                     {m.role === 'user' ? '👤' : '🤖'}
                   </div>
                   <div className={`rounded-2xl px-4 py-3 ${m.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'}`}>
@@ -138,22 +137,22 @@ export default function ChatRaw() {
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
-              className="flex-1 p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Ваше сообщение... (Shift+Enter для новой строки)"
-              rows={2}
+              className="flex-1 p-3 border border-gray-300 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 text-base"
+              placeholder="Ваше сообщение..."
+              rows={3}
               onKeyDown={handleKeyDown}
             />
             <button
               onClick={() => send()}
               disabled={loading || !text.trim()}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium"
+              className={`p-3 rounded-full transition-all duration-200 ${text.trim() ? 'bg-purple-600 text-white hover:bg-purple-700 hover:scale-105 active:scale-95' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}`}
             >
               {loading ? (
-                <span className="flex items-center gap-2">
-                  <span className="animate-spin">⏳</span> Думаю...
-                </span>
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
-                'Отправить'
+                <svg className="w-5 h-5 -rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
               )}
             </button>
           </div>

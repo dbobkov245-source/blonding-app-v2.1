@@ -104,7 +104,7 @@ export default function ChatInterface({ onSendMessage, isLoading = false }: Chat
                         disabled={!input.trim() || isLoading}
                         className={`p-3 rounded-full transition-all duration-200 transform ${input.trim() ? 'bg-purple-600 text-white shadow-md hover:scale-105 active:scale-95' : 'bg-slate-100 text-slate-300 cursor-not-allowed'}`}
                     >
-                        <svg className="w-5 h-5 translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-5 h-5 -rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                         </svg>
                     </button>
