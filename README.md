@@ -284,6 +284,41 @@ npm run dev
 - [Дополнительное тепло при блондировании. Время выдержки при блондировании. Предельное время выдержки.  Постобработка волос - 4 концепции финального мытья.](/Theory/urok7dopolnitelnoeteplopriblondirovaniivremyavyder)
 
 ### тонирование
+- [Урок 1. Выбор красителя и окислителя при тонировании. Правильное нанесение при тонировании. Время выдержки. Последующий уход.](/Theory/urok-1-vybor-krasitelya-i-okislitelya-pri-tonirovanii-pravilnoe-nanesenie-pri-to)
+- [Урок 2. Нейтрализация желтого и желто-оранжевого ФО. Индивидуальное портфолио колориста.](/Theory/urok-2-neitralizatsiya-zheltogo-i-zhelto-oranzhevogo-fo-individualnoe-portfolio-)
+- [Урок 3. Тонирование блондированных волос холодными оттенками. Тонирование тепло-холодными и теплыми оттенками.](/Theory/urok-3-tonirovanie-blondirovannyh-volos-holodnymi-ottenkami-tonirovanie-teplo-ho)
+- [Урок 4. Предотвращение нежелательных оттенков при тонировании.](/Theory/urok-4-predotvrashchenie-nezhelatelnyh-ottenkov-pri-tonirovanii)
+- [Урок 5. Выравнивание неоднородной базы при тонировании. Репигментация переосветленных участков.](/Theory/urok-5-vyravnivanie-neodnorodnoi-bazy-pri-tonirovanii-repigmentatsiya-pereosvetl)
+- [Урок 6. Снежно-белые формулы тонирования.](/Theory/urok-6-snezhno-belye-formuly-tonirovaniya)
+
+### ФУНДАМЕНТАЛЬНАЯ ТЕОРИЯ КОЛОРИСТИКИ (ПРЕДОБУЧЕНИЕ)
+- [Урок 1](/Theory/urok-1)
+- [Урок 2](/Theory/urok-2)
+- [Урок 3](/Theory/urok-3)
+- [Урок 4](/Theory/urok-4)
+- [Урок 5](/Theory/urok-5)
+- [Урок 6](/Theory/urok-6)
+- [Урок 7](/Theory/urok-7)
+- [Урок 8](/Theory/urok-8)
+- [Урок 9](/Theory/urok-9)
+- [Урок 10](/Theory/urok-10)
+- [Урок 11](/Theory/urok-11)
+- [Урок 12](/Theory/urok-12)
+- [Урок 13](/Theory/urok-13)
+- [Урок 14](/Theory/urok-14)
+- [Урок 15](/Theory/urok-15)
+- [Урок 16](/Theory/urok-16)
+
+### блондирование
+- [Чистые или грязные?](/Theory/urok1podgotovkaklientakblondirovaniyu)
+- [Как осветляются волосы на разных участках. 4 участка осветления.](/Theory/urok2zonyosvetleniyavyborokislitelyapervichnoeosv)
+- [12% окислитель при блондировании волос.](/Theory/urok3opbonusnyjurok)
+- [Резистентные волосы. Осветление очень темных волос.](/Theory/urok4blondirovanieochentemnyhiaziatskihvolosdvojno)
+- [Блондированние корней.](/Theory/urok5blondirovaniekornejraznojdlinyblondirovaniene)
+- [Блондирование ранее осветленных волос.](/Theory/urok6blondirovanieosvetlyonnyhvolosblondirovaniese)
+- [Дополнительное тепло при блондировании. Время выдержки при блондировании. Предельное время выдержки.  Постобработка волос - 4 концепции финального мытья.](/Theory/urok7dopolnitelnoeteplopriblondirovaniivremyavyder)
+
+### тонирование
 - [Сверхточные весы.](/Theory/urok1vyborkrasitelyaiokislitelyapritonirovaniiprav)
 - [Перед просмотром урока в обязательном порядке просмотрите урок 4 из ПРЕДОБУЧЕНИЯ.](/Theory/urok2neitralizatsiyazheltogoizhelto-oranzhevogofoi)
 - [Работа с переосветленными базами и с базами с высокой пористостью.](/Theory/urok3tonirovanieblondirovannyhvolosholodnymiottenk)
