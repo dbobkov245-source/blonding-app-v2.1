@@ -195,23 +195,6 @@ async function generateLessons() {
 
   fs.writeFileSync(path.join(outPublicDir, 'index.json'), JSON.stringify(indexData, null, 2), 'utf-8');
 
-  // Обновляем README
-  if (fs.existsSync(readmeFile)) {
-    try {
-      let readme = fs.readFileSync(readmeFile, 'utf-8');
-      const list = modulesData.map(m =>
-        `### ${m.name}\n` + m.lessons.map(l => `- [${l.title}](/Theory/${encodeURIComponent(l.slug)})`).join('\n')
-      ).join('\n\n');
-      const sectionHeader = '## Уроки';
-      if (readme.includes(sectionHeader)) {
-        readme = readme.replace(/(## Уроки[\s\S]*?)(?=##|$)/, `${sectionHeader}\n\n${list}\n\n`);
-      } else {
-        readme += `\n${sectionHeader}\n\n${list}\n`;
-      }
-      fs.writeFileSync(readmeFile, readme, 'utf-8');
-    } catch { }
-  }
-
   const totalLessons = flatLessons.length;
   console.log(`\n[generate-md] ✅ Готово! ${totalLessons} уроков в ${modulesData.length} модулях.`);
 }
