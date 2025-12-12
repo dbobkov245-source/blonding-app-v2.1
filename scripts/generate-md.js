@@ -145,11 +145,11 @@ async function processModule(moduleName) {
     files.map(file => processLessonFile(file, moduleSourceDir, moduleSlug, moduleName))
   )).filter(Boolean);
 
-  // Sort lessons numerically based on slug (most reliable)
+  // Sort lessons numerically based on slug
   lessons.sort((a, b) => {
     const getNum = (item) => {
-      // Slug format: "urok-1..." or "urok1..." - extract number
-      const match = item.slug.match(/^urok-?(\d+)/i);
+      // Extract number from slug: "urok-1", "balayazh-urok-2", etc.
+      const match = item.slug.match(/(\d+)$/);
       return match ? parseInt(match[1], 10) : 999;
     };
     return getNum(a) - getNum(b);

@@ -247,14 +247,14 @@ export default function EnhancedChat() {
         >
           <div className="flex items-center gap-2">
             <h2 className="text-lg sm:text-xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors">
-              {currentLesson ? 'AI-консультант' : 'Свободный чат'}
+              AI-консультант
             </h2>
             <svg className="w-4 h-4 text-gray-400 group-hover:text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </div>
           <p className="text-xs text-gray-500 mt-0.5 truncate max-w-[200px] sm:max-w-sm">
-            {currentLesson ? `Контекст: ${currentLesson.title}` : 'Без контекста (выбрать урок)'}
+            {currentLesson ? currentLesson.title : 'Выбрать контекст урока'}
           </p>
         </div>
         <button
@@ -327,16 +327,15 @@ export default function EnhancedChat() {
         </div>
       )}
 
-      {/* Quick questions when empty - compact mobile version */}
+      {/* Quick questions when empty - 3 row wrapped layout */}
       {messages.length === 0 && !isContextModalOpen && (
-        <div className="flex-none px-3 py-2 bg-slate-50/80 border-b border-slate-100">
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-            <span className="text-xs text-gray-400 whitespace-nowrap shrink-0">Быстро:</span>
-            {quickQuestions.slice(0, 4).map((q, i) => (
+        <div className="flex-none p-3 bg-slate-50/80 border-b border-slate-100">
+          <div className="flex flex-wrap justify-center gap-2">
+            {quickQuestions.map((q, i) => (
               <button
                 key={i}
                 onClick={() => handleQuickQuestion(q.text)}
-                className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-xs text-gray-600 hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700 transition-all shadow-sm active:scale-95 whitespace-nowrap shrink-0"
+                className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-xs text-gray-600 hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700 transition-all shadow-sm active:scale-95"
               >
                 {q.emoji} {q.text}
               </button>
