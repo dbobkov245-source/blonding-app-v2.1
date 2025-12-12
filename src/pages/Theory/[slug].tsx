@@ -336,8 +336,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     const titleMatch = rawText.match(/title:\s*"([^"]+)"/);
     const moduleMatch = rawText.match(/module:\s*"([^"]+)"/);
     const title = titleMatch ? titleMatch[1] : decodedSlug;
-    const module = moduleMatch ? moduleMatch[1] : undefined;
-    return { props: { lesson: { title, content, slug: decodedSlug, module } } };
+    const lessonModule = moduleMatch ? moduleMatch[1] : undefined;
+    return { props: { lesson: { title, content, slug: decodedSlug, module: lessonModule } } };
   } catch (e: any) {
     return { props: { lesson: null } };
   }
