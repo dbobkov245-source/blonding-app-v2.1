@@ -10,7 +10,7 @@ const outPublicDir = './public/lessons';
 const readmeFile = './README.md';
 
 // Список модулей курса (папки в lessons/)
-const MODULES = ['ФУНДАМЕНТАЛЬНАЯ ТЕОРИЯ КОЛОРИСТИКИ (ПРЕДОБУЧЕНИЕ)', 'блондирование', 'тонирование', 'балаяж'];
+const MODULES = ['ФУНДАМЕНТАЛЬНАЯ ТЕОРИЯ КОЛОРИСТИКИ (ПРЕДОБУЧЕНИЕ)', 'блондирование', 'тонирование', 'балаяж', 'ДОПОЛНИТЕЛЬНЫЕ МАТЕРИАЛЫ'];
 
 const turndownService = new TurndownService();
 
