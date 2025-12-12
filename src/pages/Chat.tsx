@@ -327,18 +327,16 @@ export default function EnhancedChat() {
         </div>
       )}
 
-      {/* Quick questions when empty */}
+      {/* Quick questions when empty - compact mobile version */}
       {messages.length === 0 && !isContextModalOpen && (
-        <div className="flex-none p-4 bg-slate-50">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 text-center">
-            Быстрые вопросы
-          </p>
-          <div className="flex flex-wrap justify-center gap-2">
-            {quickQuestions.map((q, i) => (
+        <div className="flex-none px-3 py-2 bg-slate-50/80 border-b border-slate-100">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+            <span className="text-xs text-gray-400 whitespace-nowrap shrink-0">Быстро:</span>
+            {quickQuestions.slice(0, 4).map((q, i) => (
               <button
                 key={i}
                 onClick={() => handleQuickQuestion(q.text)}
-                className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-700 hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700 transition-all shadow-sm active:scale-95"
+                className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-xs text-gray-600 hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700 transition-all shadow-sm active:scale-95 whitespace-nowrap shrink-0"
               >
                 {q.emoji} {q.text}
               </button>

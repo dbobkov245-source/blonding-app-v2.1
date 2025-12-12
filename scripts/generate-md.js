@@ -39,10 +39,20 @@ function slugifyModule(moduleName) {
 
 if (!fs.existsSync(outPublicDir)) fs.mkdirSync(outPublicDir, { recursive: true });
 
-async function processLessonFile(file, moduleSourceDir, moduleSlug) {
+async function processLessonFile(file, moduleSourceDir, moduleSlug, moduleName) {
   const filePath = path.join(moduleSourceDir, file);
   const baseName = path.basename(file, path.extname(file));
-  const slug = slugify(baseName);
+
+  // Special handling for балаяж module: use numbered slugs
+  let slug;
+  if (moduleName === 'балаяж') {
+    const lessonNumMatch = baseName.match(/^(\d+)/);
+    const lessonNum = lessonNumMatch ? lessonNumMatch[1] : '0';
+    slug = `balayazh-urok-${lessonNum}`;
+  } else {
+    slug = slugify(baseName);
+  }
+
   const ext = path.extname(file);
   const lessonPublicDir = path.join(outPublicDir, slug);
   const lessonPublicImgDir = path.join(lessonPublicDir, 'images');
@@ -132,7 +142,7 @@ async function processModule(moduleName) {
   console.log(`[generate-md] 📚 Модуль "${moduleName}": ${files.length} файлов`);
 
   const lessons = (await Promise.all(
-    files.map(file => processLessonFile(file, moduleSourceDir, moduleSlug))
+    files.map(file => processLessonFile(file, moduleSourceDir, moduleSlug, moduleName))
   )).filter(Boolean);
 
   // Sort lessons numerically based on slug (most reliable)
