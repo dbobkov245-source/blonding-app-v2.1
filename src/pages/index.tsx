@@ -19,7 +19,7 @@ interface HomeProps {
 }
 
 // Иконки и цвета для модулей (сохранены из оригинала)
-const MODULE_STYLES: Record<string, { icon: string; color: string; bgColor: string }> = {
+const MODULE_STYLES: Record<string, { icon: string; image?: string; color: string; bgColor: string }> = {
   'fundamentalnaya-teoriya-koloristiki-predobuchenie': {
     icon: '📚',
     color: 'text-purple-600',
@@ -34,6 +34,17 @@ const MODULE_STYLES: Record<string, { icon: string; color: string; bgColor: stri
     icon: '🎨',
     color: 'text-blue-600',
     bgColor: 'from-blue-500 to-cyan-600',
+  },
+  'balayazh': {
+    icon: '✨',
+    image: '/images/balayage-icon.png',
+    color: 'text-amber-700',
+    bgColor: 'from-amber-400 to-orange-500',
+  },
+  'dopolnitelnye-materialy': {
+    icon: '📋',
+    color: 'text-emerald-600',
+    bgColor: 'from-emerald-500 to-teal-600',
   },
 };
 
@@ -118,8 +129,12 @@ const Home = ({ modules }: HomeProps) => {
                   <div className="absolute left-0 top-4 bottom-4 w-1 bg-gradient-to-b ${style.bgColor} rounded-r-full opacity-80" />
                   <div className="flex items-center justify-between ml-3">
                     <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${style.bgColor} flex items-center justify-center text-2xl shadow-sm`}>
-                        {style.icon}
+                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${style.bgColor} flex items-center justify-center text-2xl shadow-sm overflow-hidden`}>
+                        {style.image ? (
+                          <img src={style.image} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          style.icon
+                        )}
                       </div>
                       <div className="flex-1">
                         <h3 className="text-base font-bold text-slate-800 leading-tight mb-1 group-hover:text-purple-700 transition-colors line-clamp-2">
