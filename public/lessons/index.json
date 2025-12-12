@@ -14,6 +14,11 @@
       "name": "тонирование",
       "slug": "tonirovanie",
       "lessonsCount": 6
+    },
+    {
+      "name": "Техника Балаяж",
+      "slug": "balayazh",
+      "lessonsCount": 16
     }
   ],
   "lessons": {
@@ -137,6 +142,72 @@
       {
         "slug": "urok-6-snezhno-belye-formuly-tonirovaniya",
         "title": "Урок 6. Снежно-белые формулы тонирования."
+      }
+    ],
+    "balayazh": [
+      {
+        "slug": "balayazh-urok-1",
+        "title": "Урок 1. Что такое открытые техники. Почему они так популярны"
+      },
+      {
+        "slug": "balayazh-urok-2",
+        "title": "Урок 2. Коммерческая выгода быстрых техник"
+      },
+      {
+        "slug": "balayazh-urok-3",
+        "title": "Урок 3. Эффект при работе с открытыми техниками"
+      },
+      {
+        "slug": "balayazh-urok-4",
+        "title": "Урок 4. Изоляция прядей при балаяже (4 способа)"
+      },
+      {
+        "slug": "balayazh-urok-5",
+        "title": "Урок 5. Балаяж на натуральной и косметической базе"
+      },
+      {
+        "slug": "balayazh-urok-6",
+        "title": "Урок 6. Инструменты и аксессуары для балаяжа"
+      },
+      {
+        "slug": "balayazh-urok-7",
+        "title": "Урок 7. Разделение на зоны"
+      },
+      {
+        "slug": "balayazh-urok-8",
+        "title": "Урок 8. Оттяжка при балаяже"
+      },
+      {
+        "slug": "balayazh-urok-9",
+        "title": "Урок 9. Повторный балаяж"
+      },
+      {
+        "slug": "balayazh-urok-10",
+        "title": "Урок 10. Время выдержки"
+      },
+      {
+        "slug": "balayazh-urok-11",
+        "title": "Урок 11. Акценты и виды контуринга при балаяже"
+      },
+      {
+        "slug": "balayazh-urok-12",
+        "title": "Урок 12. Тонирование после балаяжа"
+      },
+      {
+        "slug": "balayazh-urok-13",
+        "title": "Урок 13. Балаяж как выход из темного цвета"
+      },
+      {
+        "slug": "balayazh-urok-14",
+        "title": "Урок 14. Балаяж с эффектом омбре"
+      },
+      {
+        "slug": "balayazh-urok-15",
+        "title": "Урок 15. Балаяж для восточной внешности"
+      },
+      {
+        "slug": "balayazh-urok-16",
+        "title": "Урок 16. Схемы балаяж"
       }
     ]
   }

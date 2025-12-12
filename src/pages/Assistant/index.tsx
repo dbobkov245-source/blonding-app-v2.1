@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'; // Добавлен useCallback
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 const synthesisAvailable = typeof window !== 'undefined' && 'speechSynthesis' in window;
 
@@ -16,6 +16,7 @@ export default function VoiceAssistant() {
   const [recognizedText, setRecognizedText] = useState('');
   const [isMobile, setIsMobile] = useState(false);
   const [lastRequestTime, setLastRequestTime] = useState<number>(0);
+  const [playingIndex, setPlayingIndex] = useState<number | null>(null);
 
   const abortRef = useRef<AbortController | null>(null);
   const recognitionRef = useRef<any>(null);
@@ -28,19 +29,24 @@ export default function VoiceAssistant() {
     scrollToBottom();
   }, [messages]);
 
-  /* ---------- Отправка запроса (useCallback для стабильности) ---------- */
+  // Cleanup speech on unmount
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
   const sendMessage = useCallback(async (text: string, isVoiceInput = false) => {
     if (!text.trim()) return;
 
-    // ✅ Защита от спама (2 сек)
     const now = Date.now();
     if (now - lastRequestTime < 2000) {
-      alert('Подождите немного перед следующим запросом');
       return;
     }
     setLastRequestTime(now);
 
-    // ✅ Прерываем предыдущий запрос
     if (abortRef.current) {
       abortRef.current.abort();
       abortRef.current = null;
@@ -56,11 +62,6 @@ export default function VoiceAssistant() {
     setMessages((m) => [...m, userMsg]);
     setIsLoading(true);
 
-    // ✅ Чистим старые ошибки
-    setMessages((m) =>
-      m.filter((msg) => !(msg.role === 'assistant' && msg.text.includes('Ошибка')))
-    );
-
     const controller = new AbortController();
     abortRef.current = controller;
 
@@ -73,13 +74,10 @@ export default function VoiceAssistant() {
           systemPrompt: `Ты — голосовой ассистент для колориста. Отвечай кратко, по существу.`,
         }),
         signal: controller.signal,
-        // @ts-ignore
-        timeout: 30000,
       });
 
       if (!res.ok) {
-        const details = await res.text();
-        throw new Error(`Сервер вернул ${res.status}: ${details}`);
+        throw new Error(`Сервер вернул ${res.status}`);
       }
 
       const json = await res.json();
@@ -91,41 +89,52 @@ export default function VoiceAssistant() {
 
       setMessages((m) => [...m, assistantMsg]);
     } catch (err: any) {
-      // ✅ Точная причина сбоя
-      let userText = 'Ошибка соединения. Попробуйте позже.';
-      if (err.name === 'AbortError') userText = 'Запрос отменён.';
-      if (err.message?.includes('429')) userText = 'Слишком много запросов. Подождите минуту.';
-      if (err.message?.includes('timeout')) userText = 'Таймаут запроса. Попробуйте ещё раз.';
-      if (err.message?.includes('500')) userText = 'Сервер перегружен. Подождите минуту.';
-
-      const errorMsg: VoiceMessage = {
-        role: 'assistant',
-        text: userText,
-        timestamp: new Date().toISOString(),
-      };
-      setMessages((m) => [...m, errorMsg]);
-
-      console.error('[VoiceAssistant] Fetch error:', err);
+      if (err.name !== 'AbortError') {
+        const errorMsg: VoiceMessage = {
+          role: 'assistant',
+          text: 'Ошибка соединения. Попробуйте позже.',
+          timestamp: new Date().toISOString(),
+        };
+        setMessages((m) => [...m, errorMsg]);
+      }
     } finally {
-      // ✅ ГАРАНТИРОВАННО снимаем флаг
       setIsLoading(false);
       abortRef.current = null;
     }
-  }, [lastRequestTime]); // Зависимости для useCallback
+  }, [lastRequestTime]);
 
-  /* ---------- Кнопка «Стоп» ---------- */
+  // Toggle speech - stop if playing, start if not
+  const toggleSpeech = (text: string, index: number) => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+
+    // If this message is currently playing, stop it
+    if (playingIndex === index) {
+      window.speechSynthesis.cancel();
+      setPlayingIndex(null);
+      return;
+    }
+
+    // Stop any current speech first
+    window.speechSynthesis.cancel();
+
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'ru-RU';
+    utter.rate = 0.95;
+
+    utter.onend = () => setPlayingIndex(null);
+    utter.onerror = () => setPlayingIndex(null);
+
+    window.speechSynthesis.speak(utter);
+    setPlayingIndex(index);
+  };
+
   const stopSpeaking = () => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
+      setPlayingIndex(null);
     }
-    if (abortRef.current) {
-      abortRef.current.abort();
-      abortRef.current = null;
-    }
-    setIsLoading(false);
   };
 
-  /* ---------- Распознавание речи ---------- */
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const SpeechRecognition =
@@ -139,13 +148,13 @@ export default function VoiceAssistant() {
 
     rec.onresult = (e: any) => {
       let finalTranscript = '';
-      let interimTranscript = ''; // ✅ ИСПРАВЛЕНО: объявлена переменная
+      let interimTranscript = '';
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const t = e.results[i][0].transcript;
         if (e.results[i].isFinal) {
           finalTranscript = t;
         } else {
-          interimTranscript += t; // ✅ Используем правильную переменную
+          interimTranscript += t;
         }
       }
       setRecognizedText(finalTranscript || interimTranscript);
@@ -162,7 +171,7 @@ export default function VoiceAssistant() {
     rec.onend = () => setIsRecording(false);
 
     recognitionRef.current = rec;
-  }, [sendMessage]); // ✅ ИСПРАВЛЕНО: добавлена зависимость
+  }, [sendMessage]);
 
   const toggleRecording = () => {
     if (!recognitionRef.current) return;
@@ -175,18 +184,6 @@ export default function VoiceAssistant() {
     }
   };
 
-  /* ---------- Синтез речи ---------- */
-  const speakResponse = (text: string) => {
-    if (typeof window === 'undefined') return;
-    if (!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'ru-RU';
-    utter.rate = 0.9;
-    window.speechSynthesis.speak(utter);
-  };
-
-  /* ---------- Адаптивность ---------- */
   useEffect(() => {
     const check = () =>
       setIsMobile(typeof window !== 'undefined' && window.innerWidth < 768);
@@ -197,9 +194,7 @@ export default function VoiceAssistant() {
     }
   }, []);
 
-  /* ---------- UI ---------- */
   const buttonSize = isMobile ? 'w-20 h-20 text-3xl' : 'w-24 h-24 text-4xl';
-  const messageSize = isMobile ? 'max-w-[85%] text-sm' : 'max-w-[75%]';
 
   return (
     <div className="max-w-4xl mx-auto p-2 sm:p-4">
@@ -216,7 +211,7 @@ export default function VoiceAssistant() {
             onClick={toggleRecording}
             disabled={isLoading}
             className={`relative ${buttonSize} rounded-full flex items-center justify-center transition-all
-            ${isRecording ? 'bg-red-500 animate-pulse-record' : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:scale-105'}
+            ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:scale-105'}
             ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <span className={isMobile ? 'text-3xl' : 'text-4xl'}>
@@ -236,14 +231,6 @@ export default function VoiceAssistant() {
           </div>
 
           <div className="flex gap-2 sm:gap-3 mt-3 sm:mt-4 w-full justify-center">
-            {synthesisAvailable && window.speechSynthesis?.speaking && (
-              <button
-                onClick={stopSpeaking}
-                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-sm font-medium"
-              >
-                ⏸️ Стоп
-              </button>
-            )}
             <button
               onClick={() => {
                 if (confirm('Очистить историю?')) setMessages([]);
@@ -258,7 +245,7 @@ export default function VoiceAssistant() {
 
       <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
         <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">История</h2>
-        <div className="h-64 sm:h-96 overflow-y-auto space-y-2 sm:space-y-3 pr-2">
+        <div className="h-64 sm:h-96 overflow-y-auto space-y-3 sm:space-y-4 pr-2">
           {messages.length === 0 ? (
             <div className="text-center py-8 sm:py-12 text-gray-400">
               <div className="text-5xl sm:text-6xl mb-3 sm:mb-4">💇‍♀️</div>
@@ -274,36 +261,49 @@ export default function VoiceAssistant() {
                 className={`flex items-start gap-2 sm:gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
               >
                 <div
-                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm flex-shrink-0 ${
-                    msg.role === 'user' ? 'bg-blue-500 text-white' : 'bg-purple-500 text-white'
-                  }`}
+                  className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm sm:text-base flex-shrink-0 ${msg.role === 'user' ? 'bg-blue-500 text-white' : 'bg-purple-500 text-white'
+                    }`}
                 >
                   {msg.role === 'user' ? (msg.isVoiceInput ? '🎤' : '👤') : '🤖'}
                 </div>
-                <div
-                  className={`${messageSize} rounded-2xl px-3 sm:px-4 py-2 ${
-                    msg.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'
-                  }`}
-                >
-                  <p className={`whitespace-pre-wrap leading-relaxed ${isMobile ? 'text-sm' : ''}`}>
-                    {msg.text}
-                  </p>
-                  <p
-                    className={`text-xs mt-1 ${
-                      msg.role === 'user' ? 'text-blue-100' : 'text-gray-500'
-                    }`}
+                <div className="flex flex-col gap-2 max-w-[80%] sm:max-w-[75%]">
+                  <div
+                    className={`rounded-2xl px-4 py-3 ${msg.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'
+                      }`}
                   >
-                    {new Date(msg.timestamp).toLocaleTimeString('ru-RU', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </p>
+                    <p className="whitespace-pre-wrap leading-relaxed text-sm sm:text-base">
+                      {msg.text}
+                    </p>
+                    <p
+                      className={`text-xs mt-2 ${msg.role === 'user' ? 'text-blue-100' : 'text-gray-500'
+                        }`}
+                    >
+                      {new Date(msg.timestamp).toLocaleTimeString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </p>
+                  </div>
+                  {/* Modern Listen/Stop button - larger for mobile */}
                   {msg.role === 'assistant' && synthesisAvailable && (
                     <button
-                      onClick={() => speakResponse(msg.text)}
-                      className="mt-2 text-xs text-purple-600 hover:text-purple-700 font-medium"
+                      onClick={() => toggleSpeech(msg.text, i)}
+                      className={`self-start flex items-center gap-2 px-4 py-2.5 sm:py-2 rounded-full text-sm font-medium transition-all active:scale-95 min-h-[44px] ${playingIndex === i
+                          ? 'bg-red-500 text-white shadow-md'
+                          : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                        }`}
                     >
-                      🔊 Прослушать
+                      {playingIndex === i ? (
+                        <>
+                          <span className="text-base">⏹</span>
+                          <span>Остановить</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-base">🔊</span>
+                          <span>Прослушать</span>
+                        </>
+                      )}
                     </button>
                   )}
                 </div>
@@ -325,7 +325,7 @@ export default function VoiceAssistant() {
         <h3 className="font-bold text-purple-900 mb-2 text-sm sm:text-base">
           💡 Что можно спросить:
         </h3>
-        <div className="flex flex-wrap gap-1 sm:gap-2">
+        <div className="flex flex-wrap gap-2">
           {[
             'Какой окислитель на корни?',
             'Что делать с жёлтым оттенком?',
@@ -336,7 +336,7 @@ export default function VoiceAssistant() {
               key={i}
               onClick={() => sendMessage(tip)}
               disabled={isLoading}
-              className="px-2 sm:px-3 py-1 bg-white border border-purple-200 rounded-full text-xs sm:text-sm hover:bg-purple-100 disabled:opacity-50"
+              className="px-3 py-2 bg-white border border-purple-200 rounded-full text-xs sm:text-sm hover:bg-purple-100 disabled:opacity-50 min-h-[40px]"
             >
               {tip}
             </button>

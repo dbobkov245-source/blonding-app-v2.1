@@ -28,11 +28,23 @@ const LessonAIAssistant: React.FC<LessonAIAssistantProps> = ({ lessonTitle, less
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Scroll to bottom when opening or adding messages
+  useEffect(() => {
+    if (isExpanded && messages.length > 0) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, loading, isExpanded]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + 'px';
+    }
+  }, [text]);
 
   const send = async (questionText = text) => {
     if (!questionText.trim()) return;
@@ -42,122 +54,198 @@ const LessonAIAssistant: React.FC<LessonAIAssistantProps> = ({ lessonTitle, less
 Не придумывай ничего, чего нет в тексте.
 
 КОНТЕКСТ УРОКА:
-${lessonContent.substring(0, 4000)}...`;
-
-    const inputs = questionText;
+${lessonContent.substring(0, 3000)}...`;
 
     setMessages((m) => [...m, { role: 'user', text: questionText }]);
     setText('');
     setLoading(true);
+
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
 
     try {
       const res = await fetch('/api/proxy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          inputs: inputs,
+          inputs: questionText,
           systemPrompt: systemPrompt
         }),
       });
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || `HTTP error ${res.status}`);
-      }
-
+      if (!res.ok) throw new Error();
       const json = await res.json();
       setMessages((m) => [...m, { role: 'assistant', text: json.reply || 'Нет ответа' }]);
     } catch (e: any) {
-      console.error("[LessonAIAssistant] Ошибка:", e);
-      setMessages((m) => [...m, { role: 'assistant', text: `Ошибка AI: ${e.message}` }]);
+      setMessages((m) => [...m, { role: 'assistant', text: 'Ошибка связи с AI.' }]);
     } finally {
       setLoading(false);
     }
   };
 
-  const quickActions = ['💡 Объясни проще', '📖 Приведи пример', '🎯 Дай инструкцию'];
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (!loading && text.trim()) send();
+    }
+  };
+
+  const clearHistory = () => {
+    if (confirm('Очистить историю диалога?')) {
+      setMessages([]);
+    }
+  };
+
+  const quickActions = [
+    { emoji: '💡', text: 'Объясни проще' },
+    { emoji: '📖', text: 'Приведи пример' },
+    { emoji: '‼', text: 'Какие ошибки можно допустить?' },
+    { emoji: '➡', text: 'Дай инструкцию' }
+  ];
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden my-8 transition-all duration-300">
+      {/* Header - Clickable to toggle */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4 flex items-center justify-between transition-all"
+        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 p-4 flex items-center justify-between transition-colors hover:from-purple-700 hover:to-indigo-700"
       >
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
             <span className="text-xl">🤖</span>
           </div>
           <div className="text-left">
-            <div className="font-bold text-sm">AI-помощник</div>
-            <div className="text-xs text-purple-100">Задай вопрос по уроку</div>
+            <h2 className="text-white font-bold text-lg leading-tight">AI-помощник</h2>
+            <p className="text-purple-100 text-xs opacity-90">
+              {isExpanded ? `Контекст: ${lessonTitle}` : 'Задай вопрос по уроку'}
+            </p>
           </div>
         </div>
-        <svg className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
 
-      {isExpanded && (
-        <div className="p-4 space-y-4">
-          {messages.length === 0 && (
-            <div className="space-y-2">
-              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Быстрые вопросы</p>
-              {quickActions.map((action, i) => (
-                <button
-                  key={i}
-                  onClick={() => send(action)}
-                  className="w-full text-left px-4 py-3 bg-slate-50 hover:bg-purple-50 rounded-xl text-sm transition-colors"
-                >
-                  {action}
-                </button>
-              ))}
+        <div className="flex items-center gap-3">
+          {messages.length > 0 && isExpanded && (
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                clearHistory();
+              }}
+              className="text-xs text-white/90 hover:text-white px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg transition-colors backdrop-blur-sm cursor-pointer"
+            >
+              Очистить
             </div>
           )}
-          <div className="max-h-64 overflow-auto space-y-3 no-scrollbar">
+          <svg
+            className={`w-6 h-6 text-white transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </button>
+
+      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
+        <div className="p-4 space-y-4">
+          {/* Quick Questions - Optimized Chips */}
+          {messages.length === 0 && (
+            <div className="bg-slate-50 rounded-xl p-4">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 text-center">
+                Быстрые вопросы
+              </p>
+              <div className="flex flex-wrap justify-center gap-2">
+                {quickActions.map((action, i) => (
+                  <button
+                    key={i}
+                    onClick={() => send(action.text)}
+                    className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-700 hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700 transition-all shadow-sm active:scale-95"
+                  >
+                    {action.emoji} {action.text}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Messages */}
+          <div className="max-h-[500px] overflow-y-auto space-y-4 pr-1">
+            {messages.length === 0 && (
+              <div className="text-center py-6 text-slate-300">
+                <p className="text-sm">Я изучил этот урок и готов отвечать на вопросы</p>
+              </div>
+            )}
+
             {messages.map((m, i) => (
               <div
                 key={i}
-                className={`p-3 rounded-2xl text-sm ${m.role === 'user'
-                  ? 'bg-gradient-to-br from-purple-600 to-indigo-600 text-white ml-6 rounded-br-none'
-                  : 'bg-slate-100 text-slate-800 mr-6 rounded-bl-none'}`}
+                className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                <div className="font-medium text-xs mb-1 opacity-75">
-                  {m.role === 'user' ? '👤 Вы' : '🤖 AI'}
+                <div
+                  className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm ${m.role === 'user'
+                      ? 'bg-purple-600 text-white rounded-br-sm'
+                      : 'bg-slate-100 text-slate-800 rounded-bl-sm'
+                    }`}
+                >
+                  {m.text}
                 </div>
-                {m.text}
               </div>
             ))}
+
+            {loading && (
+              <div className="flex justify-start">
+                <div className="bg-slate-100 px-4 py-3 rounded-2xl rounded-bl-sm">
+                  <div className="flex gap-1.5">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '75ms' }}></div>
+                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                  </div>
+                </div>
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </div>
-          <div className="flex gap-2">
-            <input
-              type="text"
+
+          {/* Telegram Style Input */}
+          <div className="flex items-end gap-2 bg-gray-100 rounded-2xl p-1.5">
+            <button
+              className="shrink-0 w-10 h-10 flex items-center justify-center rounded-full text-gray-400 hover:text-purple-600 hover:bg-white transition-all cursor-not-allowed"
+              title="Функция в разработке"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+              </svg>
+            </button>
+
+            <textarea
+              ref={textareaRef}
               value={text}
               onChange={(e) => setText(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !loading) send();
-              }}
-              placeholder="Ваш вопрос..."
-              className="flex-1 px-4 py-3 bg-slate-50 border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+              onKeyDown={handleKeyDown}
+              placeholder="Сообщение..."
+              className="flex-1 bg-transparent border-none focus:ring-0 focus:outline-none text-gray-800 placeholder:text-gray-400 resize-none py-2.5 px-1 max-h-32 min-h-[40px] text-base leading-relaxed"
+              rows={1}
             />
+
             <button
               onClick={() => send()}
               disabled={loading || !text.trim()}
-              className={`p-3 rounded-xl transition-all ${text.trim()
-                ? 'bg-purple-600 text-white shadow-md hover:scale-105 active:scale-95'
-                : 'bg-slate-100 text-slate-300 cursor-not-allowed'}`}
+              className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all ${text.trim()
+                  ? 'bg-purple-600 text-white shadow-md hover:bg-purple-700 active:scale-95'
+                  : 'bg-gray-200 text-gray-400'
+                }`}
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               )}
             </button>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };
@@ -168,9 +256,7 @@ const TheoryPage: React.FC<TheoryPageProps> = ({ lesson }) => {
       <div className="text-center py-12">
         <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100">
           <h1 className="text-xl font-bold mb-4 text-slate-900">Урок не найден</h1>
-          <Link href="/" className="text-purple-600 font-medium hover:underline">
-            Вернуться на главную
-          </Link>
+          <Link href="/" className="text-purple-600 font-medium hover:underline">Вернуться на главную</Link>
         </div>
       </div>
     );
@@ -181,43 +267,32 @@ const TheoryPage: React.FC<TheoryPageProps> = ({ lesson }) => {
       <Head>
         <title>{lesson.title} | Blonding Course</title>
       </Head>
-
-      <article className="space-y-6">
-        {/* Кнопка Назад */}
+      <article className="space-y-6 pb-8">
         <div className="pt-2">
           <Link href="/" className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-purple-600 transition-colors">
-            <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+            <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             К списку
           </Link>
         </div>
-
-        {/* Заголовок */}
         <header>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
             {lesson.title}
           </h1>
         </header>
 
-        {/* AI Помощник */}
-        <LessonAIAssistant lessonTitle={lesson.title} lessonContent={lesson.content} />
-
-        {/* Контент (Белый лист) */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
           <div className="prose prose-slate prose-headings:font-bold prose-headings:text-slate-900 prose-p:text-slate-600 prose-a:text-purple-600 hover:prose-a:text-purple-500 max-w-none">
             <ReactMarkdown>{lesson.content}</ReactMarkdown>
           </div>
         </div>
 
-        {/* CTA: Пройти тест */}
+        {/* AI Assistant at the bottom */}
+        <LessonAIAssistant lessonTitle={lesson.title} lessonContent={lesson.content} />
+
         <div className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl p-6 text-center shadow-lg shadow-purple-200">
           <h3 className="text-lg font-bold text-white mb-2">Готовы проверить себя?</h3>
-          <p className="text-purple-100 text-sm mb-4">Пройдите тест по материалу урока</p>
-          <Link
-            href={`/Test/${lesson.slug}`}
-            className="inline-block px-6 py-3 bg-white text-purple-600 font-bold rounded-xl hover:bg-purple-50 transition-colors shadow-md"
-          >
+          <p className="text-purple-100 text-sm mb-4">Закрепите знания, пройдя короткий тест</p>
+          <Link href={`/Test/${lesson.slug}`} className="inline-block px-6 py-3 bg-white text-purple-600 font-bold rounded-xl hover:bg-purple-50 transition-colors shadow-md active:scale-95">
             Пройти тест →
           </Link>
         </div>
@@ -226,14 +301,12 @@ const TheoryPage: React.FC<TheoryPageProps> = ({ lesson }) => {
   );
 };
 
-// ВАЖНО: getStaticPaths и getStaticProps сохранены из оригинала!
 export const getStaticPaths: GetStaticPaths = async () => {
   let lessons: { slug: string }[] = [];
   try {
     const jsonPath = path.join(process.cwd(), 'public', 'lessons', 'index.json');
     const data = fs.readFileSync(jsonPath, 'utf-8');
     const indexData = JSON.parse(data);
-
     if (indexData.modules && indexData.lessons) {
       lessons = Object.values(indexData.lessons).flat() as { slug: string }[];
     } else {
@@ -242,7 +315,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
   } catch (e) {
     console.warn("index.json not found");
   }
-
   const paths = lessons.map((lesson) => ({ params: { slug: lesson.slug } }));
   return { paths, fallback: 'blocking' };
 };
@@ -252,29 +324,13 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   try {
     const decodedSlug = decodeURIComponent(slug);
     const mdPath = path.join(process.cwd(), 'public', 'lessons', decodedSlug, `${decodedSlug}.md`);
-
-    if (!fs.existsSync(mdPath)) {
-      console.warn(`Lesson file not found: ${mdPath}`);
-      return { props: { lesson: null } };
-    }
-
+    if (!fs.existsSync(mdPath)) return { props: { lesson: null } };
     const rawText = fs.readFileSync(mdPath, 'utf-8');
     const content = cleanMarkdown(rawText);
-
     const titleMatch = rawText.match(/title:\s*"([^"]+)"/);
     const title = titleMatch ? titleMatch[1] : decodedSlug;
-
-    return {
-      props: {
-        lesson: {
-          title: title,
-          content,
-          slug: decodedSlug,
-        },
-      },
-    };
+    return { props: { lesson: { title, content, slug: decodedSlug } } };
   } catch (e: any) {
-    console.error(`Error for slug: ${slug}`, e.message);
     return { props: { lesson: null } };
   }
 };
