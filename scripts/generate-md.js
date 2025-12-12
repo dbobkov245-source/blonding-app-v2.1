@@ -113,12 +113,16 @@ async function processLessonFile(file, moduleSourceDir, moduleSlug, moduleName) 
   }
   // else: keep title = baseName (filename with lesson number)
 
-  // Clean up excessive horizontal rules and empty lines
+  // Clean up form fields and formatting
   let cleanContent = content
-    .replace(/_{3,}/g, '')           // Remove ___ horizontal rules
-    .replace(/-{3,}/g, '')           // Remove --- horizontal rules  
-    .replace(/\*{3,}/g, '')          // Remove *** horizontal rules
-    .replace(/\n{4,}/g, '\n\n\n')    // Max 2 empty lines
+    // Remove standalone lines that are ONLY underscores/bold underscores (form separators)
+    .replace(/^\s*\*?\*?[\\_]+\*?\*?\s*$/gm, '')
+    // Shorten escaped underscore sequences (form fields) - keep some for form look
+    .replace(/(\\_){15,}/g, '\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_')
+    // Shorten regular underscore sequences
+    .replace(/_{15,}/g, '__________')
+    // Clean up multiple consecutive empty lines (max 2)
+    .replace(/\n{3,}/g, '\n\n')
     .trim();
 
   const mdFile = `---
