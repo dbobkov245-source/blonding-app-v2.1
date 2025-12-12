@@ -10,6 +10,7 @@ interface Lesson {
   title: string;
   content: string;
   slug: string;
+  module?: string;
 }
 
 interface TheoryPageProps {
@@ -183,8 +184,8 @@ ${lessonContent.substring(0, 3000)}...`;
               >
                 <div
                   className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm ${m.role === 'user'
-                      ? 'bg-purple-600 text-white rounded-br-sm'
-                      : 'bg-slate-100 text-slate-800 rounded-bl-sm'
+                    ? 'bg-purple-600 text-white rounded-br-sm'
+                    : 'bg-slate-100 text-slate-800 rounded-bl-sm'
                     }`}
                 >
                   {m.text}
@@ -231,8 +232,8 @@ ${lessonContent.substring(0, 3000)}...`;
               onClick={() => send()}
               disabled={loading || !text.trim()}
               className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all ${text.trim()
-                  ? 'bg-purple-600 text-white shadow-md hover:bg-purple-700 active:scale-95'
-                  : 'bg-gray-200 text-gray-400'
+                ? 'bg-purple-600 text-white shadow-md hover:bg-purple-700 active:scale-95'
+                : 'bg-gray-200 text-gray-400'
                 }`}
             >
               {loading ? (
@@ -286,16 +287,21 @@ const TheoryPage: React.FC<TheoryPageProps> = ({ lesson }) => {
           </div>
         </div>
 
-        {/* AI Assistant at the bottom */}
-        <LessonAIAssistant lessonTitle={lesson.title} lessonContent={lesson.content} />
+        {/* AI Assistant at the bottom - hide for materials */}
+        {lesson.module !== 'dopolnitelnye-materialy' && (
+          <LessonAIAssistant lessonTitle={lesson.title} lessonContent={lesson.content} />
+        )}
 
-        <div className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl p-6 text-center shadow-lg shadow-purple-200">
-          <h3 className="text-lg font-bold text-white mb-2">Готовы проверить себя?</h3>
-          <p className="text-purple-100 text-sm mb-4">Закрепите знания, пройдя короткий тест</p>
-          <Link href={`/Test/${lesson.slug}`} className="inline-block px-6 py-3 bg-white text-purple-600 font-bold rounded-xl hover:bg-purple-50 transition-colors shadow-md active:scale-95">
-            Пройти тест →
-          </Link>
-        </div>
+        {/* Test CTA - hide for materials */}
+        {lesson.module !== 'dopolnitelnye-materialy' && (
+          <div className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl p-6 text-center shadow-lg shadow-purple-200">
+            <h3 className="text-lg font-bold text-white mb-2">Готовы проверить себя?</h3>
+            <p className="text-purple-100 text-sm mb-4">Закрепите знания, пройдя короткий тест</p>
+            <Link href={`/Test/${lesson.slug}`} className="inline-block px-6 py-3 bg-white text-purple-600 font-bold rounded-xl hover:bg-purple-50 transition-colors shadow-md active:scale-95">
+              Пройти тест →
+            </Link>
+          </div>
+        )}
       </article>
     </>
   );
@@ -328,8 +334,10 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     const rawText = fs.readFileSync(mdPath, 'utf-8');
     const content = cleanMarkdown(rawText);
     const titleMatch = rawText.match(/title:\s*"([^"]+)"/);
+    const moduleMatch = rawText.match(/module:\s*"([^"]+)"/);
     const title = titleMatch ? titleMatch[1] : decodedSlug;
-    return { props: { lesson: { title, content, slug: decodedSlug } } };
+    const module = moduleMatch ? moduleMatch[1] : undefined;
+    return { props: { lesson: { title, content, slug: decodedSlug, module } } };
   } catch (e: any) {
     return { props: { lesson: null } };
   }

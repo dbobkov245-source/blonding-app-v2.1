@@ -54,6 +54,31 @@ const ModulePage = ({ moduleData, lessons }: ModulePageProps) => {
                 </p>
             </header>
 
+            {/* PDF section for materials module */}
+            {moduleData.slug === 'dopolnitelnye-materialy' && (
+                <a
+                    href="/materials/vk-telegram-guide.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-5 shadow-md hover:shadow-lg transition border border-red-100 mb-4"
+                >
+                    <div className="flex items-start gap-4">
+                        <div className="flex-shrink-0 w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center text-red-500">
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                                <span className="text-xs font-bold text-red-500 bg-red-100 px-2 py-0.5 rounded">PDF</span>
+                            </div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-1">Как оформить сообщество ВКонтакте и Телеграм канал</h3>
+                            <p className="text-sm text-red-600">Открыть PDF →</p>
+                        </div>
+                    </div>
+                </a>
+            )}
+
             <div className="space-y-4">
                 {lessons.map((lesson, index) => (
                     <Link
