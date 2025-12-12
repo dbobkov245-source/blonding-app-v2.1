@@ -113,6 +113,14 @@ async function processLessonFile(file, moduleSourceDir, moduleSlug, moduleName) 
   }
   // else: keep title = baseName (filename with lesson number)
 
+  // Clean up excessive horizontal rules and empty lines
+  let cleanContent = content
+    .replace(/_{3,}/g, '')           // Remove ___ horizontal rules
+    .replace(/-{3,}/g, '')           // Remove --- horizontal rules  
+    .replace(/\*{3,}/g, '')          // Remove *** horizontal rules
+    .replace(/\n{4,}/g, '\n\n\n')    // Max 2 empty lines
+    .trim();
+
   const mdFile = `---
 title: "${title}"
 slug: "${slug}"
@@ -120,7 +128,7 @@ module: "${moduleSlug}"
 date: "${new Date().toISOString().split('T')[0]}"
 ---
 
-${content}`;
+${cleanContent}`;
 
   fs.writeFileSync(path.join(lessonPublicDir, `${slug}.md`), mdFile, 'utf-8');
   return { slug, title, module: moduleSlug };

@@ -6,7 +6,7 @@ date: "2025-12-12"
 ---
 
 Схемы Балаяж
-------------
+
 
 ![https://fs-thb03.getcourse.ru/fileservice/file/thumbnail/h/352185294081119dc76876c7aeaedf2d.jpg/s/f1200x/a/474855/sc/106](/lessons/balayazh-urok-16/images/image-1.jpeg)
 
