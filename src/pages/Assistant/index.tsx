@@ -128,12 +128,7 @@ export default function VoiceAssistant() {
     setPlayingIndex(index);
   };
 
-  const stopSpeaking = () => {
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-      setPlayingIndex(null);
-    }
-  };
+
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -289,8 +284,8 @@ export default function VoiceAssistant() {
                     <button
                       onClick={() => toggleSpeech(msg.text, i)}
                       className={`self-start flex items-center gap-2 px-4 py-2.5 sm:py-2 rounded-full text-sm font-medium transition-all active:scale-95 min-h-[44px] ${playingIndex === i
-                          ? 'bg-red-500 text-white shadow-md'
-                          : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                        ? 'bg-red-500 text-white shadow-md'
+                        : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
                         }`}
                     >
                       {playingIndex === i ? (
