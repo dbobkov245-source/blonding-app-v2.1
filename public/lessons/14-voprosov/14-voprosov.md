@@ -2,7 +2,7 @@
 title: "14 вопросов"
 slug: "14-voprosov"
 module: "dopolnitelnye-materialy"
-date: "2025-12-12"
+date: "2025-12-13"
 ---
 
 **7 вопросов.**

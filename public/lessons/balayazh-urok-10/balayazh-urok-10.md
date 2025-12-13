@@ -1,8 +1,8 @@
 ---
-title: "10 ВРЕМЯ ВЫДЕРЖКИ"
+title: "ВРЕМЯ ВЫДЕРЖКИ"
 slug: "balayazh-urok-10"
 module: "balayazh"
-date: "2025-12-12"
+date: "2025-12-13"
 ---
 
 ВРЕМЯ ВЫДЕРЖКИ.

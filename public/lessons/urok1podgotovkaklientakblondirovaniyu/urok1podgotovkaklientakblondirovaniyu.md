@@ -2,7 +2,7 @@
 title: "Чистые или грязные?"
 slug: "urok1podgotovkaklientakblondirovaniyu"
 module: "blondirovanie"
-date: "2025-12-12"
+date: "2025-12-13"
 ---
 
 **Чистые или грязные волосы.  

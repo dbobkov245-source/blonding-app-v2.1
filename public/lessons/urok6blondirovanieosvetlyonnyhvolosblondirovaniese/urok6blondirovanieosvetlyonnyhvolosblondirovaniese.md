@@ -2,7 +2,7 @@
 title: "Блондирование ранее осветленных волос."
 slug: "urok6blondirovanieosvetlyonnyhvolosblondirovaniese"
 module: "blondirovanie"
-date: "2025-12-12"
+date: "2025-12-13"
 ---
 
 **Блондирование ранее осветленных волос.**

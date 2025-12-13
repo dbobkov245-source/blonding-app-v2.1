@@ -2,7 +2,7 @@
 title: "Информированное согласие – расписка."
 slug: "informirovannoe-soglasie-raspiska"
 module: "dopolnitelnye-materialy"
-date: "2025-12-12"
+date: "2025-12-13"
 ---
 
 **Информированное согласие – расписка.**

@@ -2,7 +2,7 @@
 title: "АНАЛИЗ ЦА ПРИМЕР"
 slug: "analiz-tsa-primer"
 module: "dopolnitelnye-materialy"
-date: "2025-12-12"
+date: "2025-12-13"
 ---
 
 АНАЛИЗ ЦА ПРИМЕР

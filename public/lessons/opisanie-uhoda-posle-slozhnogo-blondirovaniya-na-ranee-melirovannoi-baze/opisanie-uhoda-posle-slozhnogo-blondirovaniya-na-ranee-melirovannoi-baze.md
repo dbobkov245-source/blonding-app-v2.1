@@ -2,7 +2,7 @@
 title: "Описание ухода после сложного блондирования на ранее мелированной базе."
 slug: "opisanie-uhoda-posle-slozhnogo-blondirovaniya-na-ranee-melirovannoi-baze"
 module: "dopolnitelnye-materialy"
-date: "2025-12-12"
+date: "2025-12-13"
 ---
 
 **Описание ухода после сложного блондирования на ранее мелированной базе.**

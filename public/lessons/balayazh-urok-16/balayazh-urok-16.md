@@ -1,8 +1,8 @@
 ---
-title: "16 СХЕМЫ БАЛАЯЖ"
+title: "СХЕМЫ БАЛАЯЖ"
 slug: "balayazh-urok-16"
 module: "balayazh"
-date: "2025-12-12"
+date: "2025-12-13"
 ---
 
 Схемы Балаяж

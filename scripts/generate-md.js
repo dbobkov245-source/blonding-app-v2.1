@@ -113,6 +113,13 @@ async function processLessonFile(file, moduleSourceDir, moduleSlug, moduleName) 
   }
   // else: keep title = baseName (filename with lesson number)
 
+  // Clean titles for specific modules
+  if (moduleName === 'тонирование') {
+    title = title.replace(/^Урок \d+\.\s*/i, '');
+  } else if (moduleName === 'балаяж') {
+    title = title.replace(/^\d+\s+/, '');
+  }
+
   // Clean up form fields and formatting
   let cleanContent = content
     // Remove standalone lines that are ONLY underscores/bold underscores (form separators)

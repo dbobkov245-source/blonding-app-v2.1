@@ -2,7 +2,7 @@
 title: "Продающая памятка по уходу"
 slug: "prodayushchaya-pamyatka-po-uhodu"
 module: "dopolnitelnye-materialy"
-date: "2025-12-12"
+date: "2025-12-13"
 ---
 
 **Продающая памятка по уходу:**
