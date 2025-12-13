@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 import type { GetStaticProps, GetStaticPaths } from 'next';
 import Head from 'next/head';
+import { useLessonProgress } from '../../hooks/useLessonProgress';
 
 interface Lesson {
   title: string;
@@ -252,6 +253,14 @@ ${lessonContent.substring(0, 3000)}...`;
 };
 
 const TheoryPage: React.FC<TheoryPageProps> = ({ lesson }) => {
+  const { markSeen } = useLessonProgress();
+
+  useEffect(() => {
+    if (lesson?.slug) {
+      markSeen(lesson.slug);
+    }
+  }, [lesson?.slug]);
+
   if (!lesson) {
     return (
       <div className="text-center py-12">

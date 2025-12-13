@@ -3,6 +3,7 @@ import path from 'path';
 import Link from 'next/link';
 import type { GetStaticProps } from 'next';
 import Head from 'next/head';
+import { useLessonProgress } from '../hooks/useLessonProgress';
 
 interface Module {
   name: string;
@@ -64,9 +65,12 @@ function getLessonsWord(count: number): string {
 }
 
 const Home = ({ modules }: HomeProps) => {
-  // Рассчитываем общий прогресс (заглушка 15%)
+
+  // Рассчитываем общий прогресс
   const totalLessons = modules.reduce((acc, m) => acc + m.lessonsCount, 0);
-  const progressPercent = 15;
+  const { getProgress, mounted } = useLessonProgress();
+  // Show 0% initially until mounted to prevent hydration mismatch, or just render static
+  const progressPercent = mounted ? getProgress(totalLessons) : 0;
 
   if (modules.length === 0) {
     return (
